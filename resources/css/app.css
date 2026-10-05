@@ -1,0 +1,6 @@
+/* Tambahkan baris ini di paling atas */
+@import '@splidejs/splide/dist/css/splide.min.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;

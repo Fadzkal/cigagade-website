@@ -16,6 +16,12 @@
             <image:title>Logo Resmi Pemerintah Desa Cigagade</image:title>
             <image:caption>Logo resmi Pemerintah Desa Cigagade, Kecamatan Balubur Limbangan, Kabupaten Garut</image:caption>
         </image:image>
+        @elseif(file_exists(public_path('images/LOGO_GARUT.png')))
+        <image:image>
+            <image:loc>{{ asset('images/LOGO_GARUT.png') }}</image:loc>
+            <image:title>Logo Resmi Pemerintah Desa Cigagade</image:title>
+            <image:caption>Logo resmi Pemerintah Desa Cigagade, Kecamatan Balubur Limbangan, Kabupaten Garut</image:caption>
+        </image:image>
         @endif
 
         {{-- Gambar Profil / Tentang Desa --}}

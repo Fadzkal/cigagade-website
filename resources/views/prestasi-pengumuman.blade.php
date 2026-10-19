@@ -1,7 +1,8 @@
-<x-public-layout>
-    <x-slot name="title">
-        Prestasi & Pengumuman - Desa Cigagade
-    </x-slot>
+<x-public-layout
+    title="Prestasi & Pengumuman - Desa Cigagade"
+    metaDescription="Pusat informasi prestasi dan pengumuman resmi Pemerintah Desa Cigagade, Balubur Limbangan, Garut. Pantau terus pencapaian membanggakan dan agenda kegiatan warga."
+    metaKeywords="Prestasi Desa Cigagade, Pengumuman Desa Cigagade, Agenda Desa Garut, Info Balubur Limbangan"
+>
 
     <div class="relative min-h-screen pb-20 pt-12 bg-white dark:bg-slate-950 antialiased selection:bg-emerald-100 selection:text-emerald-900">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

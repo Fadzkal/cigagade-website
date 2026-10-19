@@ -8,7 +8,7 @@
         $pageTitle = $title ?? 'Portal Resmi Desa Cigagade - Balubur Limbangan, Garut';
         $pageDesc = $metaDescription ?? 'Website resmi Desa Cigagade, Kecamatan Balubur Limbangan, Kabupaten Garut. Pusat informasi pembangunan, pelayanan warga, UMKM, dan potensi desa.';
         $pageKeywords = $metaKeywords ?? 'Desa Cigagade, Balubur Limbangan, Garut, Jawa Barat, Portal Desa, Pelayanan Desa, Wisata Sunan Cibalampu, UMKM Cigagade';
-        $pageImage = $metaImage ?? asset('LOGO_GARUT.png');
+        $pageImage = $metaImage ?? asset('images/LOGO_GARUT.png');
         $pageImageAlt = $metaImageAlt ?? 'Logo Resmi Pemerintah Desa Cigagade';
         $pageUrl = $canonicalUrl ?? url()->current();
         $pageType = $ogType ?? 'website';
@@ -48,7 +48,7 @@
         "name": "Pemerintah Desa Cigagade",
         "alternateName": "Desa Cigagade",
         "url": "{{ url('/') }}",
-        "logo": "{{ asset('LOGO_GARUT.png') }}",
+        "logo": "{{ asset('images/LOGO_GARUT.png') }}",
         "image": "{{ $pageImage }}",
         "description": "Website resmi Pemerintah Desa Cigagade, Kecamatan Balubur Limbangan, Kabupaten Garut, Jawa Barat.",
         "address": {
@@ -64,7 +64,10 @@
         {!! $schemaJson !!}
     @endif
 
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23059669'><path d='M12 2L2 9.5V11H4V20H9V14H15V20H20V11H22V9.5L12 2Z'/></svg>">
+    <!-- Favicon & Brand Icons -->
+    <link rel="icon" type="image/png" href="{{ asset('images/LOGO_GARUT.png') }}">
+    <link rel="apple-touch-icon" href="{{ asset('images/LOGO_GARUT.png') }}">
+    <link rel="shortcut icon" href="{{ asset('LOGO_GARUT.png') }}">
 
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=figtree:400,500,600,700&display=swap" rel="stylesheet" />

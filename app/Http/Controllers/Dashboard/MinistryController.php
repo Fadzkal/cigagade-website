@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Ministry;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests; // Import Trait
 
@@ -42,7 +43,10 @@ class MinistryController extends Controller
         ]);
 
         if ($request->hasFile('image')) {
-            $imagePath = $request->file('image')->store('ministry-images', 'public');
+            $file = $request->file('image');
+            $nameSlug = Str::slug($validatedData['name'] ?? 'perangkat-desa');
+            $filename = ($nameSlug ?: 'perangkat-desa') . '-' . time() . '.' . $file->getClientOriginalExtension();
+            $imagePath = $file->storeAs('ministry-images', $filename, 'public');
             $validatedData['image'] = $imagePath;
         }
 
@@ -85,7 +89,10 @@ class MinistryController extends Controller
                 Storage::disk('public')->delete($request->oldImage);
             }
             // Upload gambar baru
-            $imagePath = $request->file('image')->store('ministry-images', 'public');
+            $file = $request->file('image');
+            $nameSlug = Str::slug($validatedData['name'] ?? 'perangkat-desa');
+            $filename = ($nameSlug ?: 'perangkat-desa') . '-' . time() . '.' . $file->getClientOriginalExtension();
+            $imagePath = $file->storeAs('ministry-images', $filename, 'public');
             $validatedData['image'] = $imagePath;
         }
 

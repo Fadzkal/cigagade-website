@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Gallery;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class GalleryController extends Controller
@@ -40,7 +41,10 @@ class GalleryController extends Controller
         ]);
 
         if ($request->hasFile('image')) {
-            $imagePath = $request->file('image')->store('gallery-images', 'public');
+            $file = $request->file('image');
+            $titleSlug = Str::slug($validatedData['title'] ?? 'galeri-desa-cigagade');
+            $filename = ($titleSlug ?: 'galeri-desa-cigagade') . '-' . time() . '.' . $file->getClientOriginalExtension();
+            $imagePath = $file->storeAs('gallery-images', $filename, 'public');
             $validatedData['image'] = $imagePath;
         }
 
@@ -81,7 +85,10 @@ class GalleryController extends Controller
                 Storage::disk('public')->delete($request->oldImage);
             }
             // Upload gambar baru
-            $imagePath = $request->file('image')->store('gallery-images', 'public');
+            $file = $request->file('image');
+            $titleSlug = Str::slug($validatedData['title'] ?? 'galeri-desa-cigagade');
+            $filename = ($titleSlug ?: 'galeri-desa-cigagade') . '-' . time() . '.' . $file->getClientOriginalExtension();
+            $imagePath = $file->storeAs('gallery-images', $filename, 'public');
             $validatedData['image'] = $imagePath;
         }
 

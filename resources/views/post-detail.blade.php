@@ -38,7 +38,33 @@
                 'name' => 'Pemerintah Desa Cigagade',
                 'logo' => [
                     '@type' => 'ImageObject',
-                    'url' => asset('LOGO_GARUT.png'),
+                    'url' => asset('images/LOGO_GARUT.png'),
+                ],
+            ],
+        ], JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) !!}
+        </script>
+        <script type="application/ld+json">
+        {!! json_encode([
+            '@context' => 'https://schema.org',
+            '@type' => 'BreadcrumbList',
+            'itemListElement' => [
+                [
+                    '@type' => 'ListItem',
+                    'position' => 1,
+                    'name' => 'Beranda',
+                    'item' => url('/'),
+                ],
+                [
+                    '@type' => 'ListItem',
+                    'position' => 2,
+                    'name' => 'Kabar Desa',
+                    'item' => route('berita.index'),
+                ],
+                [
+                    '@type' => 'ListItem',
+                    'position' => 3,
+                    'name' => $postTitle,
+                    'item' => $postUrl,
                 ],
             ],
         ], JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) !!}

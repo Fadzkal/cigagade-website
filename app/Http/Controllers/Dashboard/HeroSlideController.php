@@ -7,6 +7,7 @@ use App\Models\HeroSlide;
 use App\Models\Post;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class HeroSlideController extends Controller
@@ -42,7 +43,10 @@ class HeroSlideController extends Controller
         }
 
         if ($request->hasFile('image')) {
-            $validatedData['image'] = $request->file('image')->store('hero-slides', 'public');
+            $file = $request->file('image');
+            $slideSlug = Str::slug($validatedData['title'] ?? 'hero-slide-cigagade');
+            $filename = ($slideSlug ?: 'hero-slide-cigagade') . '-' . time() . '.' . $file->getClientOriginalExtension();
+            $validatedData['image'] = $file->storeAs('hero-slides', $filename, 'public');
         }
 
         HeroSlide::create($validatedData);
@@ -81,7 +85,10 @@ class HeroSlideController extends Controller
             if ($request->oldImage) {
                 Storage::disk('public')->delete($request->oldImage);
             }
-            $validatedData['image'] = $request->file('image')->store('hero-slides', 'public');
+            $file = $request->file('image');
+            $slideSlug = Str::slug($validatedData['title'] ?? 'hero-slide-cigagade');
+            $filename = ($slideSlug ?: 'hero-slide-cigagade') . '-' . time() . '.' . $file->getClientOriginalExtension();
+            $validatedData['image'] = $file->storeAs('hero-slides', $filename, 'public');
         }
 
         $heroSlide->update($validatedData);

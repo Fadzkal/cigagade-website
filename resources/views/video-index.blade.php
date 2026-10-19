@@ -1,7 +1,8 @@
-<x-public-layout>
-    <x-slot name="title">
-        Galeri Video & Dokumentasi - Desa Cigagade
-    </x-slot>
+<x-public-layout
+    title="Galeri Video & Dokumentasi - Desa Cigagade"
+    metaDescription="Koleksi video profil, liputan kegiatan, dan dokumentasi keindahan Desa Cigagade, Balubur Limbangan, Garut."
+    metaKeywords="Video Desa Cigagade, Dokumentasi Desa Garut, Kegiatan Warga Cigagade, Balubur Limbangan"
+>
 
     {{-- Hero Section --}}
     <section class="relative bg-gradient-to-br from-slate-900 via-emerald-950 to-slate-900 py-24 overflow-hidden">

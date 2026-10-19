@@ -1,7 +1,14 @@
-<x-public-layout>
-    <x-slot name="title">
-        {{ __('home.page_title') }}
-    </x-slot>
+@php
+    $homeDesc = !empty($settings['about_description']) ? Str::limit(strip_tags($settings['about_description']), 160) : 'Website resmi Desa Cigagade, Kecamatan Balubur Limbangan, Kabupaten Garut. Pusat informasi pembangunan, pelayanan warga, dan potensi UMKM desa.';
+    $homeImage = (!empty($settings['about_image']) && file_exists(public_path('storage/' . $settings['about_image']))) ? asset('storage/' . $settings['about_image']) : asset('LOGO_GARUT.png');
+@endphp
+
+<x-public-layout
+    :title="__('home.page_title')"
+    :metaDescription="$homeDesc"
+    :metaImage="$homeImage"
+    metaImageAlt="Pemandangan dan Profil Desa Cigagade"
+>
     <x-slot name="noPadding">1</x-slot>
 
     <!-- Hero Section -->

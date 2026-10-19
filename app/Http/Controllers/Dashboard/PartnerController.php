@@ -41,7 +41,10 @@ class PartnerController extends Controller
         ]);
 
         if ($request->hasFile('logo')) {
-            $logoPath = $request->file('logo')->store('partner-logos', 'public');
+            $file = $request->file('logo');
+            $slug = \Illuminate\Support\Str::slug($validatedData['name'] ?? 'partner', '-');
+            $filename = 'partner-' . $slug . '-' . time() . '.' . $file->getClientOriginalExtension();
+            $logoPath = $file->storeAs('partner-logos', $filename, 'public');
             $validatedData['logo'] = $logoPath;
         }
 
@@ -83,7 +86,10 @@ class PartnerController extends Controller
                 Storage::disk('public')->delete($request->oldLogo);
             }
             // Upload logo baru
-            $logoPath = $request->file('logo')->store('partner-logos', 'public');
+            $file = $request->file('logo');
+            $slug = \Illuminate\Support\Str::slug($validatedData['name'] ?? 'partner', '-');
+            $filename = 'partner-' . $slug . '-' . time() . '.' . $file->getClientOriginalExtension();
+            $logoPath = $file->storeAs('partner-logos', $filename, 'public');
             $validatedData['logo'] = $logoPath;
         }
 

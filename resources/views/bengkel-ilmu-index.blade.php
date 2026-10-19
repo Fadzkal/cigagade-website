@@ -1,5 +1,8 @@
-<x-public-layout>
-    <x-slot name="title">Potensi Desa — Desa Cigagade</x-slot>
+<x-public-layout
+    title="Potensi Desa — Desa Cigagade"
+    metaDescription="Ruang informasi potensi pertanian, perkebunan, UMKM, kearifan lokal, dan inovasi Desa Cigagade, Balubur Limbangan, Garut."
+    metaKeywords="Potensi Desa Cigagade, Pertanian Cigagade, Kopi Cigagade, Balubur Limbangan Garut"
+>
 
     <div class="py-12 md:py-20 min-h-screen bg-white dark:bg-slate-950">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -41,8 +44,10 @@
                     <article class="group flex flex-col">
                         {{-- Thumbnail --}}
                         <a href="{{ $post->getShowRoute() }}" class="block aspect-[4/3] w-full overflow-hidden rounded-xl bg-slate-100 dark:bg-slate-800 mb-4 relative">
-                            <img src="{{ $post->image ? asset('storage/' . $post->image) : 'https://placehold.co/600x400/064e3b/ffffff?text=Potensi+Desa' }}"
-                                 alt="{{ $post->getTitle() }}"
+                            <img src="{{ $post->image ? asset('storage/' . $post->image) : asset('images/LOGO_GARUT.png') }}"
+                                 alt="{{ $post->getTitle() }} - Potensi Desa Cigagade"
+                                 title="{{ $post->getTitle() }}"
+                                 loading="lazy"
                                  class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
                             
                             {{-- Category Badge --}}

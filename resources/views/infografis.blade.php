@@ -1,7 +1,8 @@
-<x-public-layout>
-    <x-slot name="title">
-        {{ $tabMeta['title'] }} — Infografis Desa Cigagade
-    </x-slot>
+<x-public-layout
+    :title="$tabMeta['title'] . ' — Infografis Desa Cigagade'"
+    :metaDescription="'Data dan statistik ' . $tabMeta['title'] . ' Desa Cigagade, Kecamatan Balubur Limbangan, Garut. Transparansi data kependudukan, APBDes, pendidikan, dan bansos.'"
+    metaKeywords="Infografis Desa Cigagade, Data Desa Cigagade, Statistik Penduduk Cigagade, APBDes Cigagade, Transparansi Desa Garut"
+>
 
     {{-- Chart.js CDN for interactive charts --}}
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>

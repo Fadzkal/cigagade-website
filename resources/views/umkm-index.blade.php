@@ -1,7 +1,8 @@
-<x-public-layout>
-    <x-slot name="title">
-        Katalog UMKM & Produk Unggulan - Desa Cigagade
-    </x-slot>
+<x-public-layout
+    title="Katalog UMKM & Produk Unggulan - Desa Cigagade"
+    metaDescription="Jelajahi produk lokal unggulan UMKM Desa Cigagade, Balubur Limbangan, Garut. Temukan aneka kuliner khas, kerajinan tangan, kopi robusta, dan produk pertanian terbaik."
+    metaKeywords="UMKM Desa Cigagade, Produk Unggulan Desa, Oleh-oleh Garut, Kopi Balubur Limbangan, Produk Lokal Garut"
+>
 
     <div class="relative pt-28 pb-16 bg-gradient-to-b from-slate-50 via-white to-slate-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 min-h-screen"
          x-data="{

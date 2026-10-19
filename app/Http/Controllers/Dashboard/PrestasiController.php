@@ -49,7 +49,10 @@ class PrestasiController extends Controller
         ]);
 
         if ($request->hasFile('image')) {
-            $imagePath = $request->file('image')->store('post-images', 'public');
+            $file = $request->file('image');
+            $slug = Str::slug($validatedData['title'] ?? 'prestasi', '-');
+            $filename = $slug . '-' . time() . '.' . $file->getClientOriginalExtension();
+            $imagePath = $file->storeAs('post-images', $filename, 'public');
             $validatedData['image'] = $imagePath;
         }
 
@@ -91,7 +94,10 @@ class PrestasiController extends Controller
             if ($request->oldImage) {
                 Storage::disk('public')->delete($request->oldImage);
             }
-            $imagePath = $request->file('image')->store('post-images', 'public');
+            $file = $request->file('image');
+            $slug = Str::slug($validatedData['title'] ?? 'prestasi', '-');
+            $filename = $slug . '-' . time() . '.' . $file->getClientOriginalExtension();
+            $imagePath = $file->storeAs('post-images', $filename, 'public');
             $validatedData['image'] = $imagePath;
         }
 

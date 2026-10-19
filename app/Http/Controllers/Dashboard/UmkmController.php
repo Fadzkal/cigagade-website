@@ -83,7 +83,9 @@ class UmkmController extends Controller
         $validated['is_active'] = $request->has('is_active');
 
         if ($request->hasFile('image')) {
-            $validated['image'] = $request->file('image')->store('umkm', 'public');
+            $file = $request->file('image');
+            $filename = Str::slug($validated['name']) . '-' . time() . '.' . $file->getClientOriginalExtension();
+            $validated['image'] = $file->storeAs('umkm', $filename, 'public');
         }
 
         Umkm::create($validated);
@@ -133,7 +135,9 @@ class UmkmController extends Controller
             if ($umkm->image && Storage::disk('public')->exists($umkm->image)) {
                 Storage::disk('public')->delete($umkm->image);
             }
-            $validated['image'] = $request->file('image')->store('umkm', 'public');
+            $file = $request->file('image');
+            $filename = Str::slug($validated['name']) . '-' . time() . '.' . $file->getClientOriginalExtension();
+            $validated['image'] = $file->storeAs('umkm', $filename, 'public');
         }
 
         $umkm->update($validated);

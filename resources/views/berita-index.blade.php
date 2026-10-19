@@ -1,7 +1,8 @@
-<x-public-layout>
-    <x-slot name="title">
-        Kabar Desa Terbaru - Desa Cigagade
-    </x-slot>
+<x-public-layout
+    title="Kabar Desa Terbaru - Desa Cigagade"
+    metaDescription="Portal Berita & Kabar Desa Cigagade, Balubur Limbangan, Garut. Temukan informasi dan update terkini seputar pembangunan dan kegiatan warga desa."
+    metaKeywords="Berita Desa Cigagade, Kabar Desa Cigagade, Informasi Garut, Balubur Limbangan, Kegiatan Warga Desa"
+>
 
     <section class="relative bg-gradient-to-br from-emerald-900 via-emerald-800 to-teal-900 py-24 overflow-hidden">
         <div class="absolute inset-0 opacity-10">

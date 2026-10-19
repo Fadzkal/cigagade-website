@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\LandscapeBanner;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class LandscapeBannerController extends Controller
 {
@@ -41,7 +42,10 @@ class LandscapeBannerController extends Controller
         $validated['order'] = $validated['order'] ?? (LandscapeBanner::max('order') + 1);
 
         if ($request->hasFile('image')) {
-            $validated['image'] = $request->file('image')->store('landscape-banners', 'public');
+            $file = $request->file('image');
+            $bannerSlug = Str::slug($validated['title'] ?? 'banner-desa-cigagade');
+            $filename = ($bannerSlug ?: 'banner-desa-cigagade') . '-' . time() . '.' . $file->getClientOriginalExtension();
+            $validated['image'] = $file->storeAs('landscape-banners', $filename, 'public');
         }
 
         LandscapeBanner::create($validated);
@@ -84,7 +88,10 @@ class LandscapeBannerController extends Controller
             if ($landscapeBanner->image && Storage::disk('public')->exists($landscapeBanner->image)) {
                 Storage::disk('public')->delete($landscapeBanner->image);
             }
-            $validated['image'] = $request->file('image')->store('landscape-banners', 'public');
+            $file = $request->file('image');
+            $bannerSlug = Str::slug($validated['title'] ?? 'banner-desa-cigagade');
+            $filename = ($bannerSlug ?: 'banner-desa-cigagade') . '-' . time() . '.' . $file->getClientOriginalExtension();
+            $validated['image'] = $file->storeAs('landscape-banners', $filename, 'public');
         }
 
         $landscapeBanner->update($validated);

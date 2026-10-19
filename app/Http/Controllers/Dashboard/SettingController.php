@@ -56,7 +56,9 @@ class SettingController extends Controller
             if ($request->oldLogo) {
                 Storage::disk('public')->delete($request->oldLogo);
             }
-            $logoPath = $request->file('logo')->store('logos', 'public');
+            $file = $request->file('logo');
+            $filename = 'logo-resmi-desa-cigagade-' . time() . '.' . $file->getClientOriginalExtension();
+            $logoPath = $file->storeAs('logos', $filename, 'public');
             Setting::updateOrCreate(
                 ['key' => 'logo_path'],
                 ['value' => $logoPath]
@@ -70,7 +72,9 @@ class SettingController extends Controller
             if ($request->old_about_image) {
                 Storage::disk('public')->delete($request->old_about_image);
             }
-            $aboutImagePath = $request->file('about_image')->store('settings', 'public');
+            $file = $request->file('about_image');
+            $filename = 'profil-pesona-desa-cigagade-' . time() . '.' . $file->getClientOriginalExtension();
+            $aboutImagePath = $file->storeAs('settings', $filename, 'public');
             Setting::updateOrCreate(
                 ['key' => 'about_image'],
                 ['value' => $aboutImagePath]

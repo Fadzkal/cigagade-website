@@ -1,7 +1,8 @@
-<x-public-layout>
-    <x-slot name="title">
-        Kategori: {{ $category->name }}
-    </x-slot>
+<x-public-layout
+    :title="'Kategori: ' . $category->name . ' - Desa Cigagade'"
+    :metaDescription="'Kumpulan berita dan artikel kategori ' . $category->name . ' di Desa Cigagade, Balubur Limbangan, Garut.'"
+    :metaKeywords="'Kategori ' . $category->name . ', Berita Desa Cigagade, Balubur Limbangan Garut'"
+>
 
     <section class="relative bg-gradient-to-br from-emerald-900 via-emerald-800 to-teal-900 py-20 overflow-hidden" style="background: linear-gradient(135deg, #064e3b 0%, #065f46 50%, #134e4a 100%);">
         <div class="absolute inset-0 opacity-10">

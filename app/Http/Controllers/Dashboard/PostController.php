@@ -65,7 +65,9 @@ class PostController extends Controller
         ]);
 
         if ($request->hasFile('image')) {
-            $imagePath = $request->file('image')->store('post-images', 'public');
+            $file = $request->file('image');
+            $filename = Str::slug($validatedData['title']) . '-' . time() . '.' . $file->getClientOriginalExtension();
+            $imagePath = $file->storeAs('post-images', $filename, 'public');
             $validatedData['image'] = $imagePath;
         }
 
@@ -132,7 +134,9 @@ class PostController extends Controller
             if ($request->oldImage) {
                 Storage::disk('public')->delete($request->oldImage);
             }
-            $imagePath = $request->file('image')->store('post-images', 'public');
+            $file = $request->file('image');
+            $filename = Str::slug($validatedData['title']) . '-' . time() . '.' . $file->getClientOriginalExtension();
+            $imagePath = $file->storeAs('post-images', $filename, 'public');
             $validatedData['image'] = $imagePath;
         }
 

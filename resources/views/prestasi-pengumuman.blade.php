@@ -34,7 +34,11 @@
                                     <!-- Image Wrapper -->
                                     <div class="w-full sm:w-56 aspect-[16/10] flex-shrink-0 rounded-xl overflow-hidden relative bg-slate-100 dark:bg-slate-800">
                                         @if ($post->image)
-                                            <img src="{{ asset('storage/' . $post->image) }}" alt="{{ $post->getTitle() }}" class="w-full h-full object-cover transform transition-transform duration-700 ease-out group-hover:scale-105">
+                                            <img src="{{ asset('storage/' . $post->image) }}" 
+                                                 alt="{{ $post->getTitle() }} - Prestasi Desa Cigagade" 
+                                                 title="{{ $post->getTitle() }}"
+                                                 loading="lazy"
+                                                 class="w-full h-full object-cover transform transition-transform duration-700 ease-out group-hover:scale-105">
                                         @else
                                             <div class="w-full h-full flex items-center justify-center">
                                                 <i class="fas fa-image text-slate-300 dark:bg-slate-800 text-2xl"></i>
@@ -84,7 +88,11 @@
                                     
                                     <div class="w-full sm:w-56 aspect-[16/10] flex-shrink-0 rounded-xl overflow-hidden relative bg-slate-100 dark:bg-slate-800">
                                         @if ($post->image)
-                                            <img src="{{ asset('storage/' . $post->image) }}" alt="{{ $post->getTitle() }}" class="w-full h-full object-cover transform transition-transform duration-700 ease-out group-hover:scale-105">
+                                            <img src="{{ asset('storage/' . $post->image) }}" 
+                                                 alt="{{ $post->getTitle() }} - Pengumuman Desa Cigagade" 
+                                                 title="{{ $post->getTitle() }}"
+                                                 loading="lazy"
+                                                 class="w-full h-full object-cover transform transition-transform duration-700 ease-out group-hover:scale-105">
                                         @else
                                             <div class="w-full h-full flex items-center justify-center">
                                                 <i class="fas fa-image text-slate-300 dark:text-slate-600 text-2xl"></i>

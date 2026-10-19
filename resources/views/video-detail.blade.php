@@ -1,6 +1,29 @@
-<x-public-layout>
-    <x-slot name="title">
-        {{ $video->title }} - Galeri Video Desa Cigagade
+@php
+    $vidTitle = $video->title;
+    $vidDesc = !empty($video->description) ? Str::limit(strip_tags($video->description), 160) : ('Video dokumentasi ' . $vidTitle . ' Desa Cigagade, Balubur Limbangan, Garut.');
+    $vidImage = $video->youtube_thumbnail;
+    $vidUrl = url()->current();
+@endphp
+
+<x-public-layout
+    :title="$vidTitle . ' - Galeri Video Desa Cigagade'"
+    :metaDescription="$vidDesc"
+    :metaImage="$vidImage"
+    :metaImageAlt="$vidTitle"
+    ogType="video.other"
+>
+    <x-slot name="schemaJson">
+        <script type="application/ld+json">
+        {!! json_encode([
+            '@context' => 'https://schema.org',
+            '@type' => 'VideoObject',
+            'name' => $vidTitle,
+            'description' => $vidDesc,
+            'thumbnailUrl' => [$vidImage],
+            'uploadDate' => ($video->created_at ?? now())->toIso8601String(),
+            'embedUrl' => $video->embed_url,
+        ], JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) !!}
+        </script>
     </x-slot>
 
     <div class="bg-gray-950 min-h-screen">
@@ -83,7 +106,9 @@
                         {{-- Thumbnail --}}
                         <div class="relative w-36 flex-shrink-0 bg-slate-800">
                             <img src="{{ $related->youtube_thumbnail }}"
-                                 alt="{{ $related->title }}"
+                                 alt="{{ $related->title }} - Video Desa Cigagade"
+                                 title="{{ $related->title }}"
+                                 loading="lazy"
                                  class="w-full h-full object-cover group-hover:opacity-75 transition duration-300">
                             <div class="absolute inset-0 flex items-center justify-center">
                                 <div class="w-10 h-10 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition duration-300 shadow-lg">

@@ -102,7 +102,10 @@
                         <article class="group bg-white dark:bg-slate-900 rounded-xl overflow-hidden transition-all duration-300 hover:shadow-xl border border-gray-100 dark:border-slate-800 flex flex-col h-full scroll-reveal" style="animation-delay: {{ $index * 100 }}ms">
                             <div class="relative overflow-hidden h-56">
                                 @if ($post->image)
-                                    <img src="{{ asset('storage/' . $post->image) }}" alt="{{ $post->title }}"
+                                    <img src="{{ asset('storage/' . $post->image) }}" 
+                                         alt="{{ $post->getTitle() }} - Berita Desa Cigagade"
+                                         title="{{ $post->getTitle() }}"
+                                         loading="lazy"
                                          class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out">
                                 @else
                                     <div class="w-full h-full bg-gray-100 dark:bg-slate-800 flex items-center justify-center">

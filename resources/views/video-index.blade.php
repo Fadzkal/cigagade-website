@@ -43,7 +43,8 @@
                         <div class="relative aspect-video bg-slate-900 overflow-hidden">
                             <a href="{{ route('video.detail', $featuredVideo) }}" class="block w-full h-full relative group">
                                 <img src="{{ $featuredVideo->youtube_thumbnail }}"
-                                     alt="{{ $featuredVideo->title }}"
+                                     alt="{{ $featuredVideo->title }} - Video Dokumentasi Desa Cigagade"
+                                     title="{{ $featuredVideo->title }}"
                                      class="w-full h-full object-cover opacity-90 group-hover:scale-105 transition-transform duration-700">
                                 <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent opacity-80 group-hover:opacity-60 transition-opacity duration-300 flex items-center justify-center">
                                     <div class="w-16 h-16 bg-white/90 backdrop-blur-md rounded-full flex items-center justify-center shadow-lg transform group-hover:scale-110 transition-transform duration-300">
@@ -104,7 +105,9 @@
                         {{-- Thumbnail --}}
                         <div class="relative aspect-video bg-slate-900 overflow-hidden">
                             <img src="{{ $video->youtube_thumbnail }}"
-                                 alt="{{ $video->title }}"
+                                 alt="{{ $video->title }} - Video Dokumentasi Desa Cigagade"
+                                 title="{{ $video->title }}"
+                                 loading="lazy"
                                  class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 opacity-90">
                             <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent opacity-80 group-hover:opacity-60 transition-opacity duration-300 flex items-center justify-center">
                                 <div class="w-14 h-14 bg-white/90 backdrop-blur-md rounded-full flex items-center justify-center shadow-lg transform group-hover:scale-110 transition-transform duration-300">

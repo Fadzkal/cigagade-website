@@ -63,7 +63,10 @@
                             }
                         @endphp
                         <div class="absolute inset-0 z-0">
-                            <img src="{{ $bgImage }}" alt="Hero Image" class="w-full h-full object-cover">
+                            <img src="{{ $bgImage }}" 
+                                 alt="{{ $slide->title ?: 'Dokumentasi Visual Desa Cigagade' }}" 
+                                 title="{{ $slide->title ?: 'Dokumentasi Desa Cigagade' }}"
+                                 class="w-full h-full object-cover">
                         </div>
                     @endif
 
@@ -334,7 +337,11 @@
                 <div class="scroll-reveal animation-delay-200 order-1 md:order-2">
                     @if ($settings['about_image'] ?? false)
                         <div class="rounded-2xl overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.08)] bg-white border-t-4 border-emerald-600 dark:bg-slate-900 dark:border-emerald-500 relative">
-                            <img src="{{ asset('storage/'. $settings['about_image']) }}" alt="Tentang Desa Cigagade" class="w-full h-auto object-cover aspect-[4/3] p-1 rounded-[1.25rem]">
+                            <img src="{{ asset('storage/'. $settings['about_image']) }}" 
+                                 alt="{{ $settings['about_title'] ?? 'Profil dan Keindahan Desa Cigagade' }}" 
+                                 title="{{ $settings['about_title'] ?? 'Profil Desa Cigagade, Balubur Limbangan, Garut' }}"
+                                 loading="lazy"
+                                 class="w-full h-auto object-cover aspect-[4/3] p-1 rounded-[1.25rem]">
                         </div>
                     @else
                         <div class="rounded-2xl border-t-4 border-emerald-600 shadow-[0_8px_30px_rgb(0,0,0,0.08)] bg-white dark:bg-slate-900 flex items-center justify-center aspect-[4/3]">
@@ -468,7 +475,8 @@
 
                             {{-- Gambar Utama --}}
                             <img src="{{ asset('storage/'. $gallery->image) }}" 
-                                 alt="{{ $gallery->title ?? 'Galeri Kegiatan' }}" 
+                                 alt="{{ $gallery->title ?: 'Dokumentasi Galeri Kegiatan Desa Cigagade' }}" 
+                                 title="{{ $gallery->title ?: 'Foto Dokumentasi Kegiatan Desa Cigagade' }}"
                                  loading="lazy"
                                  class="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out">
 
@@ -593,7 +601,9 @@
                                          @click="modalOpen = true; selectedImage = '{{ asset('storage/' . $ministry->image) }}'">
                                         
                                         <img src="{{ $ministry->image ? asset('storage/' . $ministry->image) : 'https://placehold.co/800x1200/064e3b/FFF?text=Perangkat+Desa' }}" 
-                                             alt="{{ $ministry->name }}" 
+                                             alt="{{ $ministry->name }} - {{ $ministry->position ?? 'Perangkat' }} Desa Cigagade" 
+                                             title="{{ $ministry->name }} - {{ $ministry->position ?? 'Perangkat' }} Desa Cigagade"
+                                             loading="lazy"
                                              class="absolute inset-0 w-full h-full object-cover group-hover:scale-110 group-hover:opacity-80 transition-all duration-700">
                                         
                                         <div class="absolute inset-0 bg-gradient-to-t from-black/95 via-black/50 to-black/10"></div>
@@ -647,7 +657,11 @@
                 <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-6">
                     @if(isset($posts[0]))
                     <div class="lg:col-span-6 xl:col-span-7 h-[400px] lg:h-[600px] rounded-3xl overflow-hidden relative group scroll-reveal shadow-md">
-                        <img src="{{ $posts[0]->image ? asset('storage/' . $posts[0]->image) : 'https://placehold.co/800x600/111928/FFF?text=No+Image' }}" alt="{{ $posts[0]->getTitle() }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-in-out">
+                        <img src="{{ $posts[0]->image ? asset('storage/' . $posts[0]->image) : 'https://placehold.co/800x600/111928/FFF?text=No+Image' }}" 
+                             alt="{{ $posts[0]->getTitle() }} - Berita Desa Cigagade" 
+                             title="{{ $posts[0]->getTitle() }}"
+                             loading="lazy"
+                             class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-in-out">
                         <div class="absolute inset-0 bg-gradient-to-t from-black/95 via-black/40 to-transparent"></div>
                         <div class="absolute bottom-0 left-0 p-6 sm:p-10 w-full z-10">
                             <span class="inline-block px-3 py-1 bg-white/20 backdrop-blur-md text-white text-xs font-bold rounded mb-4 uppercase tracking-wider">
@@ -669,7 +683,11 @@
                     <div class="lg:col-span-6 xl:col-span-5 grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                         @foreach ($posts->slice(1, 4) as $index => $post)
                         <div class="h-[250px] lg:h-[288px] rounded-3xl overflow-hidden relative group scroll-reveal shadow-sm" style="animation-delay: {{ $index * 100 }}ms">
-                            <img src="{{ $post->image ? asset('storage/' . $post->image) : 'https://placehold.co/600x400/111928/FFF?text=No+Image' }}" alt="{{ $post->getTitle() }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-in-out">
+                            <img src="{{ $post->image ? asset('storage/' . $post->image) : 'https://placehold.co/600x400/111928/FFF?text=No+Image' }}" 
+                                 alt="{{ $post->getTitle() }} - Berita Desa Cigagade" 
+                                 title="{{ $post->getTitle() }}"
+                                 loading="lazy"
+                                 class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-in-out">
                             <div class="absolute inset-0 bg-gradient-to-t from-black/95 via-black/30 to-transparent"></div>
                             <div class="absolute bottom-0 left-0 p-5 sm:p-6 w-full z-10">
                                 <span class="inline-block px-2 py-1 bg-white/20 backdrop-blur-md text-white text-[10px] font-bold rounded mb-3 uppercase tracking-wider">
@@ -869,7 +887,10 @@
                         {{-- Image & Badges --}}
                         <div class="relative aspect-4/3 overflow-hidden bg-slate-100 dark:bg-slate-800 cursor-pointer"
                              @click='openUmkm(@json($umkmJson))'>
-                            <img src="{{ $item->image_url }}" alt="{{ $item->name }}"
+                            <img src="{{ $item->image_url }}" 
+                                 alt="{{ $item->name }} - Produk UMKM Desa Cigagade"
+                                 title="{{ $item->name }}: {{ Str::limit(strip_tags($item->description), 100) }}"
+                                 loading="lazy"
                                  class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
                             
                             {{-- Category Badge --}}
@@ -1053,13 +1074,17 @@
                     @if($single->url)
                         <a href="{{ $single->url }}" target="{{ $single->target }}" class="block relative w-full aspect-[21/7] sm:aspect-[24/7] max-h-[440px] overflow-hidden">
                             <img src="{{ asset('storage/' . $single->image) }}" 
-                                 alt="{{ $single->title ?? 'Banner Promosi Desa' }}" 
+                                 alt="{{ $single->title ?: 'Banner Informasi Desa Cigagade' }}" 
+                                 title="{{ $single->title ?: 'Banner Informasi Desa Cigagade' }}"
+                                 loading="lazy"
                                  class="w-full h-full object-cover transition-transform duration-700 hover:scale-101">
                         </a>
                     @else
                         <div class="relative w-full aspect-[21/7] sm:aspect-[24/7] max-h-[440px] overflow-hidden">
                             <img src="{{ asset('storage/' . $single->image) }}" 
-                                 alt="{{ $single->title ?? 'Banner Promosi Desa' }}" 
+                                 alt="{{ $single->title ?: 'Banner Informasi Desa Cigagade' }}" 
+                                 title="{{ $single->title ?: 'Banner Informasi Desa Cigagade' }}"
+                                 loading="lazy"
                                  class="w-full h-full object-cover">
                         </div>
                     @endif
@@ -1076,7 +1101,9 @@
                                                class="block relative w-full aspect-[21/7] sm:aspect-[24/7] max-h-[440px] overflow-hidden cursor-pointer"
                                                title="{{ $banner->title ?? 'Buka Tautan Banner' }}">
                                                 <img src="{{ asset('storage/' . $banner->image) }}" 
-                                                     alt="{{ $banner->title ?? 'Banner Landscape Desa Cigagade' }}" 
+                                                     alt="{{ $banner->title ?: 'Banner Landscape Desa Cigagade' }}" 
+                                                     title="{{ $banner->title ?: 'Banner Landscape Desa Cigagade' }}"
+                                                     loading="lazy"
                                                      class="w-full h-full object-cover transition-transform duration-700 hover:scale-101">
                                                 
                                                 @if($banner->title)
@@ -1431,7 +1458,11 @@
                     <div class="flex flex-wrap justify-center gap-6">
                         @foreach ($partners_kerjasama as $partner)
                             <div class="bg-white dark:bg-slate-900 p-4 border border-slate-100 dark:border-slate-800 rounded-xl flex items-center justify-center w-32 h-20 grayscale hover:grayscale-0 transition-all duration-300 shadow-sm">
-                                <img src="{{ asset('storage/' . $partner->logo) }}" alt="{{ $partner->name }}" class="max-w-full max-h-full object-contain">
+                                <img src="{{ asset('storage/' . $partner->logo) }}" 
+                                     alt="Logo {{ $partner->name }} - Mitra Kerjasama Desa Cigagade" 
+                                     title="{{ $partner->name }}"
+                                     loading="lazy"
+                                     class="max-w-full max-h-full object-contain">
                             </div>
                         @endforeach
                     </div>
@@ -1445,7 +1476,11 @@
                     <div class="flex flex-wrap justify-center gap-6">
                         @foreach ($partners_media as $partner)
                             <div class="bg-white dark:bg-slate-900 p-4 border border-slate-100 dark:border-slate-800 rounded-xl flex items-center justify-center w-32 h-20 grayscale hover:grayscale-0 transition-all duration-300 shadow-sm">
-                                <img src="{{ asset('storage/' . $partner->logo) }}" alt="{{ $partner->name }}" class="max-w-full max-h-full object-contain">
+                                <img src="{{ asset('storage/' . $partner->logo) }}" 
+                                     alt="Logo {{ $partner->name }} - Media Partner Desa Cigagade" 
+                                     title="{{ $partner->name }}"
+                                     loading="lazy"
+                                     class="max-w-full max-h-full object-contain">
                             </div>
                         @endforeach
                     </div>

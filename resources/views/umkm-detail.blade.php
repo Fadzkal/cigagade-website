@@ -1,6 +1,43 @@
-<x-public-layout>
-    <x-slot name="title">
-        {{ $umkm->name }} - UMKM Desa Cigagade
+@php
+    $umkmTitle = $umkm->name . ' - UMKM Desa Cigagade';
+    $umkmDesc = !empty($umkm->description) ? Str::limit(strip_tags($umkm->description), 160) : ('Produk ' . $umkm->name . ' kategori ' . $umkm->category . ' dari UMKM Desa Cigagade, Balubur Limbangan, Garut.');
+    $umkmImage = $umkm->image_url;
+    $umkmImageAlt = $umkm->name . ' - Produk UMKM ' . $umkm->category . ' Desa Cigagade';
+    $umkmKeywords = $umkm->name . ', UMKM ' . $umkm->category . ', Produk Desa Cigagade, Oleh-oleh Garut, Balubur Limbangan';
+@endphp
+
+<x-public-layout
+    :title="$umkmTitle"
+    :metaDescription="$umkmDesc"
+    :metaKeywords="$umkmKeywords"
+    :metaImage="$umkmImage"
+    :metaImageAlt="$umkmImageAlt"
+    ogType="product"
+>
+    <x-slot name="schemaJson">
+        <script type="application/ld+json">
+        {!! json_encode([
+            '@context' => 'https://schema.org',
+            '@type' => 'Product',
+            'name' => $umkm->name,
+            'image' => [$umkmImage],
+            'description' => $umkmDesc,
+            'category' => $umkm->category,
+            'brand' => [
+                '@type' => 'Brand',
+                'name' => $umkm->seller_name ?: 'UMKM Desa Cigagade',
+            ],
+            'offers' => [
+                '@type' => 'Offer',
+                'url' => url()->current(),
+                'priceCurrency' => 'IDR',
+                'price' => $umkm->price ?: 0,
+                'priceValidUntil' => now()->addYear()->format('Y-m-d'),
+                'availability' => 'https://schema.org/InStock',
+                'itemCondition' => 'https://schema.org/NewCondition',
+            ],
+        ], JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) !!}
+        </script>
     </x-slot>
 
     <div class="relative pt-28 pb-16 bg-gradient-to-b from-slate-50 via-white to-slate-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 min-h-screen">
@@ -28,10 +65,12 @@
 
                     {{-- Product Image (5 cols) --}}
                     <div class="lg:col-span-5 bg-slate-100 dark:bg-slate-800 relative">
-                        <div class="aspect-4/3 lg:aspect-auto lg:h-full w-full overflow-hidden">
-                            <img src="{{ $umkm->image_url }}" alt="{{ $umkm->name }}"
+                        <figure class="aspect-4/3 lg:aspect-auto lg:h-full w-full overflow-hidden">
+                            <img src="{{ $umkm->image_url }}" 
+                                 alt="{{ $umkm->name }} - Produk UMKM {{ $umkm->category }} Desa Cigagade"
+                                 title="{{ $umkm->name }}: {{ Str::limit(strip_tags($umkm->description), 100) }}"
                                  class="w-full h-full object-cover">
-                        </div>
+                        </figure>
                         <div class="absolute top-4 left-4">
                             <span class="px-3 py-1 rounded-xl text-xs font-bold bg-white/95 dark:bg-slate-900/95 backdrop-blur-md text-emerald-700 dark:text-emerald-400 shadow-sm border border-slate-200/50 dark:border-slate-700/50">
                                 {{ $umkm->category }}
@@ -137,7 +176,10 @@
                         @foreach ($related as $rel)
                             <div class="group bg-white dark:bg-slate-900 rounded-2xl overflow-hidden border border-slate-200/80 dark:border-slate-800 shadow-xs hover:shadow-lg transition-all duration-300 flex flex-col">
                                 <a href="{{ route('umkm.show', $rel->slug) }}" class="relative aspect-4/3 overflow-hidden bg-slate-100 dark:bg-slate-800 block">
-                                    <img src="{{ $rel->image_url }}" alt="{{ $rel->name }}"
+                                    <img src="{{ $rel->image_url }}" 
+                                         alt="{{ $rel->name }} - Produk UMKM Desa Cigagade"
+                                         title="{{ $rel->name }}"
+                                         loading="lazy"
                                          class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
                                     <div class="absolute top-2 left-2">
                                         <span class="px-2 py-0.5 rounded-md text-[10px] font-semibold bg-white/90 dark:bg-slate-900/90 text-emerald-700 dark:text-emerald-400">

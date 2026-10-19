@@ -96,7 +96,10 @@
                             {{-- Image Container --}}
                             <div class="relative aspect-4/3 overflow-hidden bg-slate-100 dark:bg-slate-800 cursor-pointer"
                                  @click='openDetail(@json($productData))'>
-                                <img src="{{ $item->image_url }}" alt="{{ $item->name }}"
+                                <img src="{{ $item->image_url }}" 
+                                     alt="{{ $item->name }} - Produk UMKM Desa Cigagade"
+                                     title="{{ $item->name }}: {{ Str::limit(strip_tags($item->description), 100) }}"
+                                     loading="lazy"
                                      class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
                                 
                                 {{-- Category Tag --}}
@@ -220,7 +223,10 @@
                     <div>
                         {{-- Modal Image Banner --}}
                         <div class="relative aspect-16/9 bg-slate-100 dark:bg-slate-800 overflow-hidden">
-                            <img :src="activeProduct.image_url" :alt="activeProduct.name" class="w-full h-full object-cover">
+                            <img :src="activeProduct.image_url" 
+                                 :alt="activeProduct.name + ' - Produk UMKM Desa Cigagade'" 
+                                 :title="activeProduct.name"
+                                 class="w-full h-full object-cover">
                             <div class="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent"></div>
                             
                             <div class="absolute bottom-4 left-6 right-6 flex items-end justify-between">

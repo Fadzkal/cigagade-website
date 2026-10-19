@@ -3,18 +3,66 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="Website resmi Desa Cigagade, Kecamatan Balubur Limbangan, Kabupaten Garut. Pusat informasi pembangunan, pelayanan warga, dan potensi desa.">
-    <meta name="keywords" content="Desa Cigagade, Balubur Limbangan, Garut, Jawa Barat, Portal Desa, Pelayanan Desa, Wisata Sunan Cibalampu, Sungai Cipancar">
+    
+    @php
+        $pageTitle = $title ?? 'Portal Resmi Desa Cigagade - Balubur Limbangan, Garut';
+        $pageDesc = $metaDescription ?? 'Website resmi Desa Cigagade, Kecamatan Balubur Limbangan, Kabupaten Garut. Pusat informasi pembangunan, pelayanan warga, UMKM, dan potensi desa.';
+        $pageKeywords = $metaKeywords ?? 'Desa Cigagade, Balubur Limbangan, Garut, Jawa Barat, Portal Desa, Pelayanan Desa, Wisata Sunan Cibalampu, UMKM Cigagade';
+        $pageImage = $metaImage ?? asset('LOGO_GARUT.png');
+        $pageImageAlt = $metaImageAlt ?? 'Logo Resmi Pemerintah Desa Cigagade';
+        $pageUrl = $canonicalUrl ?? url()->current();
+        $pageType = $ogType ?? 'website';
+    @endphp
+
+    <title>{{ $pageTitle }}</title>
+    <meta name="description" content="{{ $pageDesc }}">
+    <meta name="keywords" content="{{ $pageKeywords }}">
     <meta name="author" content="Pemerintah Desa Cigagade">
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
 
-    <meta property="og:type" content="website">
-    <meta property="og:title" content="{{ $title ?? 'Portal Resmi Desa Cigagade - Balubur Limbangan, Garut' }}">
-    <meta property="og:description" content="Website resmi Pemerintah Desa Cigagade, Balubur Limbangan, Kabupaten Garut">
+    <!-- Canonical URL -->
+    <link rel="canonical" href="{{ $pageUrl }}">
 
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="{{ $pageType }}">
+    <meta property="og:site_name" content="Desa Cigagade">
+    <meta property="og:url" content="{{ $pageUrl }}">
+    <meta property="og:title" content="{{ $pageTitle }}">
+    <meta property="og:description" content="{{ $pageDesc }}">
+    <meta property="og:image" content="{{ $pageImage }}">
+    <meta property="og:image:secure_url" content="{{ $pageImage }}">
+    <meta property="og:image:alt" content="{{ $pageImageAlt }}">
+
+    <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="{{ $title ?? 'Portal Resmi Desa Cigagade - Balubur Limbangan, Garut' }}">
+    <meta name="twitter:title" content="{{ $pageTitle }}">
+    <meta name="twitter:description" content="{{ $pageDesc }}">
+    <meta name="twitter:image" content="{{ $pageImage }}">
+    <meta name="twitter:image:alt" content="{{ $pageImageAlt }}">
 
-    <title>{{ $title ?? 'Portal Resmi Desa Cigagade - Balubur Limbangan, Garut' }}</title>
+    <!-- Base Schema.org Organization Structured Data -->
+    <script type="application/ld+json">
+    {
+        "@@context": "https://schema.org",
+        "@type": "GovernmentOrganization",
+        "name": "Pemerintah Desa Cigagade",
+        "alternateName": "Desa Cigagade",
+        "url": "{{ url('/') }}",
+        "logo": "{{ asset('LOGO_GARUT.png') }}",
+        "image": "{{ $pageImage }}",
+        "description": "Website resmi Pemerintah Desa Cigagade, Kecamatan Balubur Limbangan, Kabupaten Garut, Jawa Barat.",
+        "address": {
+            "@@type": "PostalAddress",
+            "addressLocality": "Balubur Limbangan",
+            "addressRegion": "Jawa Barat",
+            "addressCountry": "ID"
+        }
+    }
+    </script>
+
+    @if(isset($schemaJson))
+        {!! $schemaJson !!}
+    @endif
 
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23059669'><path d='M12 2L2 9.5V11H4V20H9V14H15V20H20V11H22V9.5L12 2Z'/></svg>">
 

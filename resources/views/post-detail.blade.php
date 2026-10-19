@@ -1,13 +1,57 @@
-<x-public-layout>
-    <x-slot name="title">
-        {{ $post->getTitle() }} - Desa Cigagade
+@php
+    $postTitle = $post->getTitle();
+    $postExcerpt = $post->getExcerpt() ?: Str::limit(strip_tags($post->getContent()), 160);
+    $postImage = $post->image ? asset('storage/' . $post->image) : asset('LOGO_GARUT.png');
+    $postImageAlt = $postTitle . ' - Berita Desa Cigagade';
+    $postUrl = url()->current();
+    $postPublished = ($post->published_at ?? $post->created_at ?? now())->toIso8601String();
+    $postModified = ($post->updated_at ?? $post->created_at ?? now())->toIso8601String();
+@endphp
+
+<x-public-layout
+    :title="$postTitle . ' - Desa Cigagade'"
+    :metaDescription="$postExcerpt"
+    :metaImage="$postImage"
+    :metaImageAlt="$postImageAlt"
+    ogType="article"
+>
+    <x-slot name="schemaJson">
+        <script type="application/ld+json">
+        {!! json_encode([
+            '@context' => 'https://schema.org',
+            '@type' => 'NewsArticle',
+            'headline' => $postTitle,
+            'description' => $postExcerpt,
+            'image' => [$postImage],
+            'datePublished' => $postPublished,
+            'dateModified' => $postModified,
+            'mainEntityOfPage' => [
+                '@type' => 'WebPage',
+                '@id' => $postUrl,
+            ],
+            'author' => [
+                '@type' => 'Person',
+                'name' => $post->user->name ?? 'Pemerintah Desa Cigagade',
+            ],
+            'publisher' => [
+                '@type' => 'Organization',
+                'name' => 'Pemerintah Desa Cigagade',
+                'logo' => [
+                    '@type' => 'ImageObject',
+                    'url' => asset('LOGO_GARUT.png'),
+                ],
+            ],
+        ], JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) !!}
+        </script>
     </x-slot>
 
     <!-- Hero Section -->
     <section class="relative h-screen flex items-center justify-center overflow-hidden">
         @if ($post->image)
             <div class="absolute inset-0">
-                <img src="{{ asset('storage/' . $post->image) }}" alt="{{ $post->getTitle() }}"
+                <img src="{{ asset('storage/' . $post->image) }}" 
+                     alt="{{ $postTitle }} - Berita Desa Cigagade"
+                     title="{{ $postTitle }}"
                      class="w-full h-full object-cover" id="heroImage">
                 <div class="absolute inset-0 bg-gradient-to-b from-slate-950/85 via-emerald-950/80 to-slate-950/95"></div>
             </div>
@@ -97,10 +141,16 @@
             <article class="scroll-reveal">
                 
                 @if ($post->image)
-                    <div class="mb-10 rounded-2xl overflow-hidden">
-                        <img src="{{ asset('storage/' . $post->image) }}" alt="{{ $post->getTitle() }}"
+                    <figure class="mb-10 rounded-2xl overflow-hidden shadow-sm border border-slate-100">
+                        <img src="{{ asset('storage/' . $post->image) }}" 
+                             alt="{{ $postTitle }} - Berita Desa Cigagade"
+                             title="{{ $postTitle }}"
+                             loading="lazy"
                              class="w-full h-auto max-h-[500px] object-cover">
-                    </div>
+                        <figcaption class="p-3 bg-slate-50 text-center text-xs sm:text-sm text-slate-500 italic border-t border-slate-100">
+                            {{ $postTitle }} — Dokumentasi Desa Cigagade
+                        </figcaption>
+                    </figure>
                 @endif
 
                 <!-- Isi Konten - Tanpa Card/Shadow -->
@@ -160,7 +210,11 @@
                             <article class="flex flex-col sm:flex-row gap-4 group">
                                 <div class="w-full sm:w-2/5 h-40 flex-shrink-0 rounded-lg overflow-hidden relative">
                                     @if ($related->image)
-                                        <img src="{{ asset('storage/' . $related->image) }}" alt="{{ $related->getTitle() }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+                                        <img src="{{ asset('storage/' . $related->image) }}" 
+                                             alt="{{ $related->getTitle() }} - Berita Terkait Desa Cigagade" 
+                                             title="{{ $related->getTitle() }}"
+                                             loading="lazy"
+                                             class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
                                     @else
                                         <div class="w-full h-full bg-gray-100 flex items-center justify-center">
                                             <i class="fas fa-image text-gray-400"></i>

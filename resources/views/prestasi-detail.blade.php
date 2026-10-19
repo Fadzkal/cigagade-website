@@ -1,6 +1,44 @@
-<x-public-layout>
-    <x-slot name="title">
-        {{ $post->title }} - Desa Cigagade
+@php
+    $postTitle = $post->title;
+    $postExcerpt = Str::limit(strip_tags($post->content), 160);
+    $postImage = $post->image ? asset('storage/' . $post->image) : asset('LOGO_GARUT.png');
+    $postImageAlt = $postTitle . ' - Prestasi Desa Cigagade';
+    $postUrl = url()->current();
+    $postPublished = ($post->published_at ?? $post->created_at ?? now())->toIso8601String();
+    $postModified = ($post->updated_at ?? $post->created_at ?? now())->toIso8601String();
+@endphp
+
+<x-public-layout
+    :title="$postTitle . ' - Prestasi Desa Cigagade'"
+    :metaDescription="$postExcerpt"
+    :metaImage="$postImage"
+    :metaImageAlt="$postImageAlt"
+    ogType="article"
+>
+    <x-slot name="schemaJson">
+        <script type="application/ld+json">
+        {!! json_encode([
+            '@context' => 'https://schema.org',
+            '@type' => 'Article',
+            'headline' => $postTitle,
+            'description' => $postExcerpt,
+            'image' => [$postImage],
+            'datePublished' => $postPublished,
+            'dateModified' => $postModified,
+            'mainEntityOfPage' => [
+                '@type' => 'WebPage',
+                '@id' => $postUrl,
+            ],
+            'publisher' => [
+                '@type' => 'Organization',
+                'name' => 'Pemerintah Desa Cigagade',
+                'logo' => [
+                    '@type' => 'ImageObject',
+                    'url' => asset('LOGO_GARUT.png'),
+                ],
+            ],
+        ], JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) !!}
+        </script>
     </x-slot>
 
     <!-- 
@@ -63,10 +101,16 @@
 
             <!-- 2. GAMBAR UTAMA (Lebih rapi dan menyatu dengan konten) -->
             @if ($post->image)
-                <div class="mb-12 rounded-xl overflow-hidden bg-slate-50 aspect-video relative scroll-reveal">
-                    <img src="{{ asset('storage/' . $post->image) }}" alt="{{ $post->title }}"
-                         class="w-full h-full object-cover">
-                </div>
+                <figure class="mb-12 rounded-xl overflow-hidden bg-slate-50 border border-slate-100 shadow-sm relative scroll-reveal">
+                    <img src="{{ asset('storage/' . $post->image) }}" 
+                         alt="{{ $postTitle }} - Prestasi Desa Cigagade"
+                         title="{{ $postTitle }}"
+                         loading="lazy"
+                         class="w-full aspect-video object-cover">
+                    <figcaption class="p-3 bg-slate-50 text-center text-xs sm:text-sm text-slate-500 italic border-t border-slate-100">
+                        {{ $postTitle }} — Dokumentasi Prestasi Desa Cigagade
+                    </figcaption>
+                </figure>
             @endif
 
             <!-- 3. KONTEN ARTIKEL -->
@@ -107,7 +151,11 @@
                                     <!-- Thumbnail Image dengan rasio 16:10 -->
                                     <div class="w-full sm:w-56 aspect-[16/10] flex-shrink-0 rounded-xl overflow-hidden relative bg-slate-100">
                                         @if ($related->image)
-                                            <img src="{{ asset('storage/' . $related->image) }}" alt="{{ $related->title }}" class="w-full h-full object-cover transform transition-transform duration-700 ease-out group-hover:scale-105">
+                                            <img src="{{ asset('storage/' . $related->image) }}" 
+                                                 alt="{{ $related->title }} - Prestasi Desa Cigagade" 
+                                                 title="{{ $related->title }}"
+                                                 loading="lazy"
+                                                 class="w-full h-full object-cover transform transition-transform duration-700 ease-out group-hover:scale-105">
                                         @else
                                             <div class="w-full h-full flex items-center justify-center">
                                                 <i class="fas fa-image text-slate-300 text-2xl"></i>

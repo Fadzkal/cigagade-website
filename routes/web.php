@@ -24,12 +24,14 @@ use App\Http\Controllers\Dashboard\UmkmController;
 use App\Http\Controllers\Dashboard\InfografisController;
 use App\Http\Controllers\Dashboard\RunningTextController;
 use App\Http\Controllers\Dashboard\LandscapeBannerController;
+use App\Http\Controllers\SitemapController;
 
 
 // ==========================================================
 // RUTE PUBLIK
 // ==========================================================
 Route::get('/', [HomeController::class, 'home'])->name('home');
+Route::get('/sitemap.xml', [SitemapController::class, 'index'])->name('sitemap');
 
 // Set Language (cookie-based)
 Route::get('/set-locale/{lang}', function (string $lang, \Illuminate\Http\Request $request) {

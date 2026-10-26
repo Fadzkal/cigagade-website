@@ -59,7 +59,7 @@
 
         {{-- ─── SIDEBAR (Solid Dark Color, No Gradient) ─── --}}
         <aside
-            class="fixed inset-y-0 left-0 z-30 w-64 h-screen overflow-y-auto transition-transform duration-300 transform bg-[#0f172a] border-r border-slate-800 shadow-2xl lg:translate-x-0 lg:static lg:inset-0 flex-shrink-0"
+            class="fixed inset-y-0 left-0 z-50 w-64 h-screen overflow-y-auto transition-transform duration-300 transform bg-[#0f172a] border-r border-slate-800 shadow-2xl lg:translate-x-0 lg:static lg:inset-0 flex-shrink-0"
             :class="{'translate-x-0 ease-out': sidebarOpen, '-translate-x-full ease-in': !sidebarOpen}"
         >
             <div class="flex items-center justify-center h-20 px-6 border-b border-slate-700/50">
@@ -150,7 +150,14 @@
                    class="sidebar-link flex items-center px-3 py-2.5 text-slate-300 rounded-xl group">
                     <i class="fas fa-newspaper mr-3 text-slate-400 group-hover:text-emerald-400 transition-colors"></i>
                     <span class="text-sm">Kabar & Berita Desa</span>
+                    @if(Auth::check() && Auth::user()->isRw())
+                        <span class="ml-auto text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-500 text-white">
+                            {{ Auth::user()->getRwLabel() }}
+                        </span>
+                    @endif
                 </a>
+
+                @can('isSuperAdmin')
                 <a href="{{ route('prestasi.index') }}" aria-current="{{ request()->routeIs('prestasi.*') ? 'page' : '' }}"
                    class="sidebar-link flex items-center px-3 py-2.5 text-slate-300 rounded-xl group">
                     <i class="fas fa-award mr-3 text-slate-400 group-hover:text-emerald-400 transition-colors"></i>
@@ -177,7 +184,6 @@
                     <span class="text-sm">Infografis & Data Desa</span>
                 </a>
                 
-                @can('isSuperAdmin')
                 <a href="{{ route('media.index') }}" aria-current="{{ request()->routeIs('media.*') ? 'page' : '' }}"
                    class="sidebar-link flex items-center px-3 py-2.5 text-slate-300 rounded-xl group">
                     <i class="fas fa-photo-film mr-3 text-slate-400 group-hover:text-emerald-400 transition-colors"></i>
@@ -211,13 +217,13 @@
         </aside>
 
         {{-- Overlay untuk mobile --}}
-        <div x-show="sidebarOpen" @click="sidebarOpen = false" class="fixed inset-0 z-20 bg-slate-900/60 backdrop-blur-sm transition-opacity lg:hidden" x-cloak></div>
+        <div x-show="sidebarOpen" @click="sidebarOpen = false" class="fixed inset-0 z-40 bg-slate-900/60 backdrop-blur-sm transition-opacity lg:hidden" x-cloak></div>
 
         {{-- ─── KONTEN UTAMA ─── --}}
         <div class="flex flex-col flex-1 overflow-y-auto overflow-x-hidden relative">
             
             {{-- Header --}}
-            <header class="sticky top-0 z-10 bg-white/90 backdrop-blur-md border-b border-gray-200 shadow-sm">
+            <header class="sticky top-0 z-30 bg-white border-b border-gray-200 shadow-sm">
                 <div class="max-w-full mx-auto px-4 sm:px-6 lg:px-8">
                     <div class="flex items-center justify-between h-16">
                          <div class="flex lg:hidden">
@@ -236,10 +242,17 @@
                                 <i class="fas fa-bell"></i>
                             </button>
                              <div class="hidden sm:flex sm:items-center pl-4 border-l border-gray-200 gap-3">
-                                <div class="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold text-sm">
+                                <div class="w-8 h-8 rounded-full {{ Auth::check() && Auth::user()->isRw() ? 'bg-amber-100 text-amber-700' : 'bg-blue-100 text-blue-600' }} flex items-center justify-center font-bold text-sm">
                                     {{ Auth::check() ? substr(Auth::user()->name, 0, 1) : 'U' }}
                                 </div>
-                                <span class="text-sm font-semibold text-slate-700">{{ Auth::check() ? Auth::user()->name : 'User' }}</span>
+                                <div class="flex flex-col text-left">
+                                    <span class="text-sm font-semibold text-slate-700 leading-tight">{{ Auth::check() ? Auth::user()->name : 'User' }}</span>
+                                    @if(Auth::check() && Auth::user()->isRw())
+                                        <span class="text-[10px] font-bold text-amber-600 uppercase tracking-wide">Akun Resmi {{ Auth::user()->getRwLabel() }}</span>
+                                    @else
+                                        <span class="text-[10px] text-slate-400 uppercase tracking-wide">Administrator Desa</span>
+                                    @endif
+                                </div>
                             </div>
                         </div>
                     </div>

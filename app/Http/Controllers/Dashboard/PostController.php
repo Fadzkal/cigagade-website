@@ -19,19 +19,30 @@ class PostController extends Controller
     use AuthorizesRequests;
 
     /**
-     * Menampilkan daftar semua berita.
+     * Menampilkan daftar semua berita dengan filter RW.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $posts = Post::with(['category', 'user'])
+        $query = Post::with(['category', 'user'])
             ->whereHas('category', function($q) {
                 $q->whereNotIn('name', ['Prestasi', 'Pengumuman']);
             })
-            ->latest()
-            ->get();
+            ->latest();
+
+        // Filter RW jika ada parameter 'rw'
+        if ($request->filled('rw')) {
+            if ($request->rw === 'umum') {
+                $query->whereNull('rw');
+            } elseif (is_numeric($request->rw) && (int)$request->rw >= 1 && (int)$request->rw <= 10) {
+                $query->where('rw', (int)$request->rw);
+            }
+        }
+
+        $posts = $query->paginate(15)->withQueryString();
 
         return view('dashboard.posts.index', [
-            'posts' => $posts
+            'posts' => $posts,
+            'selectedRw' => $request->rw,
         ]);
     }
 
@@ -56,6 +67,7 @@ class PostController extends Controller
             'title'        => 'required|string|max:255|unique:posts',
             'title_en'     => 'nullable|string|max:255',
             'category_id'  => 'required|exists:categories,id',
+            'rw'           => 'nullable|integer|between:1,10',
             'image'        => 'nullable|image|file|max:5120',
             'excerpt'      => 'required|string',
             'excerpt_en'   => 'nullable|string',
@@ -74,6 +86,13 @@ class PostController extends Controller
         $validatedData['slug']         = Str::slug($validatedData['title'], '-');
         $validatedData['user_id']      = auth()->id();
         $validatedData['published_at'] = $validatedData['published_at'] ?? now();
+
+        // Jika user yang login adalah akun RW, otomatis kaitkan ke RW-nya
+        if (auth()->user()->isRw()) {
+            $validatedData['rw'] = auth()->user()->rw;
+        } else {
+            $validatedData['rw'] = $request->filled('rw') ? (int)$request->rw : null;
+        }
 
         // Generate slug_en from title_en if provided
         if (!empty($validatedData['title_en'])) {
@@ -122,6 +141,7 @@ class PostController extends Controller
             ],
             'title_en'     => 'nullable|string|max:255',
             'category_id'  => 'required|exists:categories,id',
+            'rw'           => 'nullable|integer|between:1,10',
             'image'        => 'nullable|image|file|max:5120',
             'excerpt'      => 'required|string',
             'excerpt_en'   => 'nullable|string',
@@ -142,6 +162,13 @@ class PostController extends Controller
 
         $validatedData['slug']         = Str::slug($validatedData['title'], '-');
         $validatedData['published_at'] = $validatedData['published_at'] ?? $post->published_at ?? now();
+
+        // Update RW: jika akun RW tetap RW-nya, jika superadmin bisa tentukan
+        if (auth()->user()->isRw()) {
+            $validatedData['rw'] = auth()->user()->rw;
+        } else {
+            $validatedData['rw'] = $request->filled('rw') ? (int)$request->rw : null;
+        }
 
         // Generate slug_en from title_en if provided
         if (!empty($validatedData['title_en'])) {

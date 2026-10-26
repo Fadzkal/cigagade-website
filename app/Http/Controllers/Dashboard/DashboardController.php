@@ -61,6 +61,18 @@ class DashboardController extends Controller
             ->orderBy('month')
             ->get();
 
+        $user = auth()->user();
+        $isRw = $user && $user->isRw();
+        $rwPostCount = 0;
+        $rwViewsCount = 0;
+        $rwPosts = collect();
+
+        if ($isRw) {
+            $rwPostCount = Post::where('rw', $user->rw)->count();
+            $rwViewsCount = Post::where('rw', $user->rw)->sum('views');
+            $rwPosts = Post::where('rw', $user->rw)->with(['category', 'user'])->latest()->take(10)->get();
+        }
+
         return view('dashboard', compact(
             'totalPosts',
             'totalViews',
@@ -73,7 +85,11 @@ class DashboardController extends Controller
             'latestPosts',
             'postsByCategory',
             'viewsByCategory',
-            'monthlyPosts'
+            'monthlyPosts',
+            'isRw',
+            'rwPostCount',
+            'rwViewsCount',
+            'rwPosts'
         ));
     }
 }

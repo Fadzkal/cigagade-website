@@ -15,7 +15,33 @@ class Post extends Model
     // Cast agar published_at otomatis jadi Carbon object
     protected $casts = [
         'published_at' => 'datetime',
+        'rw' => 'integer',
     ];
+
+    // ─── RW & Lokasi Helpers ──────────────────────────────────────────────────
+
+    /**
+     * Dapatkan label RW jika berita ini khusus untuk RW tertentu (contoh: "RW 01").
+     * Mengembalikan null jika berita umum seluruh desa.
+     */
+    public function getRwLabel(): ?string
+    {
+        return $this->rw ? 'RW ' . str_pad($this->rw, 2, '0', STR_PAD_LEFT) : null;
+    }
+
+    /**
+     * Scope untuk memfilter berita berdasarkan RW.
+     */
+    public function scopeForRw($query, $rw)
+    {
+        if (!empty($rw)) {
+            if ($rw === 'umum') {
+                return $query->whereNull('rw');
+            }
+            return $query->where('rw', (int)$rw);
+        }
+        return $query;
+    }
 
     // ─── Locale-aware Helpers ─────────────────────────────────────────────────
 

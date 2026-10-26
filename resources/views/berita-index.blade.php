@@ -51,26 +51,71 @@
                     </a>
                 </div>
             @else
-                <div class="mb-12 scroll-reveal">
-                    <div class="flex flex-col md:flex-row justify-between items-center bg-white dark:bg-slate-800 p-6 rounded-xl shadow-sm border border-gray-100 dark:border-slate-700">
-                        <div class="mb-4 md:mb-0">
-                            <h3 class="text-lg font-bold text-gray-900 dark:text-white" data-t="filter">Filter</h3>
+                <div class="mb-10 scroll-reveal">
+                    {{-- Quick Filter Pills Wilayah RW --}}
+                    <div class="flex items-center gap-2 overflow-x-auto pb-4 mb-4 scrollbar-thin">
+                        <span class="text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 whitespace-nowrap mr-1 flex items-center gap-1">
+                            <i class="fas fa-map-marker-alt text-amber-500"></i> Wilayah:
+                        </span>
+                        <a href="{{ route('berita.index', array_merge(request()->except(['page', 'rw']))) }}"
+                           class="px-3.5 py-1.5 rounded-full text-xs font-bold whitespace-nowrap transition-all {{ empty(request('rw')) ? 'bg-emerald-600 text-white shadow-md' : 'bg-white dark:bg-slate-800 text-gray-600 dark:text-gray-300 border border-gray-200 dark:border-slate-700 hover:border-emerald-500 hover:text-emerald-600' }}">
+                            Semua Wilayah
+                        </a>
+                        <a href="{{ route('berita.index', array_merge(request()->except(['page', 'rw']), ['rw' => 'umum'])) }}"
+                           class="px-3.5 py-1.5 rounded-full text-xs font-bold whitespace-nowrap transition-all {{ request('rw') === 'umum' ? 'bg-emerald-600 text-white shadow-md' : 'bg-white dark:bg-slate-800 text-gray-600 dark:text-gray-300 border border-gray-200 dark:border-slate-700 hover:border-emerald-500 hover:text-emerald-600' }}">
+                            Umum Desa
+                        </a>
+                        @foreach(range(1, 10) as $rwNum)
+                            <a href="{{ route('berita.index', array_merge(request()->except(['page', 'rw']), ['rw' => $rwNum])) }}"
+                               class="px-3.5 py-1.5 rounded-full text-xs font-bold whitespace-nowrap transition-all {{ request('rw') == (string)$rwNum ? 'bg-amber-500 text-white shadow-md ring-2 ring-amber-300 dark:ring-amber-800' : 'bg-white dark:bg-slate-800 text-gray-600 dark:text-gray-300 border border-gray-200 dark:border-slate-700 hover:border-amber-500 hover:text-amber-600' }}">
+                                RW {{ str_pad($rwNum, 2, '0', STR_PAD_LEFT) }}
+                            </a>
+                        @endforeach
+                    </div>
+
+                    {{-- Filter Bar (Search, RW, Month, Year) --}}
+                    <div class="flex flex-col lg:flex-row justify-between items-center bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700 gap-4">
+                        <div class="w-full lg:w-auto flex items-center justify-between">
+                            <h3 class="text-base font-bold text-gray-900 dark:text-white flex items-center gap-2">
+                                <i class="fas fa-sliders-h text-emerald-600"></i>
+                                <span data-t="filter">Filter Berita</span>
+                            </h3>
+                            @if(request()->hasAny(['search', 'rw', 'month', 'year']))
+                                <a href="{{ route('berita.index') }}" class="text-xs text-red-500 hover:underline flex items-center gap-1 font-semibold lg:hidden">
+                                    <i class="fas fa-times"></i> Reset Filter
+                                </a>
+                            @endif
                         </div>
-                        <form action="{{ route('berita.index') }}" method="GET" class="w-full md:w-auto flex flex-col md:flex-row gap-4">
+                        <form action="{{ route('berita.index') }}" method="GET" class="w-full lg:w-auto flex flex-col sm:flex-row flex-wrap items-center gap-3">
                             <!-- Search -->
-                            <div class="relative">
+                            <div class="relative w-full sm:w-64">
                                 <span class="absolute inset-y-0 left-0 flex items-center pl-3">
                                     <i class="fas fa-search text-gray-400"></i>
                                 </span>
                                 <input type="text" name="search" value="{{ request('search') }}"
                                     id="search-input"
-                                    class="pl-10 pr-4 py-2 border border-gray-300 dark:border-slate-600 rounded-lg bg-gray-50 dark:bg-slate-700 text-gray-900 dark:text-white focus:ring-emerald-500 focus:border-emerald-500 w-full md:w-64"
+                                    placeholder="Cari berita..."
+                                    class="pl-10 pr-4 py-2 text-sm border border-gray-300 dark:border-slate-600 rounded-xl bg-gray-50 dark:bg-slate-700 text-gray-900 dark:text-white focus:ring-emerald-500 focus:border-emerald-500 w-full"
                                     oninput="clearTimeout(this.timer); this.timer = setTimeout(() => { this.form.submit(); }, 600);"
                                     @if(request()->has('search')) autofocus onfocus="var val=this.value; this.value=''; this.value=val;" @endif>
                             </div>
+
+                            <!-- RW Dropdown -->
+                            <div class="relative w-full sm:w-auto">
+                                <select name="rw" class="w-full sm:w-auto pl-4 pr-8 py-2 text-sm font-medium border border-gray-300 dark:border-slate-600 rounded-xl bg-gray-50 dark:bg-slate-700 text-gray-900 dark:text-white focus:ring-emerald-500 focus:border-emerald-500 appearance-none" onchange="this.form.submit()">
+                                    <option value="">Semua Wilayah</option>
+                                    <option value="umum" {{ request('rw') === 'umum' ? 'selected' : '' }}>Umum Desa</option>
+                                    @foreach(range(1, 10) as $rwOpt)
+                                        <option value="{{ $rwOpt }}" {{ request('rw') == (string)$rwOpt ? 'selected' : '' }}>
+                                            RW {{ str_pad($rwOpt, 2, '0', STR_PAD_LEFT) }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+
                             <!-- Month -->
-                            <div class="relative">
-                                <select name="month" class="pl-4 pr-8 py-2 border border-gray-300 dark:border-slate-600 rounded-lg bg-gray-50 dark:bg-slate-700 text-gray-900 dark:text-white focus:ring-emerald-500 focus:border-emerald-500 w-full md:w-auto appearance-none" onchange="this.form.submit()">
+                            <div class="relative w-full sm:w-auto">
+                                <select name="month" class="w-full sm:w-auto pl-4 pr-8 py-2 text-sm border border-gray-300 dark:border-slate-600 rounded-xl bg-gray-50 dark:bg-slate-700 text-gray-900 dark:text-white focus:ring-emerald-500 focus:border-emerald-500 appearance-none" onchange="this.form.submit()">
                                     <option value="" data-t="month">Bulan</option>
                                     @foreach(range(1, 12) as $m)
                                         <option value="{{ $m }}" {{ request('month') == $m ? 'selected' : '' }}>
@@ -79,9 +124,10 @@
                                     @endforeach
                                 </select>
                             </div>
+
                             <!-- Year -->
-                            <div class="relative">
-                                <select name="year" class="pl-4 pr-8 py-2 border border-gray-300 dark:border-slate-600 rounded-lg bg-gray-50 dark:bg-slate-700 text-gray-900 dark:text-white focus:ring-emerald-500 focus:border-emerald-500 w-full md:w-auto appearance-none" onchange="this.form.submit()">
+                            <div class="relative w-full sm:w-auto">
+                                <select name="year" class="w-full sm:w-auto pl-4 pr-8 py-2 text-sm border border-gray-300 dark:border-slate-600 rounded-xl bg-gray-50 dark:bg-slate-700 text-gray-900 dark:text-white focus:ring-emerald-500 focus:border-emerald-500 appearance-none" onchange="this.form.submit()">
                                     <option value="" data-t="year">Tahun</option>
                                     @foreach(range(date('Y'), date('Y') - 5) as $y)
                                         <option value="{{ $y }}" {{ request('year') == $y ? 'selected' : '' }}>
@@ -90,18 +136,46 @@
                                     @endforeach
                                 </select>
                             </div>
-                            <!-- Submit Button for search if needed -->
+
+                            @if(request()->hasAny(['search', 'rw', 'month', 'year']))
+                                <a href="{{ route('berita.index') }}" class="hidden lg:inline-flex items-center px-3 py-2 text-xs font-semibold text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40 rounded-xl transition">
+                                    <i class="fas fa-undo mr-1"></i> Reset
+                                </a>
+                            @endif
+
                             <button type="submit" class="hidden" data-t="filter">Filter</button>
                         </form>
                     </div>
                 </div>
 
-
+                {{-- Status Filter Aktif --}}
+                @if(request('rw'))
+                    <div class="mb-6 p-4 rounded-xl bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 flex items-center justify-between text-sm">
+                        <div class="flex items-center gap-2 text-amber-800 dark:text-amber-200">
+                            <i class="fas fa-map-marker-alt text-amber-600"></i>
+                            <span>Menampilkan berita khusus: <strong>{{ request('rw') === 'umum' ? 'Umum Seluruh Desa' : 'RW ' . str_pad(request('rw'), 2, '0', STR_PAD_LEFT) }}</strong></span>
+                        </div>
+                        <a href="{{ route('berita.index', request()->except('rw')) }}" class="text-xs font-bold text-amber-700 dark:text-amber-300 hover:underline">
+                            Hapus Filter RW &times;
+                        </a>
+                    </div>
+                @endif
 
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
                     @foreach ($posts as $index => $post)
-                        <article class="group bg-white dark:bg-slate-900 rounded-xl overflow-hidden transition-all duration-300 hover:shadow-xl border border-gray-100 dark:border-slate-800 flex flex-col h-full scroll-reveal" style="animation-delay: {{ $index * 100 }}ms">
+                        <article class="group bg-white dark:bg-slate-900 rounded-2xl overflow-hidden transition-all duration-300 hover:shadow-xl border border-gray-100 dark:border-slate-800 flex flex-col h-full scroll-reveal" style="animation-delay: {{ $index * 100 }}ms">
                             <div class="relative overflow-hidden h-56">
+                                {{-- Tanda / Badge Khusus RW vs Umum --}}
+                                @if ($post->rw)
+                                    <span class="absolute top-3 left-3 z-10 inline-flex items-center px-3 py-1 bg-amber-500 text-white text-xs font-bold rounded-full shadow-md">
+                                        <i class="fas fa-map-marker-alt mr-1.5"></i> RW {{ str_pad($post->rw, 2, '0', STR_PAD_LEFT) }}
+                                    </span>
+                                @else
+                                    <span class="absolute top-3 left-3 z-10 inline-flex items-center px-3 py-1 bg-emerald-600/90 text-white text-xs font-semibold rounded-full shadow-md backdrop-blur-sm">
+                                        <i class="fas fa-landmark mr-1.5"></i> Warta Desa
+                                    </span>
+                                @endif
+
                                 @if ($post->image)
                                     <img src="{{ asset('storage/' . $post->image) }}" 
                                          alt="{{ $post->getTitle() }} - Berita Desa Cigagade"
@@ -109,10 +183,10 @@
                                          loading="lazy"
                                          class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out">
                                 @else
-                                    <div class="w-full h-full bg-gray-100 dark:bg-slate-800 flex items-center justify-center">
+                                    <div class="w-full h-full bg-gradient-to-br from-emerald-900/10 to-teal-900/10 dark:bg-slate-800 flex items-center justify-center">
                                         <div class="text-center">
                                             <i class="fas fa-image text-4xl text-gray-300 dark:text-gray-600 mb-2"></i>
-                                            <span class="text-gray-400 text-xs block" data-t="noImageLabel">Tidak ada gambar</span>
+                                            <span class="text-gray-400 text-xs block" data-t="noImageLabel">Desa Cigagade</span>
                                         </div>
                                     </div>
                                 @endif
@@ -120,11 +194,19 @@
                             </div>
                             
                             <div class="p-6 flex flex-col flex-grow">
-                                @if($post->published_at ?? $post->created_at)
-                                    <span class="text-sm text-gray-500 dark:text-gray-400 mb-2 font-medium">
-                                        {{ ($post->published_at ?? $post->created_at)->format('d M Y') }}
-                                    </span>
-                                @endif
+                                <div class="flex items-center justify-between mb-2">
+                                    @if($post->published_at ?? $post->created_at)
+                                        <span class="text-xs text-gray-400 dark:text-gray-400 font-medium">
+                                            <i class="far fa-calendar-alt mr-1"></i>
+                                            {{ ($post->published_at ?? $post->created_at)->format('d M Y') }}
+                                        </span>
+                                    @endif
+                                    @if($post->rw)
+                                        <span class="text-[11px] font-bold text-amber-600 dark:text-amber-400">
+                                            Wilayah RW {{ str_pad($post->rw, 2, '0', STR_PAD_LEFT) }}
+                                        </span>
+                                    @endif
+                                </div>
                                 
                                 <h2 class="text-lg font-serif font-bold text-gray-900 dark:text-white mb-3 line-clamp-2 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors duration-200">
                                     <a href="{{ $post->getShowRoute() }}">
@@ -136,9 +218,12 @@
                                     {{ $post->getExcerpt() }}
                                 </p>
                                 
-                                <div class="flex flex-wrap gap-2 mt-auto pt-4 border-t border-gray-100 dark:border-slate-800">
+                                <div class="flex flex-wrap items-center justify-between gap-2 mt-auto pt-4 border-t border-gray-100 dark:border-slate-800">
                                     <span class="inline-flex items-center px-3 py-1 border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 text-xs font-medium rounded-full hover:border-emerald-500 hover:text-emerald-600 transition-colors cursor-default">
                                         {{ $post->category->name }}
+                                    </span>
+                                    <span class="text-xs font-semibold text-emerald-600 dark:text-emerald-400 group-hover:translate-x-1 transition-transform inline-flex items-center gap-1">
+                                        Baca <i class="fas fa-arrow-right text-[10px]"></i>
                                     </span>
                                 </div>
                             </div>

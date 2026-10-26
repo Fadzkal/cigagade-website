@@ -671,9 +671,16 @@
                              class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-in-out">
                         <div class="absolute inset-0 bg-gradient-to-t from-black/95 via-black/40 to-transparent"></div>
                         <div class="absolute bottom-0 left-0 p-6 sm:p-10 w-full z-10">
-                            <span class="inline-block px-3 py-1 bg-white/20 backdrop-blur-md text-white text-xs font-bold rounded mb-4 uppercase tracking-wider">
-                                {{ $posts[0]->category->name ?? 'BERITA' }}
-                            </span>
+                            <div class="flex flex-wrap items-center gap-2 mb-4">
+                                @if($posts[0]->rw)
+                                    <span class="inline-flex items-center px-3 py-1 bg-amber-500 text-white text-xs font-bold rounded shadow-md uppercase tracking-wider">
+                                        <i class="fas fa-map-marker-alt mr-1"></i> RW {{ str_pad($posts[0]->rw, 2, '0', STR_PAD_LEFT) }}
+                                    </span>
+                                @endif
+                                <span class="inline-block px-3 py-1 bg-white/20 backdrop-blur-md text-white text-xs font-bold rounded uppercase tracking-wider">
+                                    {{ $posts[0]->category->name ?? 'BERITA' }}
+                                </span>
+                            </div>
                             <h3 class="text-2xl sm:text-4xl font-bold text-white leading-tight mb-4 line-clamp-3">
                                 <a href="{{ $posts[0]->getShowRoute() }}" class="hover:text-emerald-300 transition-colors">
                                     {{ $posts[0]->getTitle() }}
@@ -697,9 +704,16 @@
                                  class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-in-out">
                             <div class="absolute inset-0 bg-gradient-to-t from-black/95 via-black/30 to-transparent"></div>
                             <div class="absolute bottom-0 left-0 p-5 sm:p-6 w-full z-10">
-                                <span class="inline-block px-2 py-1 bg-white/20 backdrop-blur-md text-white text-[10px] font-bold rounded mb-3 uppercase tracking-wider">
-                                    {{ $post->category->name ?? 'BERITA' }}
-                                </span>
+                                <div class="flex flex-wrap items-center gap-1.5 mb-3">
+                                    @if($post->rw)
+                                        <span class="inline-flex items-center px-2 py-0.5 bg-amber-500 text-white text-[10px] font-bold rounded shadow-sm uppercase tracking-wider">
+                                            <i class="fas fa-map-marker-alt mr-1"></i> RW {{ str_pad($post->rw, 2, '0', STR_PAD_LEFT) }}
+                                        </span>
+                                    @endif
+                                    <span class="inline-block px-2 py-1 bg-white/20 backdrop-blur-md text-white text-[10px] font-bold rounded uppercase tracking-wider">
+                                        {{ $post->category->name ?? 'BERITA' }}
+                                    </span>
+                                </div>
                                 <h3 class="text-sm sm:text-lg font-bold text-white leading-snug mb-3 line-clamp-3">
                                     <a href="{{ $post->getShowRoute() }}" class="hover:text-emerald-300 transition-colors">
                                         {{ $post->getTitle() }}

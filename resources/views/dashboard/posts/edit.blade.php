@@ -11,7 +11,7 @@
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900">
 
-                    @if ($errors->any())
+                    @if (isset($errors) && $errors->any())
                         <div class="mb-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded-md">
                             <strong>Oops! Ada yang salah:</strong>
                             <ul>
@@ -32,32 +32,89 @@
                         @csrf
                         @method('PUT')
 
-                        {{-- Category + Image (shared) --}}
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
-                            <div>
-                                <label for="category_id" class="block text-sm font-medium text-gray-700">Kategori</label>
-                                <select name="category_id" id="category_id" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" required>
-                                    <option value="">Pilih Kategori</option>
-                                    @foreach ($categories as $category)
-                                        <option value="{{ $category->id }}" {{ old('category_id', $post->category_id) == $category->id ? 'selected' : '' }}>
-                                            {{ $category->name }}
-                                        </option>
-                                    @endforeach
-                                </select>
+                        @if(Auth::user()->isRw())
+                            {{-- Info Akun RW --}}
+                            <div class="mb-6 p-4 rounded-xl bg-amber-50 border border-amber-200 flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-lg bg-amber-500 text-white flex items-center justify-center font-bold text-lg flex-shrink-0">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                </div>
+                                <div class="flex-grow">
+                                    <p class="text-xs font-bold text-amber-800 uppercase tracking-wider">Wilayah Publikasi Berita:</p>
+                                    <p class="text-sm font-semibold text-amber-900">
+                                        Berita ini diterbitkan atas nama <strong>{{ $post->getRwLabel() ?? Auth::user()->getRwLabel() }}</strong>.
+                                    </p>
+                                </div>
+                                <input type="hidden" name="rw" value="{{ $post->rw ?? Auth::user()->rw }}">
                             </div>
 
-                            <div>
-                                <label for="image" class="block text-sm font-medium text-gray-700">Gambar Thumbnail</label>
-                                <input type="hidden" name="oldImage" value="{{ $post->image }}">
-                                @if ($post->image)
-                                    <img src="{{ asset('storage/' . $post->image) }}" class="mt-2 mb-2 w-full max-w-[200px] rounded-md border" alt="Thumbnail lama">
-                                @else
-                                    <p class="mt-2 text-sm text-gray-500 mb-2">Tidak ada gambar sebelumnya.</p>
-                                @endif
-                                <input type="file" name="image" id="image" class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
-                                <p class="mt-1 text-xs text-gray-500">Kosongkan jika tidak ingin mengganti gambar.</p>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+                                <div>
+                                    <label for="category_id" class="block text-sm font-medium text-gray-700">Kategori <span class="text-red-500">*</span></label>
+                                    <select name="category_id" id="category_id" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" required>
+                                        <option value="">Pilih Kategori</option>
+                                        @foreach ($categories as $category)
+                                            <option value="{{ $category->id }}" {{ old('category_id', $post->category_id) == $category->id ? 'selected' : '' }}>
+                                                {{ $category->name }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+
+                                <div>
+                                    <label for="image" class="block text-sm font-medium text-gray-700">Gambar Thumbnail</label>
+                                    <input type="hidden" name="oldImage" value="{{ $post->image }}">
+                                    @if ($post->image)
+                                        <img src="{{ asset('storage/' . $post->image) }}" class="mt-2 mb-2 w-full max-w-[200px] rounded-md border" alt="Thumbnail lama">
+                                    @else
+                                        <p class="mt-2 text-sm text-gray-500 mb-2">Tidak ada gambar sebelumnya.</p>
+                                    @endif
+                                    <input type="file" name="image" id="image" class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
+                                    <p class="mt-1 text-xs text-gray-500">Kosongkan jika tidak ingin mengganti gambar.</p>
+                                </div>
                             </div>
-                        </div>
+                        @else
+                            {{-- Pilihan Superadmin (Bisa pilih Umum atau RW 1 - 10) --}}
+                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+                                <div>
+                                    <label for="category_id" class="block text-sm font-medium text-gray-700">Kategori <span class="text-red-500">*</span></label>
+                                    <select name="category_id" id="category_id" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" required>
+                                        <option value="">Pilih Kategori</option>
+                                        @foreach ($categories as $category)
+                                            <option value="{{ $category->id }}" {{ old('category_id', $post->category_id) == $category->id ? 'selected' : '' }}>
+                                                {{ $category->name }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+
+                                <div>
+                                    <label for="rw" class="block text-sm font-medium text-gray-700">
+                                        Wilayah / RW <span class="text-xs text-gray-400 font-normal">(Opsional)</span>
+                                    </label>
+                                    <select name="rw" id="rw" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                                        <option value="" {{ old('rw', $post->rw) === null || old('rw', $post->rw) === '' ? 'selected' : '' }}>🌐 Umum (Seluruh Desa)</option>
+                                        @foreach(range(1, 10) as $rwOpt)
+                                            <option value="{{ $rwOpt }}" {{ (string)old('rw', $post->rw) === (string)$rwOpt ? 'selected' : '' }}>
+                                                📍 RW {{ str_pad($rwOpt, 2, '0', STR_PAD_LEFT) }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                    <p class="mt-1 text-[11px] text-gray-500">Pilih jika berita ini spesifik untuk RW tertentu.</p>
+                                </div>
+
+                                <div>
+                                    <label for="image" class="block text-sm font-medium text-gray-700">Gambar Thumbnail</label>
+                                    <input type="hidden" name="oldImage" value="{{ $post->image }}">
+                                    @if ($post->image)
+                                        <img src="{{ asset('storage/' . $post->image) }}" class="mt-2 mb-2 w-full max-w-[200px] rounded-md border" alt="Thumbnail lama">
+                                    @else
+                                        <p class="mt-2 text-sm text-gray-500 mb-2">Tidak ada gambar sebelumnya.</p>
+                                    @endif
+                                    <input type="file" name="image" id="image" class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
+                                    <p class="mt-1 text-xs text-gray-500">Kosongkan jika tidak ingin mengganti gambar.</p>
+                                </div>
+                            </div>
+                        @endif
 
                         {{-- Language Tabs --}}
                         <div class="mb-6">

@@ -104,13 +104,27 @@
                             Berita
                         </a>
                     </li>
+                    @if ($post->rw)
+                        <li class="text-emerald-300">/</li>
+                        <li>
+                            <a href="{{ route('berita.index', ['rw' => $post->rw]) }}" class="text-amber-300 hover:text-white transition-colors duration-200 font-semibold">
+                                RW {{ str_pad($post->rw, 2, '0', STR_PAD_LEFT) }}
+                            </a>
+                        </li>
+                    @endif
                     <li class="text-emerald-300">/</li>
                     <li class="text-white font-semibold">{{ Str::limit($post->getTitle(), 30) }}</li>
                 </ol>
             </nav>
 
-            <!-- Kategori Badge (Warna Solid) -->
-            <div class="mb-6 scroll-reveal animation-delay-200">
+            <!-- Kategori & RW Badge (Warna Solid) -->
+            <div class="mb-6 flex flex-wrap items-center justify-center gap-3 scroll-reveal animation-delay-200">
+                @if ($post->rw)
+                    <a href="{{ route('berita.index', ['rw' => $post->rw]) }}" class="inline-flex items-center px-6 py-3 bg-amber-500 hover:bg-amber-600 text-white font-bold rounded-full transition-all duration-300 transform hover:scale-105 shadow-md">
+                        <i class="fas fa-map-marker-alt mr-2"></i>
+                        Warta RW {{ str_pad($post->rw, 2, '0', STR_PAD_LEFT) }}
+                    </a>
+                @endif
                 <a href="{{ route('kategori.posts', $post->category->slug) }}" class="inline-flex items-center px-6 py-3 bg-[#111928] text-white font-bold rounded-full hover:bg-[#1f2a40] transition-all duration-300 transform hover:scale-105">
                     <i class="fas fa-tag mr-2"></i>
                     {{ $post->category->name }}

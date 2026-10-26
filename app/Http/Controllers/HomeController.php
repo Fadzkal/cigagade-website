@@ -49,7 +49,7 @@ class HomeController extends Controller
         $heroSlides = HeroSlide::with('post')->where('is_active', true)->orderBy('order')->take(5)->get();
         $galleries = Gallery::latest()->get();
         $ministries = Ministry::latest()->get();
-        $posts = Post::with('category')
+        $posts = Post::with(['category', 'user'])
             ->whereHas('category', function($q) {
                 $q->whereNotIn('name', ['Prestasi', 'Pengumuman'])
                   ->whereNotIn('slug', [
@@ -59,7 +59,7 @@ class HomeController extends Controller
             })
             ->latest()
             ->take(5)
-            ->get(); // Ambil 5 berita terbaru
+            ->get(); // Ambil 5 berita terbaru (termasuk berita RW dengan tanda khusus)
         $partners_kerjasama = Partner::where('type', 'kerjasama')->latest()->get();
         $partners_media = Partner::where('type', 'media_partner')->latest()->get();
 
@@ -151,6 +151,15 @@ class HomeController extends Controller
             });
         }
 
+        if ($request->filled('rw')) {
+            $rw = $request->rw;
+            if ($rw === 'umum') {
+                $query->whereNull('rw');
+            } elseif (is_numeric($rw) && (int)$rw >= 1 && (int)$rw <= 10) {
+                $query->where('rw', (int)$rw);
+            }
+        }
+
         if ($request->filled('month')) {
             $query->whereMonth('created_at', $request->month);
         }
@@ -165,7 +174,8 @@ class HomeController extends Controller
             'posts' => $posts,
             'search' => $request->search,
             'month' => $request->month,
-            'year' => $request->year
+            'year' => $request->year,
+            'rw' => $request->rw,
         ]);
     }
 

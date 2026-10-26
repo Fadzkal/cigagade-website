@@ -79,26 +79,26 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-    // RUTE BERITA (Semua user login)
+    // RUTE BERITA (Semua user login, termasuk akun RW)
     Route::resource('/dashboard/posts', PostController::class)->names('posts');
-    Route::resource('/dashboard/prestasi', PrestasiController::class)->names('prestasi');
-    Route::resource('/dashboard/pengumuman', PengumumanController::class)->names('pengumuman');
-    Route::resource('/dashboard/umkm', UmkmController::class)->names('umkm.admin');
 
-    // RUTE INFOGRAFIS DESA (Dashboard)
-    Route::get('/dashboard/infografis', [InfografisController::class, 'index'])->name('infografis.admin.index');
-    Route::post('/dashboard/infografis/bulk', [InfografisController::class, 'updateBulk'])->name('infografis.admin.bulk');
-    Route::post('/dashboard/infografis', [InfografisController::class, 'store'])->name('infografis.admin.store');
-    Route::put('/dashboard/infografis/{infografi}', [InfografisController::class, 'update'])->name('infografis.admin.update');
-    Route::delete('/dashboard/infografis/{infografi}', [InfografisController::class, 'destroy'])->name('infografis.admin.destroy');
-    Route::post('/dashboard/infografis/reset', [InfografisController::class, 'reset'])->name('infografis.admin.reset');
-
-    // Rute upload gambar untuk TinyMCE
+    // Rute upload gambar untuk TinyMCE (diperlukan saat menulis berita)
     Route::post('/tinymce/upload', [TinyMCEController::class, 'upload'])->name('tinymce.upload');
 
-
-    // --- RUTE KHUSUS SUPERADMIN ---
+    // --- RUTE KHUSUS SUPERADMIN (Akun RW hanya bisa upload berita) ---
     Route::middleware('can:isSuperAdmin')->group(function () {
+
+        Route::resource('/dashboard/prestasi', PrestasiController::class)->names('prestasi');
+        Route::resource('/dashboard/pengumuman', PengumumanController::class)->names('pengumuman');
+        Route::resource('/dashboard/umkm', UmkmController::class)->names('umkm.admin');
+
+        // RUTE INFOGRAFIS DESA (Dashboard)
+        Route::get('/dashboard/infografis', [InfografisController::class, 'index'])->name('infografis.admin.index');
+        Route::post('/dashboard/infografis/bulk', [InfografisController::class, 'updateBulk'])->name('infografis.admin.bulk');
+        Route::post('/dashboard/infografis', [InfografisController::class, 'store'])->name('infografis.admin.store');
+        Route::put('/dashboard/infografis/{infografi}', [InfografisController::class, 'update'])->name('infografis.admin.update');
+        Route::delete('/dashboard/infografis/{infografi}', [InfografisController::class, 'destroy'])->name('infografis.admin.destroy');
+        Route::post('/dashboard/infografis/reset', [InfografisController::class, 'reset'])->name('infografis.admin.reset');
 
         Route::resource('/dashboard/categories', CategoryController::class)->names('categories');
         Route::get('/dashboard/settings', [SettingController::class, 'index'])->name('settings.index');

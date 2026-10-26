@@ -22,6 +22,7 @@ class User extends Authenticatable
         'password',
         // Kita tambahkan 'role' di sini agar bisa diisi
         'role',
+        'rw',
     ];
 
     /**
@@ -44,7 +45,32 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'rw' => 'integer',
         ];
+    }
+
+    /**
+     * Cek apakah user adalah akun RW.
+     */
+    public function isRw(): bool
+    {
+        return $this->role === 'rw' || !is_null($this->rw);
+    }
+
+    /**
+     * Cek apakah user adalah Super Admin.
+     */
+    public function isSuperAdmin(): bool
+    {
+        return $this->role === 'superadmin';
+    }
+
+    /**
+     * Dapatkan label format RW (contoh: "RW 01").
+     */
+    public function getRwLabel(): ?string
+    {
+        return $this->rw ? 'RW ' . str_pad($this->rw, 2, '0', STR_PAD_LEFT) : null;
     }
 
     /**

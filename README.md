@@ -98,6 +98,46 @@ Akses portal melalui peramban web: `http://localhost:8000`
 
 ---
 
+## 🐳 Docker: Demo & Produksi (Server Lab)
+
+Semua lewat `./run.sh` (Linux/server) atau `run.bat` (Windows). Dua stack terisolasi:
+
+| Mode | Perintah | File env | Port host | Isi data |
+|---|---|---|---|---|
+| Demo | `./run.sh demo` | `.env.demo` | `127.0.0.1:8094` | Konten contoh desa + akun RW |
+| Produksi | `./run.sh deploy` | `.env.prod` | `127.0.0.1:8093` | Bersih: kategori + 1 admin dari env |
+
+`.env` biasa tidak disentuh (tetap untuk `php artisan serve`). Migrasi + `EssentialSeeder` berjalan otomatis di entrypoint setiap container start; seeder konten contoh hanya dijalankan mode demo.
+
+### Deploy pertama di server (`trinserver`, user `trin`)
+```bash
+cd /home/trin/docker/apps
+git clone <repo> cigagade-website && cd cigagade-website
+# run.sh tidak ikut repo (lihat .gitignore) — salin dari laptop operator:
+#   scp run.sh trin@172.16.67.5:/home/trin/docker/apps/cigagade-website/
+cp .env.prod.example .env.prod && nano .env.prod   # ganti semua GANTI_..., cek WEB_PORT & APP_URL
+chmod +x run.sh && ./run.sh deploy
+```
+Lalu di Cloudflare: Tunnels → `proxmox-server` → Public Hostname → `cigagade.trin-polman.id` → `http://localhost:8093`.
+
+### Update / redeploy
+```bash
+git pull && ./run.sh deploy
+```
+
+### Operasional
+- `./run.sh prod-logs` — lihat log (Ctrl+C keluar, app tetap jalan)
+- `./run.sh prod-restart` / `./run.sh prod-down` / `./run.sh status` / `./run.sh doctor`
+- Cek sehat & TTFB:
+  ```bash
+  curl -s -o /dev/null -w "TLS:%{time_appconnect} TTFB:%{time_starttransfer} Total:%{time_total}\n" https://cigagade.trin-polman.id/api/health
+  ```
+  TTFB ≤ ~150 ms = app sehat; TTFB rendah tapi Total tinggi = jaringan/proxy.
+
+Upload gambar disimpan di volume `cigagade-prod_storage_app`, database di `cigagade-prod_db_data` — keduanya aman saat redeploy.
+
+---
+
 ## 🏛️ Pemerintah Desa Cigagade
 - **Alamat Kantor**: Jl. Raya Cigagade, Kec. Balubur Limbangan, Kab. Garut, Jawa Barat 44186
 - **Email**: desa.cigagade@garutkab.go.id

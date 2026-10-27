@@ -1,0 +1,64 @@
+# ======================================================================
+# Stack Docker Website Desa Cigagade — dipakai lewat ./run.sh (jangan langsung).
+# Isolasi demo vs produksi lewat COMPOSE_PROJECT_NAME (cigagade-demo / cigagade-prod):
+# container, network & volume otomatis ber-prefix project, data tidak pernah tercampur.
+#
+# Server lab (trinserver): akses publik via Cloudflare Tunnel -> localhost:WEB_PORT.
+# Port app hanya di-bind ke 127.0.0.1; port DB TIDAK dipublish ke host.
+# JANGAN set container_name (akan bentrok antar mode).
+# ======================================================================
+
+services:
+  db:
+    image: mariadb:11.4
+    restart: unless-stopped
+    environment:
+      MARIADB_DATABASE: ${DB_DATABASE}
+      MARIADB_USER: ${DB_USERNAME}
+      MARIADB_PASSWORD: ${DB_PASSWORD}
+      MARIADB_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+    # RAM server 4 GB dibagi banyak app — buffer pool dibuat kecil.
+    command:
+      - --innodb-buffer-pool-size=128M
+      - --max-connections=50
+      - --performance-schema=OFF
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+    volumes:
+      - db_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+    mem_limit: 512m
+
+  app:
+    build: .
+    image: ${COMPOSE_PROJECT_NAME:-cigagade}-app
+    restart: unless-stopped
+    env_file:
+      - ${APP_ENV_FILE:-.env.prod}
+    environment:
+      DB_CONNECTION: mysql
+      DB_HOST: db
+      DB_PORT: 3306
+      LOG_CHANNEL: stderr
+    ports:
+      - "127.0.0.1:${WEB_PORT}:80"
+    volumes:
+      - storage_app:/var/www/html/storage/app   # upload gambar (disk 'public') persisten
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://127.0.0.1/api/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 60s
+    mem_limit: 384m
+
+volumes:
+  db_data:
+  storage_app:

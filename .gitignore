@@ -25,3 +25,37 @@ Thumbs.db
 *.zip
 /scratch
 *.docx
+
+# -------------------------------------------------------
+# FILE KHUSUS SERVER & LOKAL OPERATOR — tidak perlu masuk repo
+# Mahasiswa tidak perlu memahami konfigurasi deployment/server
+# -------------------------------------------------------
+
+# One-click runner (hanya untuk operator: server Linux & lokal Windows)
+run.sh
+run.bat
+
+# Konfigurasi web server & reverse proxy di ROOT (docker/*.conf dipakai Dockerfile — tetap di-commit)
+/nginx.conf
+/nginx-site.conf
+/nginx/
+/apache.conf
+apache-vhost.conf
+
+# Konfigurasi systemd / supervisor (process manager di server)
+*.service
+/supervisord.conf
+/systemd/
+
+# File environment produksi & server (selain .env.example yang memang harus ada)
+.env.server
+.env.prod
+.env.staging
+.env.demo
+
+# Script utilitas deployment / maintenance server
+deploy.sh
+deploy.bat
+setup-server.sh
+backup.sh
+restore.sh

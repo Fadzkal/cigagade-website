@@ -28,7 +28,7 @@
                 </div>
             @endif
 
-            {{-- Role info banner untuk akun RW --}}
+            {{-- Role info banner untuk akun RW / PKK --}}
             @if(Auth::check() && Auth::user()->isRw())
                 <div class="bg-gradient-to-r from-amber-500 to-amber-600 text-white rounded-2xl p-5 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                     <div class="flex items-center gap-3">
@@ -45,6 +45,25 @@
                     <div class="flex items-center gap-2">
                         <a href="{{ route('posts.index', ['rw' => Auth::user()->rw]) }}" class="px-3.5 py-1.5 bg-white text-amber-700 hover:bg-amber-50 text-xs font-bold rounded-lg shadow-sm transition">
                             Lihat Berita {{ Auth::user()->getRwLabel() }} Saja
+                        </a>
+                    </div>
+                </div>
+            @elseif(Auth::check() && Auth::user()->isPkk())
+                <div class="bg-gradient-to-r from-rose-600 via-pink-600 to-pink-700 text-white rounded-2xl p-5 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                    <div class="flex items-center gap-3">
+                        <div class="w-12 h-12 rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center text-white text-xl">
+                            <i class="fas fa-heart"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-base leading-tight">Panel Kader TP-PKK Desa Cigagade</h3>
+                            <p class="text-xs text-pink-100 mt-0.5">
+                                Publikasikan warta 10 Program Pokok PKK, kegiatan Posyandu rutin balita & lansia, serta inovasi ketahanan pangan keluarga.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <a href="{{ route('posts.create') }}" class="px-3.5 py-1.5 bg-white text-pink-700 hover:bg-pink-50 text-xs font-bold rounded-lg shadow-sm transition">
+                            <i class="fas fa-pen-nib mr-1"></i> Tulis Kabar PKK Baru
                         </a>
                     </div>
                 </div>

@@ -18,6 +18,7 @@ class DatabaseSeeder extends Seeder
         $this->call([
             DesaCigagadeSeeder::class,
             RwSeeder::class,
+            PkkSeeder::class,
         ]);
     }
 }

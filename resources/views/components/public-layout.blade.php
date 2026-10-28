@@ -65,9 +65,15 @@
     @endif
 
     <!-- Favicon & Brand Icons -->
-    <link rel="icon" type="image/png" href="{{ asset('images/LOGO_GARUT.png') }}">
-    <link rel="apple-touch-icon" href="{{ asset('images/LOGO_GARUT.png') }}">
-    <link rel="shortcut icon" href="{{ asset('LOGO_GARUT.png') }}">
+    @if (isset($logoPath) && $logoPath && file_exists(public_path('storage/' . $logoPath)))
+        <link rel="icon" type="image/png" href="{{ asset('storage/' . $logoPath) }}">
+        <link rel="shortcut icon" href="{{ asset('storage/' . $logoPath) }}">
+        <link rel="apple-touch-icon" href="{{ asset('storage/' . $logoPath) }}">
+    @else
+        <link rel="icon" type="image/png" href="{{ asset('LOGO_GARUT.png') }}">
+        <link rel="shortcut icon" href="{{ asset('favicon.ico') }}">
+        <link rel="apple-touch-icon" href="{{ asset('LOGO_GARUT.png') }}">
+    @endif
 
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=figtree:400,500,600,700&display=swap" rel="stylesheet" />
@@ -417,23 +423,55 @@
         currentLang: localStorage.getItem('language') || '{{ app()->getLocale() }}',
         isTransitioning: false,
         suratModalOpen: false,
-        suratForm: { jenis: 'Surat Keterangan Usaha (SKU)', nama: '', nik: '', no_kk: '', alamat: '', keperluan: '' },
-        kirimSuratWa() {
-            if (!this.suratForm.nama || !this.suratForm.nik) {
-                alert('Mohon masukkan Nama Lengkap dan NIK Anda.');
+        suratSubmitting: false,
+        suratSuccessData: null,
+        suratForm: {
+            jenis_surat: 'sku',
+            nama_lengkap: '',
+            nik: '',
+            no_telepon: '',
+            pekerjaan: 'Buruh Harian Lepas',
+            alamat: '',
+            rt: '001',
+            rw: '006',
+            keperluan: '',
+            jenis_kelamin: 'Laki-laki',
+            warga_negara: 'Indonesia',
+            agama: 'Islam',
+            status_perkawinan: 'Belum Kawin',
+            data_spesifik: {}
+        },
+        async submitSuratModal() {
+            if (!this.suratForm.nama_lengkap || !this.suratForm.nik || !this.suratForm.no_telepon || !this.suratForm.alamat) {
+                alert('Mohon masukkan Nama Lengkap, NIK, No. WhatsApp, dan Alamat Anda.');
                 return;
             }
-            const pesan = `*PERMOHONAN LAYANAN SURAT DESA CIGAGADE*\n\n` +
-                `• *Jenis Surat:* ${this.suratForm.jenis}\n` +
-                `• *Nama Lengkap:* ${this.suratForm.nama}\n` +
-                `• *NIK:* ${this.suratForm.nik}\n` +
-                `• *No. KK:* ${this.suratForm.no_kk || '-'}\n` +
-                `• *Alamat / Dusun:* ${this.suratForm.alamat || '-'}\n` +
-                `• *Keperluan:* ${this.suratForm.keperluan || '-'}\n\n` +
-                `_Mohon dapat diproses oleh petugas pelayanan Kantor Desa Cigagade. Terima kasih._`;
-            const waUrl = 'https://wa.me/6281234567890?text=' + encodeURIComponent(pesan);
-            window.open(waUrl, '_blank');
-            this.suratModalOpen = false;
+            if (this.suratForm.nik.length < 16) {
+                alert('NIK harus terdiri dari 16 digit.');
+                return;
+            }
+            this.suratSubmitting = true;
+            try {
+                const res = await fetch('{{ route('layanan-surat.store') }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    body: JSON.stringify(this.suratForm)
+                });
+                const data = await res.json();
+                if (data.success) {
+                    this.suratSuccessData = data.data;
+                } else {
+                    alert(data.message || 'Gagal mengirim permohonan surat.');
+                }
+            } catch (err) {
+                alert('Terjadi kesalahan jaringan.');
+            } finally {
+                this.suratSubmitting = false;
+            }
         },
 
         translations: {
@@ -442,7 +480,9 @@
                 news: 'Kabar & Informasi',
                 ormawa: 'Kelembagaan',
                 bengkelIlmu: 'Potensi Desa',
+                layananWarga: 'Layanan Warga',
                 layananSurat: 'Layanan Surat',
+                pengaduan: 'Pengaduan Warga',
                 dashboard: 'Dashboard',
                 login: 'Masuk',
                 register: 'Daftar',
@@ -501,7 +541,9 @@
                 news: 'News & Info',
                 ormawa: 'Institutions',
                 bengkelIlmu: 'Village Potential',
-                layananSurat: 'Online Service',
+                layananWarga: 'Citizen Services',
+                layananSurat: 'Online Letters',
+                pengaduan: 'Complaints',
                 dashboard: 'Dashboard',
                 login: 'Login',
                 register: 'Register',
@@ -864,11 +906,81 @@
                             </div>
                         </div>
 
-                        {{-- Fitur Unggulan: Layanan Surat Online --}}
-                        <button @click="suratModalOpen = true" class="nav-link nav-pill bg-emerald-600 hover:bg-emerald-700 text-white font-bold shadow-md shadow-emerald-600/20 inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs transition-all hover:scale-105 active:scale-95">
-                            <i class="fas fa-file-pen text-xs"></i>
-                            <span x-text="t('layananSurat')"></span>
-                        </button>
+                        {{-- ─── MENU LAYANAN WARGA TERPADU (Surat Mandiri & Pengaduan) ─── --}}
+                        <div class="relative" x-data="{ openLayanan: false }">
+                            <button @click="openLayanan = !openLayanan"
+                                    class="nav-link nav-pill whitespace-nowrap {{ request()->routeIs('layanan-surat.*') || request()->routeIs('pengaduan.*') ? 'bg-emerald-700 ring-2 ring-emerald-400 text-white' : 'bg-emerald-600 hover:bg-emerald-700 text-white' }} font-bold shadow-md shadow-emerald-600/20 inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs transition-all hover:scale-105 active:scale-95">
+                                <i class="fas fa-hand-holding-heart text-xs"></i>
+                                <span x-text="t('layananWarga')"></span>
+                                <svg class="ml-0.5 h-3 w-3 transition-transform duration-300" :class="{ '-rotate-180': openLayanan }" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                                </svg>
+                            </button>
+                            <div x-show="openLayanan"
+                                 @click.away="openLayanan = false"
+                                 x-transition:enter="transition ease-out duration-200"
+                                 x-transition:enter-start="opacity-0 translate-y-2 scale-95"
+                                 x-transition:enter-end="opacity-100 translate-y-0 scale-100"
+                                 x-transition:leave="transition ease-in duration-150"
+                                 x-transition:leave-start="opacity-100 translate-y-0 scale-100"
+                                 x-transition:leave-end="opacity-0 translate-y-2 scale-95"
+                                 class="absolute right-0 top-full mt-2 w-72 rounded-2xl shadow-2xl bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl overflow-hidden border border-slate-200/80 dark:border-slate-700/80 p-2 z-50"
+                                 style="display: none;">
+                                
+                                <div class="px-3 pt-2 pb-1.5 border-b border-slate-100 dark:border-slate-800">
+                                    <span class="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">Portal Layanan Warga</span>
+                                </div>
+
+                                <div class="flex flex-col space-y-1 mt-1.5">
+                                    {{-- Layanan Surat Mandiri --}}
+                                    <a href="{{ route('layanan-surat.index') }}" class="px-3 py-2 rounded-xl text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-emerald-50 dark:hover:bg-emerald-950/40 hover:text-emerald-700 dark:hover:text-emerald-300 transition-all flex items-start gap-2.5 group">
+                                        <div class="w-8 h-8 rounded-xl bg-emerald-100 dark:bg-emerald-900/50 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0 mt-0.5 group-hover:scale-110 transition-transform">
+                                            <i class="fas fa-file-pen text-sm"></i>
+                                        </div>
+                                        <div class="flex-1">
+                                            <div class="flex items-center justify-between">
+                                                <span class="font-bold text-slate-800 dark:text-white">Layanan Surat Mandiri</span>
+                                                <span class="px-1.5 py-0.5 rounded text-[9px] font-bold bg-emerald-100 text-emerald-700 dark:bg-emerald-900/60 dark:text-emerald-300">7 Surat</span>
+                                            </div>
+                                            <p class="text-[10px] text-slate-500 dark:text-slate-400 leading-tight mt-0.5">Pembuatan SKU, SKD, SKTM dll, cetak PDF & Word</p>
+                                        </div>
+                                    </a>
+
+                                    {{-- Pengaduan Masyarakat --}}
+                                    <a href="{{ route('pengaduan.index') }}" class="px-3 py-2 rounded-xl text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-amber-50 dark:hover:bg-amber-950/40 hover:text-amber-700 dark:hover:text-amber-300 transition-all flex items-start gap-2.5 group">
+                                        <div class="w-8 h-8 rounded-xl bg-amber-100 dark:bg-amber-900/50 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0 mt-0.5 group-hover:scale-110 transition-transform">
+                                            <i class="fas fa-bullhorn text-sm"></i>
+                                        </div>
+                                        <div class="flex-1">
+                                            <div class="flex items-center justify-between">
+                                                <span class="font-bold text-slate-800 dark:text-white">Pengaduan & Aspirasi</span>
+                                                <span class="px-1.5 py-0.5 rounded text-[9px] font-bold bg-amber-100 text-amber-700 dark:bg-amber-900/60 dark:text-amber-300">Aspirasi</span>
+                                            </div>
+                                            <p class="text-[10px] text-slate-500 dark:text-slate-400 leading-tight mt-0.5">Sampaikan keluhan warga (opsional anonim & foto bukti)</p>
+                                        </div>
+                                    </a>
+
+                                    <div class="border-t border-slate-100 dark:border-slate-800 my-1"></div>
+
+                                    {{-- Pintasan Lacak --}}
+                                    <a href="{{ route('layanan-surat.index', ['tab' => 'lacak']) }}" class="px-3 py-1.5 rounded-xl text-xs font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all flex items-center justify-between">
+                                        <span class="flex items-center gap-2">
+                                            <i class="fas fa-magnifying-glass text-[10px] text-slate-400"></i>
+                                            <span>Lacak Permohonan Surat</span>
+                                        </span>
+                                        <i class="fas fa-chevron-right text-[8px] text-slate-400"></i>
+                                    </a>
+
+                                    <a href="{{ route('pengaduan.index', ['lacak' => '1']) }}" class="px-3 py-1.5 rounded-xl text-xs font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all flex items-center justify-between">
+                                        <span class="flex items-center gap-2">
+                                            <i class="fas fa-ticket text-[10px] text-slate-400"></i>
+                                            <span>Lacak Tiket Pengaduan</span>
+                                        </span>
+                                        <i class="fas fa-chevron-right text-[8px] text-slate-400"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
                     <div class="hidden lg:flex lg:items-center space-x-2">
@@ -1053,12 +1165,28 @@
                     </div>
                 </div>
 
-                {{-- Layanan Surat (Mobile Action) --}}
+                {{-- ─── Layanan Warga Terpadu (Mobile Action) ─── --}}
                 <div class="pt-2">
-                    <button type="button" @click="suratModalOpen = true; open = false" class="w-full py-2.5 px-4 rounded-xl text-sm font-bold text-white bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 flex items-center justify-center gap-2 shadow-sm transition-all active:scale-95">
-                        <i class="fas fa-file-pen text-sm"></i>
-                        <span>Layanan Surat Mandiri Warga</span>
-                    </button>
+                    <div class="p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200/80 dark:border-slate-700/80 space-y-2">
+                        <div class="flex items-center justify-between px-1">
+                            <span class="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest flex items-center gap-1.5">
+                                <i class="fas fa-hand-holding-heart text-emerald-500"></i> Layanan Warga
+                            </span>
+                            <span class="text-[9px] font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-100 dark:bg-emerald-950 px-2 py-0.5 rounded-full">Online</span>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2">
+                            <a href="{{ route('layanan-surat.index') }}" class="p-3 rounded-xl bg-gradient-to-br from-emerald-600 to-teal-700 hover:from-emerald-700 hover:to-teal-800 text-white flex flex-col items-center text-center shadow-sm transition active:scale-95">
+                                <i class="fas fa-file-pen text-base mb-1"></i>
+                                <span class="text-xs font-bold leading-tight">Surat Mandiri</span>
+                                <span class="text-[9px] text-emerald-200 mt-0.5">7 Template</span>
+                            </a>
+                            <a href="{{ route('pengaduan.index') }}" class="p-3 rounded-xl bg-gradient-to-br from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white flex flex-col items-center text-center shadow-sm transition active:scale-95">
+                                <i class="fas fa-bullhorn text-base mb-1"></i>
+                                <span class="text-xs font-bold leading-tight">Pengaduan</span>
+                                <span class="text-[9px] text-amber-200 mt-0.5">Aspirasi Warga</span>
+                            </a>
+                        </div>
+                    </div>
                 </div>
 
             </div>
@@ -1120,6 +1248,8 @@
                     <h3 class="text-lg font-bold mb-4 text-white" x-text="t('quickLinks')"></h3>
                     <ul class="space-y-3 text-sm">
                         <li><a href="{{ route('home') }}" class="text-gray-400 hover:text-white hover:underline transition-colors" x-text="t('home')"></a></li>
+                        <li><a href="{{ route('layanan-surat.index') }}" class="text-emerald-400 hover:text-white hover:underline transition-colors font-semibold"><i class="fas fa-file-pen text-xs mr-1"></i> Layanan Surat Mandiri</a></li>
+                        <li><a href="{{ route('pengaduan.index') }}" class="text-amber-400 hover:text-white hover:underline transition-colors font-semibold"><i class="fas fa-bullhorn text-xs mr-1"></i> Pengaduan Warga</a></li>
                         <li><a href="{{ route('berita.index') }}" class="text-gray-400 hover:text-white hover:underline transition-colors" x-text="t('news')"></a></li>
                         <li><a href="{{ route('prestasi-pengumuman') }}" class="text-gray-400 hover:text-white hover:underline transition-colors" x-text="t('infoCenter')"></a></li>
                         <li><a href="{{ route('bengkel-ilmu.list') }}" class="text-gray-400 hover:text-white hover:underline transition-colors" x-text="t('bengkelIlmu')"></a></li>
@@ -1201,71 +1331,110 @@
                         <i class="fas fa-file-signature text-xl"></i>
                     </div>
                     <div>
-                        <h3 class="text-lg font-bold">Layanan Surat Mandiri Warga</h3>
-                        <p class="text-xs text-emerald-100">Pelayanan Administrasi Desa Cigagade</p>
+                        <h3 class="text-base font-bold">Layanan Surat Mandiri Warga</h3>
+                        <p class="text-xs text-emerald-100">7 Template Resmi Pelayanan Desa Cigagade</p>
                     </div>
                 </div>
-                <button type="button" @click="suratModalOpen = false" class="w-8 h-8 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center text-white transition-all">
+                <button type="button" @click="suratModalOpen = false; suratSuccessData = null" class="w-8 h-8 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center text-white transition-all">
                     <i class="fas fa-times"></i>
                 </button>
             </div>
 
+            <!-- Sukses State -->
+            <div x-show="suratSuccessData" class="p-6 space-y-4 text-center">
+                <div class="w-16 h-16 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mx-auto text-2xl">
+                    <i class="fas fa-check"></i>
+                </div>
+                <h4 class="text-lg font-bold text-slate-900 dark:text-white">Permohonan Berhasil Dikirim!</h4>
+                <p class="text-xs text-slate-500">Nomor Registrasi Lacak Dokumen Anda:</p>
+                <div class="p-3 rounded-2xl bg-slate-100 dark:bg-slate-800 font-mono font-extrabold text-lg text-emerald-600 dark:text-emerald-400" x-text="suratSuccessData?.tracking_code"></div>
+                <p class="text-xs text-slate-500">Data Anda telah masuk ke panel SuperAdmin Kantor Desa Cigagade dan siap diverifikasi.</p>
+                <div class="pt-2 flex flex-col gap-2">
+                    <a :href="'{{ route('layanan-surat.index') }}?lacak=' + suratSuccessData?.tracking_code" class="w-full py-2.5 rounded-xl bg-emerald-600 text-white font-bold text-xs shadow-sm">
+                        Lihat Status & Cetak Dokumen
+                    </a>
+                    <button type="button" @click="suratModalOpen = false; suratSuccessData = null" class="w-full py-2 text-xs font-semibold text-slate-500 hover:text-slate-700">
+                        Selesai / Tutup
+                    </button>
+                </div>
+            </div>
+
             <!-- Form Body -->
-            <div class="p-6 overflow-y-auto space-y-4 text-sm text-slate-700 dark:text-slate-200">
+            <div x-show="!suratSuccessData" class="p-6 overflow-y-auto space-y-4 text-sm text-slate-700 dark:text-slate-200">
                 <div class="p-3 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/60 text-xs text-emerald-800 dark:text-emerald-300">
-                    <p class="font-semibold mb-1"><i class="fas fa-circle-info mr-1"></i> Informasi Layanan:</p>
-                    Isi data di bawah ini untuk mengajukan permohonan surat keterangan. Pengajuan akan langsung diformat dan dikirim ke kontak WhatsApp resmi Kantor Desa Cigagade untuk segera diproses.
+                    <p class="font-semibold mb-1"><i class="fas fa-circle-info mr-1"></i> 7 Template Surat Resmi Aktif:</p>
+                    Data langsung masuk ke sistem SuperAdmin dan dapat dicetak dalam format Word (.docx) & PDF.
                 </div>
 
                 <div>
-                    <label class="block font-semibold mb-1 text-slate-700 dark:text-slate-300">Jenis Surat yang Dimohon <span class="text-red-500">*</span></label>
-                    <select x-model="suratForm.jenis" class="w-full px-3 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 focus:ring-2 focus:ring-emerald-500 outline-none text-slate-800 dark:text-slate-100">
-                        <option value="Surat Keterangan Usaha (SKU)">Surat Keterangan Usaha (SKU)</option>
-                        <option value="Surat Keterangan Domisili">Surat Keterangan Domisili</option>
-                        <option value="Surat Pengantar SKCK">Surat Pengantar SKCK</option>
-                        <option value="Surat Keterangan Tidak Mampu (SKTM)">Surat Keterangan Tidak Mampu (SKTM)</option>
-                        <option value="Surat Keterangan Belum Menikah">Surat Keterangan Belum Menikah</option>
-                        <option value="Surat Keterangan Kematian">Surat Keterangan Kematian</option>
-                        <option value="Surat Pengantar Umum">Surat Pengantar Umum / Lainnya</option>
+                    <label class="block font-semibold mb-1 text-slate-700 dark:text-slate-300">Jenis Template Surat <span class="text-red-500">*</span></label>
+                    <select x-model="suratForm.jenis_surat" class="w-full px-3 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 focus:ring-2 focus:ring-emerald-500 outline-none text-slate-800 dark:text-slate-100 font-medium text-xs">
+                        <option value="sku">1. Surat Keterangan Usaha (SKU)</option>
+                        <option value="skbb">2. Surat Keterangan Berkelakuan Baik (SKBB)</option>
+                        <option value="skd">3. Surat Keterangan Domisili (SKD)</option>
+                        <option value="sktm">4. Surat Keterangan Tidak Mampu (SKTM)</option>
+                        <option value="skm">5. Surat Keterangan Menikah (SKM)</option>
+                        <option value="skbm">6. Surat Keterangan Belum Menikah (SKBM)</option>
+                        <option value="skp">7. Surat Keterangan Penghasilan (SKP)</option>
                     </select>
                 </div>
 
                 <div>
                     <label class="block font-semibold mb-1 text-slate-700 dark:text-slate-300">Nama Lengkap (Sesuai KTP) <span class="text-red-500">*</span></label>
-                    <input type="text" x-model="suratForm.nama" placeholder="Contoh: Asep Saepudin" class="w-full px-3 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 focus:ring-2 focus:ring-emerald-500 outline-none text-slate-800 dark:text-slate-100" />
+                    <input type="text" x-model="suratForm.nama_lengkap" placeholder="Contoh: ASEP KURNIAWAN" class="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs focus:ring-2 focus:ring-emerald-500 uppercase font-semibold" />
                 </div>
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                        <label class="block font-semibold mb-1 text-slate-700 dark:text-slate-300">NIK (Nomor KTP) <span class="text-red-500">*</span></label>
-                        <input type="text" x-model="suratForm.nik" maxlength="16" placeholder="16 digit NIK" class="w-full px-3 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 focus:ring-2 focus:ring-emerald-500 outline-none text-slate-800 dark:text-slate-100" />
+                        <label class="block font-semibold mb-1 text-slate-700 dark:text-slate-300">NIK (16 Digit) <span class="text-red-500">*</span></label>
+                        <input type="text" x-model="suratForm.nik" maxlength="16" placeholder="16 digit NIK" class="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 font-mono text-xs focus:ring-2 focus:ring-emerald-500" />
                     </div>
                     <div>
-                        <label class="block font-semibold mb-1 text-slate-700 dark:text-slate-300">No. WhatsApp Pemohon <span class="text-red-500">*</span></label>
-                        <input type="text" x-model="suratForm.telepon" placeholder="08xxxxxxxxxx" class="w-full px-3 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 focus:ring-2 focus:ring-emerald-500 outline-none text-slate-800 dark:text-slate-100" />
+                        <label class="block font-semibold mb-1 text-slate-700 dark:text-slate-300">No. WhatsApp <span class="text-red-500">*</span></label>
+                        <input type="text" x-model="suratForm.no_telepon" placeholder="08xxxxxxxxxx" class="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs focus:ring-2 focus:ring-emerald-500" />
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <div class="sm:col-span-2">
+                        <label class="block font-semibold mb-1 text-slate-700 dark:text-slate-300">Alamat Kampung / Dusun <span class="text-red-500">*</span></label>
+                        <input type="text" x-model="suratForm.alamat" placeholder="Contoh: KP. Ranca Paku" class="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs focus:ring-2 focus:ring-emerald-500" />
+                    </div>
+                    <div>
+                        <label class="block font-semibold mb-1 text-slate-700 dark:text-slate-300">RT / RW</label>
+                        <div class="flex gap-1.5">
+                            <input type="text" x-model="suratForm.rt" placeholder="RT" class="w-1/2 px-2 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs text-center" />
+                            <input type="text" x-model="suratForm.rw" placeholder="RW" class="w-1/2 px-2 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs text-center" />
+                        </div>
                     </div>
                 </div>
 
                 <div>
-                    <label class="block font-semibold mb-1 text-slate-700 dark:text-slate-300">Alamat / Dusun / RT / RW <span class="text-red-500">*</span></label>
-                    <input type="text" x-model="suratForm.alamat" placeholder="Contoh: Dusun Cigagade, RT 02 / RW 04" class="w-full px-3 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 focus:ring-2 focus:ring-emerald-500 outline-none text-slate-800 dark:text-slate-100" />
+                    <label class="block font-semibold mb-1 text-slate-700 dark:text-slate-300">Keperluan Pembuatan Surat</label>
+                    <textarea x-model="suratForm.keperluan" rows="2" placeholder="Contoh: Persyaratan Credit BANK / Melamar Pekerjaan" class="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs focus:ring-2 focus:ring-emerald-500 resize-none"></textarea>
                 </div>
 
-                <div>
-                    <label class="block font-semibold mb-1 text-slate-700 dark:text-slate-300">Keperluan Pembuatan Surat <span class="text-red-500">*</span></label>
-                    <textarea x-model="suratForm.keperluan" rows="2" placeholder="Contoh: Pengajuan pinjaman modal usaha / Melamar pekerjaan" class="w-full px-3 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 focus:ring-2 focus:ring-emerald-500 outline-none text-slate-800 dark:text-slate-100 resize-none"></textarea>
+                <div class="text-right">
+                    <a href="{{ route('layanan-surat.index') }}" class="text-xs text-emerald-600 dark:text-emerald-400 font-semibold hover:underline">
+                        Ingin isi formulir khusus dengan rincian lengkap? Buka Halaman Surat &rarr;
+                    </a>
                 </div>
             </div>
 
             <!-- Footer Buttons -->
-            <div class="p-4 bg-slate-50 dark:bg-slate-800/80 border-t border-slate-200 dark:border-slate-800 flex items-center justify-end gap-3 shrink-0">
-                <button type="button" @click="suratModalOpen = false" class="px-4 py-2.5 rounded-xl text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700 font-medium transition-all">
-                    Batal
-                </button>
-                <button type="button" @click="kirimSuratWa()" class="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold flex items-center gap-2 shadow-md hover:shadow-emerald-500/20 active:scale-95 transition-all">
-                    <i class="fab fa-whatsapp text-lg"></i>
-                    <span>Kirim via WhatsApp Pelayanan</span>
-                </button>
+            <div x-show="!suratSuccessData" class="p-4 bg-slate-50 dark:bg-slate-800/80 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between gap-3 shrink-0">
+                <a href="{{ route('layanan-surat.index') }}" class="text-xs font-semibold text-slate-500 hover:text-slate-700 dark:text-slate-400">
+                    Buka Portal Penuh
+                </a>
+                <div class="flex items-center gap-2">
+                    <button type="button" @click="suratModalOpen = false" class="px-4 py-2 rounded-xl text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700 font-medium text-xs transition-all">
+                        Batal
+                    </button>
+                    <button type="button" @click="submitSuratModal()" :disabled="suratSubmitting" class="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs flex items-center gap-2 shadow-md transition-all active:scale-95 disabled:opacity-50">
+                        <span x-show="!suratSubmitting"><i class="fas fa-paper-plane"></i> Kirim ke Desa</span>
+                        <span x-show="suratSubmitting"><i class="fas fa-spinner fa-spin"></i> Menyimpan...</span>
+                    </button>
+                </div>
             </div>
         </div>
     </div>

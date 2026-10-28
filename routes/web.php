@@ -24,6 +24,10 @@ use App\Http\Controllers\Dashboard\UmkmController;
 use App\Http\Controllers\Dashboard\InfografisController;
 use App\Http\Controllers\Dashboard\RunningTextController;
 use App\Http\Controllers\Dashboard\LandscapeBannerController;
+use App\Http\Controllers\Dashboard\SuratAdminController;
+use App\Http\Controllers\PublicSuratController;
+use App\Http\Controllers\Dashboard\PengaduanAdminController;
+use App\Http\Controllers\PublicPengaduanController;
 use App\Http\Controllers\SitemapController;
 
 
@@ -61,6 +65,17 @@ Route::get('/umkm/{slug}', [HomeController::class, 'umkmShow'])->name('umkm.show
 // Halaman Infografis Desa (Demografi, APBDes, Stunting, Bansos, IDM, SDGs)
 Route::get('/infografis', [HomeController::class, 'infografisIndex'])->name('infografis.index');
 Route::get('/infografis/{tab}', [HomeController::class, 'infografisIndex'])->name('infografis.tab');
+
+// Layanan Surat Mandiri Warga Desa Cigagade
+Route::get('/layanan-surat', [PublicSuratController::class, 'index'])->name('layanan-surat.index');
+Route::post('/layanan-surat/ajukan', [PublicSuratController::class, 'store'])->name('layanan-surat.store');
+Route::get('/layanan-surat/lacak', [PublicSuratController::class, 'track'])->name('layanan-surat.track');
+Route::get('/layanan-surat/cetak/{tracking_code}', [PublicSuratController::class, 'printPublic'])->name('surat.public.print');
+
+// Layanan Pengaduan & Aspirasi Masyarakat
+Route::get('/pengaduan', [PublicPengaduanController::class, 'index'])->name('pengaduan.index');
+Route::post('/pengaduan', [PublicPengaduanController::class, 'store'])->name('pengaduan.store');
+Route::get('/pengaduan/lacak', [PublicPengaduanController::class, 'track'])->name('pengaduan.track');
 
 // API Statistik Kunjungan
 Route::get('/api/visitor-stats', function (\App\Services\VisitorService $service) {
@@ -119,6 +134,23 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
         Route::resource('/dashboard/bengkel-ilmu', BengkelIlmuController::class)->names('bengkel-ilmu');
         Route::resource('/dashboard/instagram-reels', InstagramReelController::class)->names('instagram-reels');
+
+        // RUTE LAYANAN & PERMOHONAN SURAT DESA
+        Route::get('/dashboard/surat', [SuratAdminController::class, 'index'])->name('surat.admin.index');
+        Route::get('/dashboard/surat/create', [SuratAdminController::class, 'create'])->name('surat.admin.create');
+        Route::post('/dashboard/surat', [SuratAdminController::class, 'store'])->name('surat.admin.store');
+        Route::get('/dashboard/surat/{id}', [SuratAdminController::class, 'show'])->name('surat.admin.show');
+        Route::put('/dashboard/surat/{id}', [SuratAdminController::class, 'update'])->name('surat.admin.update');
+        Route::delete('/dashboard/surat/{id}', [SuratAdminController::class, 'destroy'])->name('surat.admin.destroy');
+        Route::get('/dashboard/surat/{id}/print', [SuratAdminController::class, 'print'])->name('surat.admin.print');
+        Route::get('/dashboard/surat/{id}/pdf', [SuratAdminController::class, 'downloadPdf'])->name('surat.admin.pdf');
+        Route::get('/dashboard/surat/{id}/word', [SuratAdminController::class, 'downloadWord'])->name('surat.admin.word');
+
+        // RUTE PENGADUAN MASYARAKAT
+        Route::get('/dashboard/pengaduan', [PengaduanAdminController::class, 'index'])->name('pengaduan.admin.index');
+        Route::get('/dashboard/pengaduan/{id}', [PengaduanAdminController::class, 'show'])->name('pengaduan.admin.show');
+        Route::put('/dashboard/pengaduan/{id}', [PengaduanAdminController::class, 'update'])->name('pengaduan.admin.update');
+        Route::delete('/dashboard/pengaduan/{id}', [PengaduanAdminController::class, 'destroy'])->name('pengaduan.admin.destroy');
 
     });
     // --- Akhir Rute SuperAdmin ---

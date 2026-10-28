@@ -66,6 +66,31 @@ class User extends Authenticatable
     }
 
     /**
+     * Cek apakah user adalah akun Kader PKK.
+     */
+    public function isPkk(): bool
+    {
+        return $this->role === 'pkk' || $this->role === 'kader_pkk';
+    }
+
+    /**
+     * Dapatkan label role pengguna.
+     */
+    public function getRoleLabel(): string
+    {
+        if ($this->isSuperAdmin()) {
+            return 'Administrator Desa';
+        }
+        if ($this->isRw()) {
+            return 'Pengurus ' . $this->getRwLabel();
+        }
+        if ($this->isPkk()) {
+            return 'Kader TP-PKK Desa';
+        }
+        return 'Pengguna';
+    }
+
+    /**
      * Dapatkan label format RW (contoh: "RW 01").
      */
     public function getRwLabel(): ?string

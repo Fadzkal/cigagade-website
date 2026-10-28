@@ -5,7 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23059669'><path d='M12 2L2 9.5V11H4V20H9V14H15V20H20V11H22V9.5L12 2Z'/></svg>">
+    {{-- Site Icon / Favicon --}}
+    @if (isset($logoPath) && $logoPath && file_exists(public_path('storage/' . $logoPath)))
+        <link rel="icon" type="image/png" href="{{ asset('storage/' . $logoPath) }}">
+        <link rel="shortcut icon" href="{{ asset('storage/' . $logoPath) }}">
+        <link rel="apple-touch-icon" href="{{ asset('storage/' . $logoPath) }}">
+    @else
+        <link rel="icon" type="image/png" href="{{ asset('LOGO_GARUT.png') }}">
+        <link rel="shortcut icon" href="{{ asset('favicon.ico') }}">
+        <link rel="apple-touch-icon" href="{{ asset('LOGO_GARUT.png') }}">
+    @endif
     <title>{{ config('app.name', 'Desa Cigagade') }} - Panel Administrasi</title>
 
     <link rel="preconnect" href="https://fonts.bunny.net">
@@ -97,7 +106,35 @@
 
                 {{-- BLOK SUPERADMIN --}}
                 @can('isSuperAdmin')
+                    @php
+                        $badgePendingSurat = \App\Models\SuratRequest::where('status', 'pending')->count();
+                        $badgePendingPengaduan = \App\Models\Pengaduan::where('status', 'menunggu')->count();
+                    @endphp
                     <div class="px-3 pt-6 pb-2">
+                        <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Pelayanan & Administrasi</p>
+                    </div>
+                    <a href="{{ route('surat.admin.index') }}" aria-current="{{ request()->routeIs('surat.admin.*') ? 'page' : '' }}"
+                       class="sidebar-link flex items-center px-3 py-2.5 text-slate-300 rounded-xl group relative">
+                        <i class="fas fa-file-signature mr-3 text-slate-400 group-hover:text-emerald-400 transition-colors"></i>
+                        <span class="text-sm">Permohonan Surat</span>
+                        @if ($badgePendingSurat > 0)
+                            <span class="ml-auto inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500 text-white animate-pulse">
+                                {{ $badgePendingSurat }} Baru
+                            </span>
+                        @endif
+                    </a>
+                    <a href="{{ route('pengaduan.admin.index') }}" aria-current="{{ request()->routeIs('pengaduan.admin.*') ? 'page' : '' }}"
+                       class="sidebar-link flex items-center px-3 py-2.5 text-slate-300 rounded-xl group relative">
+                        <i class="fas fa-bullhorn mr-3 text-slate-400 group-hover:text-emerald-400 transition-colors"></i>
+                        <span class="text-sm">Pengaduan Warga</span>
+                        @if ($badgePendingPengaduan > 0)
+                            <span class="ml-auto inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500 text-white animate-pulse">
+                                {{ $badgePendingPengaduan }} Baru
+                            </span>
+                        @endif
+                    </a>
+
+                    <div class="px-3 pt-4 pb-2">
                         <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Pemerintahan Desa</p>
                     </div>
                     <a href="{{ route('categories.index') }}" aria-current="{{ request()->routeIs('categories.*') ? 'page' : '' }}"
@@ -153,6 +190,10 @@
                     @if(Auth::check() && Auth::user()->isRw())
                         <span class="ml-auto text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-500 text-white">
                             {{ Auth::user()->getRwLabel() }}
+                        </span>
+                    @elseif(Auth::check() && Auth::user()->isPkk())
+                        <span class="ml-auto text-[10px] font-bold px-2 py-0.5 rounded-full bg-pink-500 text-white">
+                            PKK
                         </span>
                     @endif
                 </a>
@@ -242,13 +283,15 @@
                                 <i class="fas fa-bell"></i>
                             </button>
                              <div class="hidden sm:flex sm:items-center pl-4 border-l border-gray-200 gap-3">
-                                <div class="w-8 h-8 rounded-full {{ Auth::check() && Auth::user()->isRw() ? 'bg-amber-100 text-amber-700' : 'bg-blue-100 text-blue-600' }} flex items-center justify-center font-bold text-sm">
+                                <div class="w-8 h-8 rounded-full {{ Auth::check() && Auth::user()->isRw() ? 'bg-amber-100 text-amber-700' : (Auth::check() && Auth::user()->isPkk() ? 'bg-pink-100 text-pink-700 font-extrabold' : 'bg-blue-100 text-blue-600') }} flex items-center justify-center font-bold text-sm">
                                     {{ Auth::check() ? substr(Auth::user()->name, 0, 1) : 'U' }}
                                 </div>
                                 <div class="flex flex-col text-left">
                                     <span class="text-sm font-semibold text-slate-700 leading-tight">{{ Auth::check() ? Auth::user()->name : 'User' }}</span>
                                     @if(Auth::check() && Auth::user()->isRw())
                                         <span class="text-[10px] font-bold text-amber-600 uppercase tracking-wide">Akun Resmi {{ Auth::user()->getRwLabel() }}</span>
+                                    @elseif(Auth::check() && Auth::user()->isPkk())
+                                        <span class="text-[10px] font-bold text-pink-600 uppercase tracking-wide">Kader TP-PKK Desa</span>
                                     @else
                                         <span class="text-[10px] text-slate-400 uppercase tracking-wide">Administrator Desa</span>
                                     @endif

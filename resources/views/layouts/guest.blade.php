@@ -15,7 +15,16 @@
 
         <title>{{ config('app.name', 'Desa Cigagade') }}</title>
 
-        <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23059669'><path d='M12 2L2 9.5V11H4V20H9V14H15V20H20V11H22V9.5L12 2Z'/></svg>">
+        {{-- Site Icon / Favicon --}}
+        @if (isset($logoPath) && $logoPath && file_exists(public_path('storage/' . $logoPath)))
+            <link rel="icon" type="image/png" href="{{ asset('storage/' . $logoPath) }}">
+            <link rel="shortcut icon" href="{{ asset('storage/' . $logoPath) }}">
+            <link rel="apple-touch-icon" href="{{ asset('storage/' . $logoPath) }}">
+        @else
+            <link rel="icon" type="image/png" href="{{ asset('LOGO_GARUT.png') }}">
+            <link rel="shortcut icon" href="{{ asset('favicon.ico') }}">
+            <link rel="apple-touch-icon" href="{{ asset('LOGO_GARUT.png') }}">
+        @endif
 
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />

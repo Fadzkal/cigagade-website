@@ -9,6 +9,8 @@ use App\Models\Gallery;
 use App\Models\Ministry;
 use App\Models\Partner;
 use App\Models\Umkm;
+use App\Models\SuratRequest;
+use App\Models\Pengaduan;
 use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
@@ -23,6 +25,11 @@ class DashboardController extends Controller
         $totalMinistries = Ministry::count();
         $totalPartners   = Partner::count();
         $totalUmkm       = Umkm::count();
+        $totalSurat      = SuratRequest::count();
+        $pendingSurat    = SuratRequest::where('status', 'pending')->count();
+        $latestSurats    = SuratRequest::latest()->take(5)->get();
+        $totalPengaduan  = Pengaduan::count();
+        $pendingPengaduan = Pengaduan::where('status', 'menunggu')->count();
 
         // ─── Top 10 Most Popular Posts ──────────────────────────────────
         $popularPosts = Post::with('category')
@@ -63,14 +70,25 @@ class DashboardController extends Controller
 
         $user = auth()->user();
         $isRw = $user && $user->isRw();
+        $isPkk = $user && $user->isPkk();
         $rwPostCount = 0;
         $rwViewsCount = 0;
         $rwPosts = collect();
+
+        $pkkPostCount = 0;
+        $pkkViewsCount = 0;
+        $pkkPosts = collect();
 
         if ($isRw) {
             $rwPostCount = Post::where('rw', $user->rw)->count();
             $rwViewsCount = Post::where('rw', $user->rw)->sum('views');
             $rwPosts = Post::where('rw', $user->rw)->with(['category', 'user'])->latest()->take(10)->get();
+        }
+
+        if ($isPkk) {
+            $pkkPostCount = Post::where('user_id', $user->id)->count();
+            $pkkViewsCount = Post::where('user_id', $user->id)->sum('views');
+            $pkkPosts = Post::where('user_id', $user->id)->with(['category', 'user'])->latest()->take(10)->get();
         }
 
         return view('dashboard', compact(
@@ -81,6 +99,11 @@ class DashboardController extends Controller
             'totalMinistries',
             'totalPartners',
             'totalUmkm',
+            'totalSurat',
+            'pendingSurat',
+            'latestSurats',
+            'totalPengaduan',
+            'pendingPengaduan',
             'popularPosts',
             'latestPosts',
             'postsByCategory',
@@ -89,7 +112,11 @@ class DashboardController extends Controller
             'isRw',
             'rwPostCount',
             'rwViewsCount',
-            'rwPosts'
+            'rwPosts',
+            'isPkk',
+            'pkkPostCount',
+            'pkkViewsCount',
+            'pkkPosts'
         ));
     }
 }

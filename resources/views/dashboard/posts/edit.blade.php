@@ -72,6 +72,45 @@
                                     <p class="mt-1 text-xs text-gray-500">Kosongkan jika tidak ingin mengganti gambar.</p>
                                 </div>
                             </div>
+                        @elseif(Auth::user()->isPkk())
+                            {{-- Info Akun TP-PKK --}}
+                            <div class="mb-6 p-4 rounded-xl bg-pink-50 border border-pink-200 flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-lg bg-pink-500 text-white flex items-center justify-center font-bold text-lg flex-shrink-0">
+                                    <i class="fas fa-heart"></i>
+                                </div>
+                                <div class="flex-grow">
+                                    <p class="text-xs font-bold text-pink-800 uppercase tracking-wider">Publikasi Tim Penggerak PKK:</p>
+                                    <p class="text-sm font-semibold text-pink-900">
+                                        Artikel ini dipublikasikan atas nama <strong>Kader TP-PKK Desa Cigagade</strong>.
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+                                <div>
+                                    <label for="category_id" class="block text-sm font-medium text-gray-700">Kategori <span class="text-red-500">*</span></label>
+                                    <select name="category_id" id="category_id" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-pink-500 focus:ring-pink-500 sm:text-sm" required>
+                                        <option value="">Pilih Kategori</option>
+                                        @foreach ($categories as $category)
+                                            <option value="{{ $category->id }}" {{ old('category_id', $post->category_id) == $category->id ? 'selected' : '' }}>
+                                                {{ $category->name }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+
+                                <div>
+                                    <label for="image" class="block text-sm font-medium text-gray-700">Gambar Thumbnail</label>
+                                    <input type="hidden" name="oldImage" value="{{ $post->image }}">
+                                    @if ($post->image)
+                                        <img src="{{ asset('storage/' . $post->image) }}" class="mt-2 mb-2 w-full max-w-[200px] rounded-md border" alt="Thumbnail lama">
+                                    @else
+                                        <p class="mt-2 text-sm text-gray-500 mb-2">Tidak ada gambar sebelumnya.</p>
+                                    @endif
+                                    <input type="file" name="image" id="image" class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-pink-50 file:text-pink-700 hover:file:bg-pink-100">
+                                    <p class="mt-1 text-xs text-gray-500">Kosongkan jika tidak ingin mengganti gambar.</p>
+                                </div>
+                            </div>
                         @else
                             {{-- Pilihan Superadmin (Bisa pilih Umum atau RW 1 - 10) --}}
                             <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">

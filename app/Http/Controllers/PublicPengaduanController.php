@@ -38,11 +38,15 @@ class PublicPengaduanController extends Controller
 
         // Jika ada parameter lacak langsung dari URL (misal: /pengaduan?lacak=PGD-...)
         $trackedPengaduan = null;
+        $trackedData = null;
         if ($request->filled('lacak')) {
             $trackedPengaduan = Pengaduan::where('kode_tiket', trim($request->lacak))->first();
+            if ($trackedPengaduan) {
+                $trackedData = $trackedPengaduan->toPublicArray();
+            }
         }
 
-        return view('pengaduan.index', compact('kategoriList', 'pengaduans', 'stats', 'trackedPengaduan'));
+        return view('pengaduan.index', compact('kategoriList', 'pengaduans', 'stats', 'trackedPengaduan', 'trackedData'));
     }
 
     /**
@@ -129,22 +133,7 @@ class PublicPengaduanController extends Controller
 
         return response()->json([
             'success' => true,
-            'data'    => [
-                'kode_tiket'     => $pengaduan->kode_tiket,
-                'nama_tampil'    => $pengaduan->nama_tampil,
-                'kategori'       => $pengaduan->kategori,
-                'judul'          => $pengaduan->judul,
-                'isi_pengaduan'  => $pengaduan->isi_pengaduan,
-                'lokasi'         => $pengaduan->lokasi,
-                'foto_url'       => $pengaduan->foto_url,
-                'status'         => $pengaduan->status,
-                'status_label'   => $pengaduan->status_label,
-                'status_badge'   => $pengaduan->status_badge,
-                'tanggapan'      => $pengaduan->tanggapan,
-                'tanggapan_at'   => $pengaduan->tanggapan_at ? $pengaduan->tanggapan_at->translatedFormat('d F Y, H:i') : null,
-                'tanggapan_oleh' => $pengaduan->tanggapan_oleh,
-                'created_at'     => $pengaduan->created_at->translatedFormat('d F Y, H:i'),
-            ],
+            'data'    => $pengaduan->toPublicArray(),
         ]);
     }
 }

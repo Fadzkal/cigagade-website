@@ -151,4 +151,27 @@ class Pengaduan extends Model
         $pesan = "Halo Sdr/i " . ($this->nama ?: 'Warga Desa Cigagade') . ", menindaklanjuti pengaduan Anda di Portal Desa Cigagade terkait: *" . $this->judul . "* (Tiket: *" . $this->kode_tiket . "*).";
         return "https://wa.me/" . $clean . "?text=" . urlencode($pesan);
     }
+
+    /**
+     * Konversi data publik pengaduan untuk JSON / tracking view
+     */
+    public function toPublicArray(): array
+    {
+        return [
+            'kode_tiket'     => $this->kode_tiket,
+            'nama_tampil'    => $this->nama_tampil,
+            'kategori'       => $this->kategori,
+            'judul'          => $this->judul,
+            'isi_pengaduan'  => $this->isi_pengaduan,
+            'lokasi'         => $this->lokasi,
+            'foto_url'       => $this->foto_url,
+            'status'         => $this->status,
+            'status_label'   => $this->status_label,
+            'status_badge'   => $this->status_badge,
+            'tanggapan'      => $this->tanggapan,
+            'tanggapan_at'   => $this->tanggapan_at ? $this->tanggapan_at->translatedFormat('d F Y, H:i') : null,
+            'tanggapan_oleh' => $this->tanggapan_oleh,
+            'created_at'     => $this->created_at ? $this->created_at->translatedFormat('d F Y, H:i') : null,
+        ];
+    }
 }

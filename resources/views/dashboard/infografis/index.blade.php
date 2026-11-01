@@ -81,6 +81,30 @@
                 </nav>
             </div>
 
+            {{-- Kondisi jika data kosong pada kategori ini --}}
+            @if ($items->isEmpty())
+                <div class="bg-white rounded-3xl p-10 border border-slate-200/80 shadow-sm text-center max-w-xl mx-auto my-6 space-y-4">
+                    <div class="w-16 h-16 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-2xl mx-auto shadow-inner">
+                        <i class="fas fa-chart-column"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-slate-800 text-lg">Data {{ strtoupper($currentTab) }} Belum Tersedia</h3>
+                        <p class="text-xs text-slate-500 mt-1 max-w-md mx-auto leading-relaxed">
+                            Data indikator untuk kategori ini saat ini masih kosong di database server. Anda dapat langsung memuat seluruh data standar resmi Pemerintah Desa Cigagade dengan menekan tombol di bawah.
+                        </p>
+                    </div>
+                    <form action="{{ route('infografis.admin.reset') }}" method="POST">
+                        @csrf
+                        <input type="hidden" name="tab" value="{{ $currentTab }}">
+                        <button type="submit"
+                                class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-bold text-xs rounded-xl shadow-md shadow-emerald-600/20 transition-all inline-flex items-center gap-2">
+                            <i class="fas fa-rotate-left"></i>
+                            Muat Data Standar Cigagade Sekarang
+                        </button>
+                    </form>
+                </div>
+            @endif
+
             {{-- Form Simpan Cepat / Bulk Update untuk Tab Aktif --}}
             <form action="{{ route('infografis.admin.bulk') }}" method="POST" class="space-y-6">
                 @csrf
@@ -342,16 +366,18 @@
                 @endif
 
                 {{-- Action Bar Bawah (Tombol Simpan Perubahan) --}}
-                <div class="sticky bottom-4 z-20 bg-white/95 backdrop-blur-md p-4 rounded-2xl border border-slate-200/80 shadow-xl flex items-center justify-between gap-4">
-                    <div class="text-xs text-slate-500">
-                        Pastikan data yang Anda ubah sudah sesuai dengan sensus & data resmi Pemerintah Desa Cigagade.
+                @if ($items->isNotEmpty())
+                    <div class="sticky bottom-4 z-20 bg-white/95 backdrop-blur-md p-4 rounded-2xl border border-slate-200/80 shadow-xl flex items-center justify-between gap-4">
+                        <div class="text-xs text-slate-500">
+                            Pastikan data yang Anda ubah sudah sesuai dengan sensus & data resmi Pemerintah Desa Cigagade.
+                        </div>
+                        <button type="submit"
+                                class="px-6 py-2.5 bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white font-bold text-sm rounded-xl shadow-md shadow-emerald-500/20 transition-all flex items-center gap-2">
+                            <i class="fas fa-floppy-disk"></i>
+                            Simpan Perubahan {{ strtoupper($currentTab) }}
+                        </button>
                     </div>
-                    <button type="submit"
-                            class="px-6 py-2.5 bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white font-bold text-sm rounded-xl shadow-md shadow-emerald-500/20 transition-all flex items-center gap-2">
-                        <i class="fas fa-floppy-disk"></i>
-                        Simpan Perubahan {{ strtoupper($currentTab) }}
-                    </button>
-                </div>
+                @endif
             </form>
 
         </div>

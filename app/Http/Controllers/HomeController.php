@@ -471,6 +471,16 @@ class HomeController extends Controller
             $tab = 'penduduk';
         }
 
+        // Auto-seed data standar jika tabel infografis masih kosong
+        if (Infografis::count() === 0) {
+            try {
+                $seeder = new \Database\Seeders\InfografisSeeder();
+                $seeder->run();
+            } catch (\Throwable $e) {
+                // Ignore jika seeder terkendala
+            }
+        }
+
         $items = Infografis::where('category', $tab)->orderBy('order_index')->get();
         $sections = $items->groupBy('section');
         $tabMeta = $allowedTabs[$tab];

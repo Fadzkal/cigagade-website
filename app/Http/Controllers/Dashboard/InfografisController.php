@@ -21,6 +21,16 @@ class InfografisController extends Controller
             $currentTab = 'penduduk';
         }
 
+        // Auto-seed data standar jika tabel infografis masih kosong (misal di server baru/production)
+        if (Infografis::count() === 0) {
+            try {
+                $seeder = new InfografisSeeder();
+                $seeder->run();
+            } catch (\Throwable $e) {
+                // Ignore jika seeder terkendala
+            }
+        }
+
         $items = Infografis::where('category', $currentTab)
             ->orderBy('section')
             ->orderBy('order_index')

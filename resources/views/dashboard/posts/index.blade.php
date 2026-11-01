@@ -16,7 +16,7 @@
         </div>
     </x-slot>
 
-    <div class="py-8" x-data="{ rejectModalOpen: false, rejectAction: '', rejectTitle: '' }">
+    <div class="py-8">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
 
             {{-- Flash Messages --}}
@@ -302,7 +302,9 @@
 
                                             {{-- Tombol Tolak (Buka Modal) --}}
                                             <button type="button"
-                                                    @click="rejectModalOpen = true; rejectAction = '{{ route('posts.reject', $post->id) }}'; rejectTitle = '{{ addslashes($post->title) }}'"
+                                                    data-action="{{ route('posts.reject', $post->id) }}"
+                                                    data-title="{{ $post->title }}"
+                                                    onclick="openRejectModal(this)"
                                                     class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 text-xs font-bold transition"
                                                     title="Tolak / Minta Revisi">
                                                 <i class="fas fa-xmark"></i> Tolak
@@ -359,11 +361,9 @@
         </div>
 
         {{-- ─── MODAL TOLAK BERITA (SUPER ADMIN) ─── --}}
-        <div x-show="rejectModalOpen"
-             class="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4"
-             x-cloak>
-            <div class="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-slate-100 relative"
-                 @click.away="rejectModalOpen = false">
+        <div id="rejectModal"
+             class="hidden fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+            <div class="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-slate-100 relative">
                 <div class="flex items-center justify-between pb-4 border-b border-slate-100">
                     <div class="flex items-center gap-3">
                         <div class="w-10 h-10 rounded-2xl bg-rose-50 text-rose-600 flex items-center justify-center text-lg">
@@ -374,18 +374,18 @@
                             <p class="text-xs text-slate-400">Berikan catatan perbaikan kepada pembuat berita</p>
                         </div>
                     </div>
-                    <button type="button" @click="rejectModalOpen = false" class="text-slate-400 hover:text-slate-600">
+                    <button type="button" onclick="closeRejectModal()" class="text-slate-400 hover:text-slate-600">
                         <i class="fas fa-times text-lg"></i>
                     </button>
                 </div>
 
-                <form :action="rejectAction" method="POST" class="mt-4 space-y-4">
+                <form id="rejectModalForm" method="POST" action="" class="mt-4 space-y-4" onsubmit="return validateRejectForm(this)">
                     @csrf
                     @method('PATCH')
 
                     <div>
                         <p class="text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Judul Berita:</p>
-                        <p class="text-sm font-semibold text-slate-800 bg-slate-50 p-3 rounded-xl border border-slate-200" x-text="rejectTitle"></p>
+                        <p id="rejectModalTitle" class="text-sm font-semibold text-slate-800 bg-slate-50 p-3 rounded-xl border border-slate-200">-</p>
                     </div>
 
                     <div>
@@ -400,7 +400,7 @@
                     </div>
 
                     <div class="flex items-center justify-end gap-2 pt-4 border-t border-slate-100">
-                        <button type="button" @click="rejectModalOpen = false" class="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition">
+                        <button type="button" onclick="closeRejectModal()" class="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition">
                             Batal
                         </button>
                         <button type="submit" class="px-5 py-2 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold shadow-md shadow-rose-600/20 transition flex items-center gap-2">
@@ -412,4 +412,47 @@
         </div>
 
     </div>
+
+    <script>
+        function openRejectModal(button) {
+            const action = button.getAttribute('data-action');
+            const title = button.getAttribute('data-title');
+
+            const form = document.getElementById('rejectModalForm');
+            const titleDisplay = document.getElementById('rejectModalTitle');
+            const modal = document.getElementById('rejectModal');
+
+            if (form && action) {
+                form.action = action;
+            }
+            if (titleDisplay && title) {
+                titleDisplay.textContent = title;
+            }
+            if (modal) {
+                modal.classList.remove('hidden');
+            }
+        }
+
+        function closeRejectModal() {
+            const modal = document.getElementById('rejectModal');
+            if (modal) {
+                modal.classList.add('hidden');
+            }
+        }
+
+        function validateRejectForm(form) {
+            if (!form.action || form.action === window.location.href || form.action.endsWith('/dashboard/posts')) {
+                alert('Peringatan: URL tindakan penolakan belum ditentukan. Silakan klik tombol Tolak kembali.');
+                return false;
+            }
+            return true;
+        }
+
+        // Close modal on escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeRejectModal();
+            }
+        });
+    </script>
 </x-app-layout>

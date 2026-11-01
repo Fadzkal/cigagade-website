@@ -157,8 +157,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::resource('/dashboard/users', UserController::class)->names('users');
 
         // MODERASI & VALIDASI BERITA
-        Route::patch('/dashboard/posts/{post}/approve', [PostController::class, 'approve'])->name('posts.approve');
-        Route::patch('/dashboard/posts/{post}/reject', [PostController::class, 'reject'])->name('posts.reject');
+        Route::match(['POST', 'PATCH'], '/dashboard/posts/{post}/approve', [PostController::class, 'approve'])->name('posts.approve');
+        Route::match(['POST', 'PATCH'], '/dashboard/posts/{post}/reject', [PostController::class, 'reject'])->name('posts.reject');
 
     });
     // --- Akhir Rute SuperAdmin ---

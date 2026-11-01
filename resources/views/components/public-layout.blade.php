@@ -1238,7 +1238,7 @@
                         <a href="https://wa.me/6281234567890" target="_blank" rel="noopener noreferrer" class="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center text-gray-400 hover:text-white hover:bg-emerald-600 transition-all duration-300" title="WhatsApp Pelayanan Desa">
                             <i class="fab fa-whatsapp text-lg"></i>
                         </a>
-                        <a href="https://www.instagram.com/" target="_blank" rel="noopener noreferrer" class="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center text-gray-400 hover:text-white hover:bg-pink-600 transition-all duration-300" title="Instagram Resmi">
+                        <a href="https://www.instagram.com/kkn_cigagade.polman?rpxt=ZjZ2ZmRhM3EzM2Rt" target="_blank" rel="noopener noreferrer" class="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center text-gray-400 hover:text-white hover:bg-pink-600 transition-all duration-300" title="Instagram Resmi @kkn_cigagade.polman">
                             <i class="fab fa-instagram text-lg"></i>
                         </a>
                     </div>
@@ -1272,6 +1272,13 @@
                             <i class="fab fa-whatsapp mr-3 text-emerald-400 text-base"></i>
                             <a href="https://wa.me/6281234567890" target="_blank" class="hover:text-white transition-colors">+62 812-3456-7890 (Layanan Warga)</a>
                         </p>
+                        <p class="flex items-center">
+                            <i class="fab fa-instagram mr-3 text-pink-400 text-base"></i>
+                            <a href="https://www.instagram.com/kkn_cigagade.polman?rpxt=ZjZ2ZmRhM3EzM2Rt" target="_blank" rel="noopener noreferrer" class="hover:text-white hover:underline transition-colors flex items-center gap-1.5" title="Instagram KKN Cigagade Polman">
+                                <span>@kkn_cigagade.polman</span>
+                                <i class="fas fa-arrow-up-right-from-square text-[10px] text-slate-500"></i>
+                            </a>
+                        </p>
                         <p class="flex items-center text-xs text-slate-500">
                             <i class="far fa-clock mr-3 text-slate-500"></i>
                             <span>Senin - Jumat: 08.00 - 15.30 WIB</span>
@@ -1290,15 +1297,20 @@
                         Portal Layanan Informasi dan Pelayanan Publik Terpadu Desa Cigagade.
                     </p>
                 </div>
-                <div class="inline-flex items-center gap-3 px-4 py-2 rounded-2xl bg-slate-800/90 border border-slate-700/80 shadow-xs">
-                    <div class="w-8 h-8 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center text-sm">
-                        <i class="fas fa-graduation-cap"></i>
+                <a href="https://www.instagram.com/kkn_cigagade.polman?rpxt=ZjZ2ZmRhM3EzM2Rt" target="_blank" rel="noopener noreferrer"
+                   class="inline-flex items-center gap-3 px-4 py-2 rounded-2xl bg-slate-800/90 hover:bg-slate-800 border border-slate-700/80 hover:border-pink-500/50 shadow-xs transition-all group"
+                   title="Kunjungi Instagram KKN Cigagade POLMAN Bandung (@kkn_cigagade.polman)">
+                    <div class="w-8 h-8 rounded-xl bg-pink-500/10 text-pink-400 group-hover:bg-gradient-to-tr group-hover:from-amber-500 group-hover:via-pink-500 group-hover:to-purple-600 group-hover:text-white flex items-center justify-center text-sm transition-all duration-300">
+                        <i class="fab fa-instagram"></i>
                     </div>
                     <div class="text-left">
                         <span class="block text-[10px] uppercase font-bold tracking-wider text-slate-400">Pengabdian Masyarakat</span>
-                        <span class="block text-xs font-bold text-white tracking-wide">KKN Politeknik Manufaktur Bandung</span>
+                        <span class="block text-xs font-bold text-white group-hover:text-pink-300 tracking-wide transition-colors flex items-center gap-1.5">
+                            <span>KKN POLMAN Bandung</span>
+                            <i class="fas fa-arrow-up-right-from-square text-[10px] text-slate-500 group-hover:text-pink-300 transition-colors"></i>
+                        </span>
                     </div>
-                </div>
+                </a>
             </div>
         </div>
     </footer>

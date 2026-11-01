@@ -230,16 +230,18 @@
                     @foreach ($jenisList as $key => $item)
                         <button type="button" @click="selectJenis('{{ $key }}')"
                                 :class="activeTab === '{{ $key }}' ? 'border-emerald-600 bg-white dark:bg-slate-800 ring-2 ring-emerald-500 shadow-md scale-102' : 'border-slate-200 dark:border-slate-800 bg-white/70 dark:bg-slate-900/60 hover:border-slate-300 dark:hover:border-slate-700'"
-                                class="p-3.5 rounded-2xl border text-center transition-all flex flex-col items-center justify-between gap-2 text-left group">
-                            <span class="w-10 h-10 rounded-2xl flex items-center justify-center text-base transition-colors"
+                                class="p-3 sm:p-3.5 rounded-2xl border text-center transition-all flex flex-col items-center justify-between gap-2 group min-h-[148px]">
+                            <span class="w-10 h-10 rounded-2xl flex items-center justify-center text-base transition-colors shrink-0"
                                   :class="activeTab === '{{ $key }}' ? 'bg-emerald-600 text-white shadow-sm' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300'">
                                 <i class="fas {{ $item['icon'] }}"></i>
                             </span>
-                            <div>
-                                <div class="text-xs font-extrabold text-slate-900 dark:text-white">{{ $item['short'] }}</div>
-                                <div class="text-[9.5px] text-slate-500 dark:text-slate-400 line-clamp-1 mt-0.5">{{ $item['title'] }}</div>
+                            <div class="w-full flex-1 flex flex-col items-center justify-center my-0.5 text-center">
+                                <div class="text-xs font-black text-slate-900 dark:text-white tracking-wide">{{ $item['short'] }}</div>
+                                <div class="text-[10px] text-slate-500 dark:text-slate-400 font-medium leading-tight mt-1 text-center min-h-[28px] flex items-center justify-center px-0.5 break-words" title="{{ $item['title'] }}">
+                                    {{ ucwords(strtolower($item['title'])) }}
+                                </div>
                             </div>
-                            <span class="text-[9px] font-mono font-bold px-2 py-0.5 rounded-full"
+                            <span class="text-[9px] font-mono font-bold px-2 py-0.5 rounded-full shrink-0"
                                   :class="activeTab === '{{ $key }}' ? 'bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300' : 'bg-slate-100 dark:bg-slate-800 text-slate-500'">
                                 Kode: {{ $item['code'] }}
                             </span>

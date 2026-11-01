@@ -143,11 +143,11 @@
                             </span>
                         </div>
                         <div>
-                            <div class="text-[11px] font-bold text-slate-800 leading-tight line-clamp-1" title="{{ $item['title'] }}">
+                            <div class="text-[11px] font-bold text-slate-800 leading-tight" title="{{ $item['title'] }}">
                                 {{ $item['short'] }}
                             </div>
-                            <div class="text-[9.5px] text-slate-500 leading-tight line-clamp-1 mt-0.5">
-                                {{ $item['title'] }}
+                            <div class="text-[9.5px] text-slate-500 leading-tight mt-0.5 min-h-[26px] flex items-center" title="{{ $item['title'] }}">
+                                {{ ucwords(strtolower($item['title'])) }}
                             </div>
                         </div>
                         <div class="mt-2.5">

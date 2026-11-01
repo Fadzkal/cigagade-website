@@ -28,6 +28,7 @@ use App\Http\Controllers\Dashboard\SuratAdminController;
 use App\Http\Controllers\PublicSuratController;
 use App\Http\Controllers\Dashboard\PengaduanAdminController;
 use App\Http\Controllers\PublicPengaduanController;
+use App\Http\Controllers\Dashboard\UserController;
 use App\Http\Controllers\SitemapController;
 
 
@@ -151,6 +152,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/dashboard/pengaduan/{id}', [PengaduanAdminController::class, 'show'])->name('pengaduan.admin.show');
         Route::put('/dashboard/pengaduan/{id}', [PengaduanAdminController::class, 'update'])->name('pengaduan.admin.update');
         Route::delete('/dashboard/pengaduan/{id}', [PengaduanAdminController::class, 'destroy'])->name('pengaduan.admin.destroy');
+
+        // RUTE MANAJEMEN PENGGUNA & AKUN
+        Route::resource('/dashboard/users', UserController::class)->names('users');
 
     });
     // --- Akhir Rute SuperAdmin ---

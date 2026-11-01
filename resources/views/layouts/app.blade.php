@@ -177,6 +177,11 @@
                         <i class="fas fa-cog mr-3 text-slate-400 group-hover:text-emerald-400 transition-colors"></i>
                         <span class="text-sm">Profil & Pengaturan Desa</span>
                     </a>
+                    <a href="{{ route('users.index') }}" aria-current="{{ request()->routeIs('users.*') ? 'page' : '' }}"
+                       class="sidebar-link flex items-center px-3 py-2.5 text-slate-300 rounded-xl group">
+                        <i class="fas fa-users-cog mr-3 text-slate-400 group-hover:text-emerald-400 transition-colors"></i>
+                        <span class="text-sm">Kelola Akun Pengguna</span>
+                    </a>
                 @endcan
 
                 {{-- KONTEN PUBLIK --}}

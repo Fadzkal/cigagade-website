@@ -40,7 +40,7 @@
                                 <div class="flex-grow">
                                     <p class="text-xs font-bold text-amber-800 uppercase tracking-wider">Wilayah Publikasi Berita:</p>
                                     <p class="text-sm font-semibold text-amber-900">
-                                        Berita ini otomatis diterbitkan atas nama <strong>{{ Auth::user()->getRwLabel() }} ({{ Auth::user()->name }})</strong> dan akan masuk ke portal kabar desa utama dengan penanda RW.
+                                        Berita ini diajukan atas nama <strong>{{ Auth::user()->getRwLabel() }} ({{ Auth::user()->name }})</strong>. Sebelum tampil di portal utama, berita akan diperiksa dan divalidasi terlebih dahulu oleh <strong>Super Admin</strong>.
                                     </p>
                                 </div>
                                 <input type="hidden" name="rw" value="{{ Auth::user()->rw }}">
@@ -74,7 +74,7 @@
                                 <div class="flex-grow">
                                     <p class="text-xs font-bold text-pink-800 uppercase tracking-wider">Publikasi Tim Penggerak PKK:</p>
                                     <p class="text-sm font-semibold text-pink-900">
-                                        Artikel ini akan dipublikasikan atas nama <strong>Kader TP-PKK Desa Cigagade</strong> untuk warta kegiatan Posyandu, kesehatan keluarga, dan 10 Program Pokok PKK.
+                                        Artikel ini diajukan atas nama <strong>Kader TP-PKK Desa Cigagade</strong> dan akan divalidasi oleh <strong>Super Admin</strong> sebelum tayang di portal utama.
                                     </p>
                                 </div>
                             </div>
@@ -193,10 +193,11 @@
                         </div>
 
                         <div class="mt-6 flex items-center gap-3">
-                            <button type="submit" class="inline-flex items-center px-5 py-2.5 bg-indigo-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-indigo-500 transition">
-                                Publikasikan
+                            <button type="submit" class="inline-flex items-center px-5 py-2.5 {{ Auth::user()->isSuperAdmin() ? 'bg-emerald-600 hover:bg-emerald-500' : 'bg-amber-600 hover:bg-amber-500' }} border border-transparent rounded-xl font-semibold text-xs text-white uppercase tracking-widest shadow-sm transition">
+                                <i class="fas {{ Auth::user()->isSuperAdmin() ? 'fa-paper-plane' : 'fa-clock' }} mr-2"></i>
+                                {{ Auth::user()->isSuperAdmin() ? 'Publikasikan Berita Sekarang' : 'Kirim untuk Validasi Super Admin' }}
                             </button>
-                            <a href="{{ route('posts.index') }}" class="inline-flex items-center px-4 py-2.5 bg-gray-200 border border-transparent rounded-md font-semibold text-xs text-gray-700 uppercase tracking-widest hover:bg-gray-300 transition">
+                            <a href="{{ route('posts.index') }}" class="inline-flex items-center px-4 py-2.5 bg-gray-200 border border-transparent rounded-xl font-semibold text-xs text-gray-700 uppercase tracking-widest hover:bg-gray-300 transition">
                                 Batal
                             </a>
                             <button type="button" onclick="clearDraft()" class="ml-auto text-xs text-red-400 hover:text-red-600 transition">Hapus Draft</button>

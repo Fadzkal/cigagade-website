@@ -156,6 +156,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
         // RUTE MANAJEMEN PENGGUNA & AKUN
         Route::resource('/dashboard/users', UserController::class)->names('users');
 
+        // MODERASI & VALIDASI BERITA
+        Route::patch('/dashboard/posts/{post}/approve', [PostController::class, 'approve'])->name('posts.approve');
+        Route::patch('/dashboard/posts/{post}/reject', [PostController::class, 'reject'])->name('posts.reject');
+
     });
     // --- Akhir Rute SuperAdmin ---
 

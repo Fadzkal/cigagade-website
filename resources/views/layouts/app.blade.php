@@ -192,7 +192,16 @@
                    class="sidebar-link flex items-center px-3 py-2.5 text-slate-300 rounded-xl group">
                     <i class="fas fa-newspaper mr-3 text-slate-400 group-hover:text-emerald-400 transition-colors"></i>
                     <span class="text-sm">Kabar & Berita Desa</span>
-                    @if(Auth::check() && Auth::user()->isRw())
+                    @if(Auth::check() && Auth::user()->isSuperAdmin())
+                        @php
+                            $badgePendingPosts = \App\Models\Post::where('status', 'pending')->count();
+                        @endphp
+                        @if ($badgePendingPosts > 0)
+                            <span class="ml-auto inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500 text-white animate-pulse">
+                                {{ $badgePendingPosts }} Validasi
+                            </span>
+                        @endif
+                    @elseif(Auth::check() && Auth::user()->isRw())
                         <span class="ml-auto text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-500 text-white">
                             {{ Auth::user()->getRwLabel() }}
                         </span>

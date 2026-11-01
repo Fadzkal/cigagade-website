@@ -376,6 +376,7 @@
                             ['label' => 'Permohonan Surat', 'value' => $totalSurat ?? 0, 'icon' => 'fa-file-signature', 'color' => 'teal', 'link' => route('surat.admin.index')],
                             ['label' => 'Pengaduan Warga',  'value' => $totalPengaduan ?? 0, 'icon' => 'fa-bullhorn',       'color' => 'amber', 'link' => route('pengaduan.admin.index')],
                             ['label' => 'Total Artikel',    'value' => $totalPosts,      'icon' => 'fa-newspaper',  'color' => 'blue',    'link' => route('posts.index')],
+                            ['label' => 'Validasi Berita',  'value' => $pendingPosts ?? 0, 'icon' => 'fa-clock',      'color' => 'amber',   'link' => route('posts.index', ['status' => 'pending'])],
                             ['label' => 'Total Views',      'value' => number_format($totalViews), 'icon' => 'fa-eye', 'color' => 'indigo',  'link' => null],
                             ['label' => 'Produk UMKM',      'value' => $totalUmkm,       'icon' => 'fa-store',      'color' => 'emerald', 'link' => route('umkm.admin.index')],
                             ['label' => 'Kategori',         'value' => $totalCategories, 'icon' => 'fa-tags',       'color' => 'purple',  'link' => route('categories.index')],

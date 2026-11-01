@@ -12,11 +12,63 @@ class Post extends Model
     // Melindungi agar 'id' tidak bisa diisi manual
     protected $guarded = ['id'];
 
-    // Cast agar published_at otomatis jadi Carbon object
+    // Cast agar published_at & validated_at otomatis jadi Carbon object
     protected $casts = [
         'published_at' => 'datetime',
+        'validated_at' => 'datetime',
         'rw' => 'integer',
     ];
+
+    // ─── Status & Moderasi Helpers ───────────────────────────────────────────
+
+    public function isPublished(): bool
+    {
+        return $this->status === 'published';
+    }
+
+    public function isPending(): bool
+    {
+        return $this->status === 'pending';
+    }
+
+    public function isRejected(): bool
+    {
+        return $this->status === 'rejected';
+    }
+
+    public function getStatusLabel(): string
+    {
+        return match ($this->status) {
+            'published' => 'Tayang / Disetujui',
+            'pending'   => 'Menunggu Validasi',
+            'rejected'  => 'Ditolak / Perlu Revisi',
+            default     => ucfirst($this->status ?? 'Tayang'),
+        };
+    }
+
+    /**
+     * Scope untuk berita yang sudah lolos validasi dan tayang ke publik.
+     */
+    public function scopePublished($query)
+    {
+        return $query->where('status', 'published');
+    }
+
+    /**
+     * Scope untuk berita yang masih menunggu validasi Super Admin.
+     */
+    public function scopePending($query)
+    {
+        return $query->where('status', 'pending');
+    }
+
+    /**
+     * Scope untuk berita yang ditolak.
+     */
+    public function scopeRejected($query)
+    {
+        return $query->where('status', 'rejected');
+    }
 
     // ─── RW & Lokasi Helpers ──────────────────────────────────────────────────
 
@@ -118,6 +170,16 @@ class Post extends Model
     {
         return $this->belongsTo(User::class)->withDefault([
             'name' => 'Admin'
+        ]);
+    }
+
+    /**
+     * Relasi: Validator yang menyetujui/meninjau berita ini (Super Admin)
+     */
+    public function validator()
+    {
+        return $this->belongsTo(User::class, 'validated_by')->withDefault([
+            'name' => 'Super Admin'
         ]);
     }
 }

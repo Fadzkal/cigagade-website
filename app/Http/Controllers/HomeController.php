@@ -49,7 +49,7 @@ class HomeController extends Controller
         $heroSlides = HeroSlide::with('post')->where('is_active', true)->orderBy('order')->take(5)->get();
         $galleries = Gallery::latest()->get();
         $ministries = Ministry::latest()->get();
-        $posts = Post::with(['category', 'user'])
+        $posts = Post::published()->with(['category', 'user'])
             ->whereHas('category', function($q) {
                 $q->whereNotIn('name', ['Prestasi', 'Pengumuman'])
                   ->whereNotIn('slug', [
@@ -59,37 +59,37 @@ class HomeController extends Controller
             })
             ->latest()
             ->take(5)
-            ->get(); // Ambil 5 berita terbaru (termasuk berita RW dengan tanda khusus)
+            ->get(); // Ambil 5 berita terbaru yang sudah lolos validasi
         $partners_kerjasama = Partner::where('type', 'kerjasama')->latest()->get();
         $partners_media = Partner::where('type', 'media_partner')->latest()->get();
 
         $bengkelSlugs = ['karir-pengembangan-diri', 'riset-inovasi', 'hiburan', 'institusional'];
-        $bengkelIlmuPosts = Post::with('category')
+        $bengkelIlmuPosts = Post::published()->with('category')
             ->whereHas('category', fn($q) => $q->whereIn('slug', $bengkelSlugs))
             ->latest()
             ->take(6)
             ->get();
 
         $ormawaSlugs = ['kegiatan-ukm', 'prestasi-ukm', 'kegiatan-himpunan', 'prestasi-himpunan'];
-        $ormawaPosts = Post::with('category')
+        $ormawaPosts = Post::published()->with('category')
             ->whereHas('category', fn($q) => $q->whereIn('slug', $ormawaSlugs))
             ->latest()
             ->take(5)
             ->get();
 
-        $prestasiPosts = Post::with('category')
+        $prestasiPosts = Post::published()->with('category')
             ->whereHas('category', fn($q) => $q->where('name', 'Prestasi'))
             ->latest()
             ->take(6)
             ->get();
 
-        $pengumumanPosts = Post::with('category')
+        $pengumumanPosts = Post::published()->with('category')
             ->whereHas('category', fn($q) => $q->where('name', 'Pengumuman'))
             ->latest()
             ->take(6)
             ->get();
 
-        $magazinePosts = Post::with('category')
+        $magazinePosts = Post::published()->with('category')
             ->whereHas('category', function($q) {
                 $q->whereNotIn('name', ['Prestasi', 'Pengumuman'])
                   ->whereNotIn('slug', [
@@ -133,7 +133,7 @@ class HomeController extends Controller
      */
     public function beritaIndex(Request $request)
     {
-        $query = Post::with(['category', 'user'])
+        $query = Post::published()->with(['category', 'user'])
             ->whereHas('category', function($q) {
                 $q->whereNotIn('name', ['Prestasi', 'Pengumuman'])
                   ->whereNotIn('slug', [
@@ -187,8 +187,8 @@ class HomeController extends Controller
         $prestasiCategory = Category::where('name', 'Prestasi')->first();
         $pengumumanCategory = Category::where('name', 'Pengumuman')->first();
 
-        $prestasiPosts = $prestasiCategory ? $prestasiCategory->posts()->with('category')->latest()->get() : collect();
-        $pengumumanPosts = $pengumumanCategory ? $pengumumanCategory->posts()->with('category')->latest()->get() : collect();
+        $prestasiPosts = $prestasiCategory ? $prestasiCategory->posts()->published()->with('category')->latest()->get() : collect();
+        $pengumumanPosts = $pengumumanCategory ? $pengumumanCategory->posts()->published()->with('category')->latest()->get() : collect();
 
         return view('prestasi-pengumuman', compact('prestasiPosts', 'pengumumanPosts'));
     }
@@ -198,10 +198,17 @@ class HomeController extends Controller
      */
     public function show(Post $post)
     {
+        // Proteksi: jika berita belum disetujui, hanya Super Admin atau Penulis yang boleh melihat
+        if (!$post->isPublished()) {
+            if (!auth()->check() || (!auth()->user()->isSuperAdmin() && auth()->id() !== $post->user_id)) {
+                abort(404);
+            }
+        }
+
         // Increment view counter
         $post->increment('views');
 
-        $relatedPosts = Post::with('category')
+        $relatedPosts = Post::published()->with('category')
             ->where('category_id', $post->category_id)
             ->where('id', '!=', $post->id)
             ->latest()
@@ -221,12 +228,19 @@ class HomeController extends Controller
     {
         $post = Post::where('slug_en', $slug_en)->firstOrFail();
 
+        // Proteksi: jika berita belum disetujui, hanya Super Admin atau Penulis yang boleh melihat
+        if (!$post->isPublished()) {
+            if (!auth()->check() || (!auth()->user()->isSuperAdmin() && auth()->id() !== $post->user_id)) {
+                abort(404);
+            }
+        }
+
         // Force EN locale since user reached this via /news/ URL
         app()->setLocale('en');
 
         $post->increment('views');
 
-        $relatedPosts = Post::with('category')
+        $relatedPosts = Post::published()->with('category')
             ->where('category_id', $post->category_id)
             ->where('id', '!=', $post->id)
             ->latest()
@@ -244,7 +258,7 @@ class HomeController extends Controller
         // Increment view counter
         $post->increment('views');
 
-        $relatedPosts = Post::with('category')
+        $relatedPosts = Post::published()->with('category')
             ->where('category_id', $post->category_id)
             ->where('id', '!=', $post->id)
             ->latest()
@@ -262,7 +276,7 @@ class HomeController extends Controller
         // Increment view counter
         $post->increment('views');
 
-        $relatedPosts = Post::with('category')
+        $relatedPosts = Post::published()->with('category')
             ->where('category_id', $post->category_id)
             ->where('id', '!=', $post->id)
             ->latest()
@@ -281,6 +295,7 @@ class HomeController extends Controller
     public function categoryPosts(Category $category)
     {
         $posts = $category->posts()
+                        ->published()
                         ->with(['category', 'user'])
                         ->latest()
                         ->paginate(9);
@@ -328,7 +343,7 @@ class HomeController extends Controller
             $activeCategory = Category::where('slug', $request->kategori)->first();
         }
 
-        $query = Post::with(['category', 'user'])
+        $query = Post::published()->with(['category', 'user'])
             ->whereHas('category', fn($q) => $q->whereIn('slug', $bengkelSlugs))
             ->latest();
 

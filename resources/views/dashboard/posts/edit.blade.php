@@ -28,6 +28,49 @@
                         Perubahan tersimpan sementara (Draft)
                     </div>
 
+                    {{-- Status Banner Berita --}}
+                    @if($post->isPending())
+                        <div class="mb-6 p-4 rounded-2xl bg-amber-50 border border-amber-300 text-amber-900 flex items-center justify-between gap-3">
+                            <div class="flex items-center gap-3">
+                                <i class="fas fa-clock text-amber-600 text-xl"></i>
+                                <div>
+                                    <p class="text-xs font-bold uppercase tracking-wider text-amber-800">Status: Menunggu Validasi Super Admin</p>
+                                    <p class="text-xs text-amber-700">Berita ini belum tampil di portal publik dan sedang menunggu persetujuan dari Super Admin.</p>
+                                </div>
+                            </div>
+                            @can('isSuperAdmin')
+                                <form action="{{ route('posts.approve', $post->id) }}" method="POST" class="inline" onsubmit="return confirm('Setujui berita ini sekarang?');">
+                                    @csrf
+                                    @method('PATCH')
+                                    <button type="submit" class="px-3.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold shadow-sm transition">
+                                        <i class="fas fa-check mr-1"></i> Setujui Sekarang
+                                    </button>
+                                </form>
+                            @endcan
+                        </div>
+                    @elseif($post->isRejected())
+                        <div class="mb-6 p-4 rounded-2xl bg-rose-50 border border-rose-300 text-rose-900 space-y-2">
+                            <div class="flex items-center gap-2 text-rose-700 font-bold text-sm">
+                                <i class="fas fa-triangle-exclamation text-lg"></i>
+                                <span>Status: Berita Ditolak / Memerlukan Revisi</span>
+                            </div>
+                            @if($post->rejection_note)
+                                <div class="p-3 bg-white/80 rounded-xl border border-rose-200 text-xs text-rose-800 italic">
+                                    <strong>Catatan dari Super Admin:</strong> "{{ $post->rejection_note }}"
+                                </div>
+                            @endif
+                            <p class="text-xs text-rose-600">Silakan sesuaikan isi berita sesuai catatan di atas, kemudian klik Simpan untuk mengirim ulang ke antrean validasi.</p>
+                        </div>
+                    @elseif($post->isPublished())
+                        <div class="mb-6 p-4 rounded-2xl bg-emerald-50 border border-emerald-300 text-emerald-900 flex items-center gap-3">
+                            <i class="fas fa-circle-check text-emerald-600 text-xl"></i>
+                            <div>
+                                <p class="text-xs font-bold uppercase tracking-wider text-emerald-800">Status: Tayang & Disetujui</p>
+                                <p class="text-xs text-emerald-700">Berita ini sudah diverifikasi dan saat ini aktif tampil di portal website desa.</p>
+                            </div>
+                        </div>
+                    @endif
+
                     <form action="{{ route('posts.update', $post->id) }}" method="POST" enctype="multipart/form-data" id="post-form">
                         @csrf
                         @method('PUT')
@@ -213,10 +256,11 @@
                         </div>
 
                         <div class="mt-6 flex items-center gap-3">
-                            <button type="submit" class="inline-flex items-center px-5 py-2.5 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-500 transition">
-                                Update Berita
+                            <button type="submit" class="inline-flex items-center px-5 py-2.5 {{ Auth::user()->isSuperAdmin() ? 'bg-blue-600 hover:bg-blue-500' : 'bg-amber-600 hover:bg-amber-500' }} border border-transparent rounded-xl font-semibold text-xs text-white uppercase tracking-widest shadow-sm transition">
+                                <i class="fas {{ Auth::user()->isSuperAdmin() ? 'fa-floppy-disk' : 'fa-clock' }} mr-2"></i>
+                                {{ Auth::user()->isSuperAdmin() ? 'Simpan Perubahan' : 'Simpan & Ajukan Validasi Ulang' }}
                             </button>
-                            <a href="{{ route('posts.index') }}" class="inline-flex items-center px-4 py-2.5 bg-gray-200 border border-transparent rounded-md font-semibold text-xs text-gray-700 uppercase tracking-widest hover:bg-gray-300 transition">
+                            <a href="{{ route('posts.index') }}" class="inline-flex items-center px-4 py-2.5 bg-gray-200 border border-transparent rounded-xl font-semibold text-xs text-gray-700 uppercase tracking-widest hover:bg-gray-300 transition">
                                 Batal
                             </a>
                             <button type="button" onclick="clearDraft()" class="ml-auto text-xs text-red-400 hover:text-red-600 transition">Hapus Draft</button>

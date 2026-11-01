@@ -7,42 +7,83 @@ use App\Models\Post;
 use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
-
-// 1. TAMBAHKAN INI (Untuk mengimpor Trait)
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class PostController extends Controller
 {
-    // 2. TAMBAHKAN INI (Untuk menggunakan Trait)
     use AuthorizesRequests;
 
     /**
-     * Menampilkan daftar semua berita dengan filter RW.
+     * Menampilkan daftar semua berita dengan filter Wilayah (RW) dan Status Validasi.
      */
     public function index(Request $request)
     {
-        $query = Post::with(['category', 'user'])
+        $status = $request->query('status');
+        $rw = $request->query('rw');
+        $search = $request->query('search');
+
+        $query = Post::with(['category', 'user', 'validator'])
             ->whereHas('category', function($q) {
                 $q->whereNotIn('name', ['Prestasi', 'Pengumuman']);
             })
             ->latest();
 
-        // Filter RW jika ada parameter 'rw'
+        // Filter Pencarian
+        if ($search) {
+            $query->where(function($q) use ($search) {
+                $q->where('title', 'like', "%{$search}%")
+                  ->orWhere('excerpt', 'like', "%{$search}%");
+            });
+        }
+
+        // Filter Status Validasi
+        if ($status && in_array($status, ['pending', 'published', 'rejected'])) {
+            $query->where('status', $status);
+        }
+
+        // Filter Wilayah RW
         if ($request->filled('rw')) {
-            if ($request->rw === 'umum') {
+            if ($rw === 'umum') {
                 $query->whereNull('rw');
-            } elseif (is_numeric($request->rw) && (int)$request->rw >= 1 && (int)$request->rw <= 10) {
-                $query->where('rw', (int)$request->rw);
+            } elseif (is_numeric($rw) && (int)$rw >= 1 && (int)$rw <= 10) {
+                $query->where('rw', (int)$rw);
             }
         }
 
+        // Jika bukan superadmin dan pengguna adalah akun RW, beri kemudahan melihat berita wilayahnya
+        $user = auth()->user();
+
         $posts = $query->paginate(15)->withQueryString();
 
+        // Hitung statistik status untuk tab navigasi
+        $baseCount = Post::whereHas('category', function($q) {
+            $q->whereNotIn('name', ['Prestasi', 'Pengumuman']);
+        });
+
+        if ($request->filled('rw')) {
+            if ($rw === 'umum') {
+                $baseCount->whereNull('rw');
+            } elseif (is_numeric($rw)) {
+                $baseCount->where('rw', (int)$rw);
+            }
+        }
+
+        $stats = [
+            'all'       => (clone $baseCount)->count(),
+            'pending'   => (clone $baseCount)->where('status', 'pending')->count(),
+            'published' => (clone $baseCount)->where('status', 'published')->count(),
+            'rejected'  => (clone $baseCount)->where('status', 'rejected')->count(),
+        ];
+
         return view('dashboard.posts.index', [
-            'posts' => $posts,
-            'selectedRw' => $request->rw,
+            'posts'      => $posts,
+            'selectedRw' => $rw,
+            'status'     => $status,
+            'search'     => $search,
+            'stats'      => $stats,
         ]);
     }
 
@@ -60,6 +101,8 @@ class PostController extends Controller
 
     /**
      * Menyimpan berita baru ke database.
+     * Jika dibuat oleh akun RW/PKK -> status 'pending' (menunggu validasi Super Admin).
+     * Jika dibuat oleh Super Admin -> status 'published' (langsung tayang).
      */
     public function store(Request $request)
     {
@@ -83,33 +126,41 @@ class PostController extends Controller
             $validatedData['image'] = $imagePath;
         }
 
-        $validatedData['slug']         = Str::slug($validatedData['title'], '-');
-        $validatedData['user_id']      = auth()->id();
-        $validatedData['published_at'] = $validatedData['published_at'] ?? now();
+        $validatedData['slug']    = Str::slug($validatedData['title'], '-');
+        $validatedData['user_id'] = auth()->id();
 
-        // Jika user yang login adalah akun RW, otomatis kaitkan ke RW-nya
+        // Otomatis kaitkan wilayah jika login sebagai RW
         if (auth()->user()->isRw()) {
             $validatedData['rw'] = auth()->user()->rw;
         } else {
             $validatedData['rw'] = $request->filled('rw') ? (int)$request->rw : null;
         }
 
-        // Generate slug_en from title_en if provided
+        // Generate slug_en dari title_en
         if (!empty($validatedData['title_en'])) {
             $validatedData['slug_en'] = Str::slug($validatedData['title_en'], '-');
         }
 
+        // LOGIKA VALIDASI:
+        // Super Admin -> langsung published
+        // Akun RW / PKK / Lainnya -> status pending (menunggu validasi Super Admin)
+        if (auth()->user()->isSuperAdmin()) {
+            $validatedData['status']       = 'published';
+            $validatedData['published_at'] = $validatedData['published_at'] ?? now();
+            $validatedData['validated_by'] = auth()->id();
+            $validatedData['validated_at'] = now();
+            $message = 'Berita baru berhasil dibuat dan langsung dipublikasikan ke website portal desa!';
+        } else {
+            $validatedData['status']       = 'pending';
+            $validatedData['published_at'] = null; // Belum tayang sampai disetujui Super Admin
+            $validatedData['validated_by'] = null;
+            $validatedData['validated_at'] = null;
+            $message = 'Berita berhasil dikirim! Menunggu pemeriksaan & validasi Super Admin sebelum tayang di portal publik.';
+        }
+
         Post::create($validatedData);
 
-        return redirect()->route('posts.index')->with('success', 'Berita baru berhasil dipublikasikan!');
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(Post $post)
-    {
-        //
+        return redirect()->route('posts.index')->with('success', $message);
     }
 
     /**
@@ -122,13 +173,14 @@ class PostController extends Controller
         $categories = Category::whereNotIn('name', ['Prestasi', 'Pengumuman'])->get();
 
         return view('dashboard.posts.edit', [
-            'post' => $post,
+            'post'       => $post,
             'categories' => $categories
         ]);
     }
 
     /**
      * Mengupdate data berita di database.
+     * Jika diedit oleh non-superadmin, status kembali menjadi 'pending' untuk diverifikasi ulang.
      */
     public function update(Request $request, Post $post)
     {
@@ -160,19 +212,17 @@ class PostController extends Controller
             $validatedData['image'] = $imagePath;
         }
 
-        $validatedData['slug']         = Str::slug($validatedData['title'], '-');
-        $validatedData['published_at'] = $validatedData['published_at'] ?? $post->published_at ?? now();
+        $validatedData['slug'] = Str::slug($validatedData['title'], '-');
 
-        // Update RW: jika akun RW tetap RW-nya, jika superadmin bisa tentukan
+        // Update RW
         if (auth()->user()->isRw()) {
             $validatedData['rw'] = auth()->user()->rw;
         } else {
             $validatedData['rw'] = $request->filled('rw') ? (int)$request->rw : null;
         }
 
-        // Generate slug_en from title_en if provided
+        // Slug English
         if (!empty($validatedData['title_en'])) {
-            // Only regenerate slug_en if title_en changed
             if ($validatedData['title_en'] !== $post->title_en) {
                 $validatedData['slug_en'] = Str::slug($validatedData['title_en'], '-');
             }
@@ -180,9 +230,65 @@ class PostController extends Controller
             $validatedData['slug_en'] = null;
         }
 
+        // Logika Status saat Update:
+        if (auth()->user()->isSuperAdmin()) {
+            // Super Admin dapat langsung mempertahankan status published
+            $validatedData['published_at'] = $validatedData['published_at'] ?? $post->published_at ?? now();
+            $message = 'Berita berhasil diperbarui!';
+        } else {
+            // Jika akun non-superadmin (RW/PKK) merevisi berita, status kembali ke 'pending' agar dicek ulang
+            $validatedData['status']         = 'pending';
+            $validatedData['published_at']   = null;
+            $validatedData['rejection_note'] = null;
+            $message = 'Perubahan berita berhasil disimpan dan kembali masuk ke antrean validasi Super Admin.';
+        }
+
         $post->update($validatedData);
 
-        return redirect()->route('posts.index')->with('success', 'Berita berhasil diperbarui!');
+        return redirect()->route('posts.index')->with('success', $message);
+    }
+
+    /**
+     * (KHUSUS SUPER ADMIN)
+     * Setujui & Publikasikan berita ke portal website.
+     */
+    public function approve(Post $post)
+    {
+        Gate::authorize('isSuperAdmin');
+
+        $post->update([
+            'status'         => 'published',
+            'published_at'   => now(),
+            'validated_by'   => auth()->id(),
+            'validated_at'   => now(),
+            'rejection_note' => null,
+        ]);
+
+        return back()->with('success', "Berita \"{$post->title}\" berhasil disetujui dan telah tayang di website publik!");
+    }
+
+    /**
+     * (KHUSUS SUPER ADMIN)
+     * Tolak berita dengan catatan revisi untuk pembuat berita.
+     */
+    public function reject(Request $request, Post $post)
+    {
+        Gate::authorize('isSuperAdmin');
+
+        $request->validate([
+            'rejection_note' => 'required|string|max:1000',
+        ], [
+            'rejection_note.required' => 'Mohon sertakan alasan penolakan atau catatan perbaikan.',
+        ]);
+
+        $post->update([
+            'status'         => 'rejected',
+            'validated_by'   => auth()->id(),
+            'validated_at'   => now(),
+            'rejection_note' => $request->rejection_note,
+        ]);
+
+        return back()->with('success', "Berita \"{$post->title}\" telah ditolak/dikembalikan ke pembuat berita dengan catatan perbaikan.");
     }
 
     /**

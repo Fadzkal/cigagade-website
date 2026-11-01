@@ -19,6 +19,7 @@ class DashboardController extends Controller
     {
         // ─── Global Stats ───────────────────────────────────────────────
         $totalPosts      = Post::count();
+        $pendingPosts    = Post::where('status', 'pending')->count();
         $totalViews      = Post::sum('views');
         $totalCategories = Category::count();
         $totalGalleries  = Gallery::count();
@@ -93,6 +94,7 @@ class DashboardController extends Controller
 
         return view('dashboard', compact(
             'totalPosts',
+            'pendingPosts',
             'totalViews',
             'totalCategories',
             'totalGalleries',

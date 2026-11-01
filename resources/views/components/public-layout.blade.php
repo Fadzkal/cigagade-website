@@ -1235,7 +1235,7 @@
                         <a href="https://garutkab.go.id" target="_blank" rel="noopener noreferrer" class="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center text-gray-400 hover:text-white hover:bg-emerald-600 transition-all duration-300" title="Portal Pemkab Garut">
                             <i class="fas fa-globe text-base"></i>
                         </a>
-                        <a href="https://wa.me/6281234567890" target="_blank" rel="noopener noreferrer" class="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center text-gray-400 hover:text-white hover:bg-emerald-600 transition-all duration-300" title="WhatsApp Pelayanan Desa">
+                        <a href="https://wa.me/6285861102174" target="_blank" rel="noopener noreferrer" class="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center text-gray-400 hover:text-white hover:bg-emerald-600 transition-all duration-300" title="WhatsApp Layanan Warga (+62 858-6110-2174)">
                             <i class="fab fa-whatsapp text-lg"></i>
                         </a>
                         <a href="https://www.instagram.com/kkn_cigagade.polman?rpxt=ZjZ2ZmRhM3EzM2Rt" target="_blank" rel="noopener noreferrer" class="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center text-gray-400 hover:text-white hover:bg-pink-600 transition-all duration-300" title="Instagram Resmi @kkn_cigagade.polman">
@@ -1270,7 +1270,7 @@
                         </p>
                         <p class="flex items-center">
                             <i class="fab fa-whatsapp mr-3 text-emerald-400 text-base"></i>
-                            <a href="https://wa.me/6281234567890" target="_blank" class="hover:text-white transition-colors">+62 812-3456-7890 (Layanan Warga)</a>
+                            <a href="https://wa.me/6285861102174" target="_blank" class="hover:text-white transition-colors">+62 858-6110-2174 (Layanan Warga)</a>
                         </p>
                         <p class="flex items-center">
                             <i class="fab fa-instagram mr-3 text-pink-400 text-base"></i>

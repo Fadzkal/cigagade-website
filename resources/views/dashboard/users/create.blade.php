@@ -18,8 +18,16 @@
     </x-slot>
 
     <div class="max-w-3xl mx-auto py-2">
+        @php
+            $currentRole = old('role', 'rw');
+            if ($currentRole === 'kader_pkk') { $currentRole = 'pkk'; }
+            if (!in_array($currentRole, ['superadmin', 'rw', 'pkk'])) {
+                $currentRole = 'rw';
+            }
+        @endphp
+
         <div class="bg-white rounded-3xl border border-slate-200/80 shadow-sm p-6 sm:p-8"
-             x-data="{ role: '{{ old('role', 'rw') }}' }">
+             x-data="{ role: '{{ $currentRole }}' }">
 
             <div class="border-b border-slate-100 pb-5 mb-6">
                 <h3 class="font-bold text-lg text-slate-800">Formulir Pendaftaran Akun</h3>
@@ -73,46 +81,73 @@
                     </label>
                     <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
                         {{-- Super Admin --}}
-                        <label class="relative flex flex-col p-4 rounded-2xl border cursor-pointer transition select-none"
-                               :class="role === 'superadmin' ? 'border-indigo-500 bg-indigo-50/40 ring-2 ring-indigo-500/20' : 'border-slate-200 hover:border-slate-300 bg-white'">
-                            <input type="radio" name="role" value="superadmin" x-model="role" class="sr-only">
-                            <div class="flex items-center justify-between mb-2">
-                                <span class="w-8 h-8 rounded-xl bg-indigo-100 text-indigo-700 flex items-center justify-center text-sm font-bold">
-                                    <i class="fas fa-shield-halved"></i>
-                                </span>
-                                <i class="fas fa-circle-check text-indigo-600 text-sm" x-show="role === 'superadmin'"></i>
-                            </div>
-                            <span class="text-xs font-bold text-slate-800">Super Admin</span>
-                            <span class="text-[11px] text-slate-500 mt-1 leading-snug">Akses seluruh modul, surat, dan data desa.</span>
-                        </label>
+                        <div>
+                            <input type="radio" name="role" id="role_superadmin" value="superadmin"
+                                   x-model="role"
+                                   {{ $currentRole === 'superadmin' ? 'checked' : '' }}
+                                   onchange="window.updateUserRole && window.updateUserRole(this.value)"
+                                   class="sr-only peer">
+                            <label for="role_superadmin"
+                                   class="relative flex flex-col p-4 rounded-2xl border cursor-pointer transition select-none h-full border-slate-200 bg-white hover:border-slate-300 peer-checked:border-indigo-500 peer-checked:bg-indigo-50/40 peer-checked:ring-2 peer-checked:ring-indigo-500/20"
+                                   :class="role === 'superadmin' ? 'border-indigo-500 bg-indigo-50/40 ring-2 ring-indigo-500/20' : 'border-slate-200 hover:border-slate-300 bg-white'">
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="w-8 h-8 rounded-xl bg-indigo-100 text-indigo-700 flex items-center justify-center text-sm font-bold">
+                                        <i class="fas fa-shield-halved"></i>
+                                    </span>
+                                    <i class="fas fa-circle-check text-indigo-600 text-sm {{ $currentRole === 'superadmin' ? '' : 'hidden' }}"
+                                       :class="{ 'hidden': role !== 'superadmin' }"
+                                       x-show="role === 'superadmin'" x-cloak></i>
+                                </div>
+                                <span class="text-xs font-bold text-slate-800">Super Admin</span>
+                                <span class="text-[11px] text-slate-500 mt-1 leading-snug">Akses seluruh modul, surat, dan data desa.</span>
+                            </label>
+                        </div>
 
                         {{-- Akun RW --}}
-                        <label class="relative flex flex-col p-4 rounded-2xl border cursor-pointer transition select-none"
-                               :class="role === 'rw' ? 'border-amber-500 bg-amber-50/40 ring-2 ring-amber-500/20' : 'border-slate-200 hover:border-slate-300 bg-white'">
-                            <input type="radio" name="role" value="rw" x-model="role" class="sr-only">
-                            <div class="flex items-center justify-between mb-2">
-                                <span class="w-8 h-8 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center text-sm font-bold">
-                                    <i class="fas fa-map-location-dot"></i>
-                                </span>
-                                <i class="fas fa-circle-check text-amber-600 text-sm" x-show="role === 'rw'"></i>
-                            </div>
-                            <span class="text-xs font-bold text-slate-800">Pengurus RW</span>
-                            <span class="text-[11px] text-slate-500 mt-1 leading-snug">Khusus mengunggah dan mengelola kabar berita RW.</span>
-                        </label>
+                        <div>
+                            <input type="radio" name="role" id="role_rw" value="rw"
+                                   x-model="role"
+                                   {{ $currentRole === 'rw' ? 'checked' : '' }}
+                                   onchange="window.updateUserRole && window.updateUserRole(this.value)"
+                                   class="sr-only peer">
+                            <label for="role_rw"
+                                   class="relative flex flex-col p-4 rounded-2xl border cursor-pointer transition select-none h-full border-slate-200 bg-white hover:border-slate-300 peer-checked:border-amber-500 peer-checked:bg-amber-50/40 peer-checked:ring-2 peer-checked:ring-amber-500/20"
+                                   :class="role === 'rw' ? 'border-amber-500 bg-amber-50/40 ring-2 ring-amber-500/20' : 'border-slate-200 hover:border-slate-300 bg-white'">
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="w-8 h-8 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center text-sm font-bold">
+                                        <i class="fas fa-map-location-dot"></i>
+                                    </span>
+                                    <i class="fas fa-circle-check text-amber-600 text-sm {{ $currentRole === 'rw' ? '' : 'hidden' }}"
+                                       :class="{ 'hidden': role !== 'rw' }"
+                                       x-show="role === 'rw'" x-cloak></i>
+                                </div>
+                                <span class="text-xs font-bold text-slate-800">Pengurus RW</span>
+                                <span class="text-[11px] text-slate-500 mt-1 leading-snug">Khusus mengunggah dan mengelola kabar berita RW.</span>
+                            </label>
+                        </div>
 
                         {{-- Kader PKK --}}
-                        <label class="relative flex flex-col p-4 rounded-2xl border cursor-pointer transition select-none"
-                               :class="role === 'pkk' ? 'border-pink-500 bg-pink-50/40 ring-2 ring-pink-500/20' : 'border-slate-200 hover:border-slate-300 bg-white'">
-                            <input type="radio" name="role" value="pkk" x-model="role" class="sr-only">
-                            <div class="flex items-center justify-between mb-2">
-                                <span class="w-8 h-8 rounded-xl bg-pink-100 text-pink-700 flex items-center justify-center text-sm font-bold">
-                                    <i class="fas fa-hand-holding-heart"></i>
-                                </span>
-                                <i class="fas fa-circle-check text-pink-600 text-sm" x-show="role === 'pkk'"></i>
-                            </div>
-                            <span class="text-xs font-bold text-slate-800">Kader TP-PKK</span>
-                            <span class="text-[11px] text-slate-500 mt-1 leading-snug">Publikasi posyandu & kegiatan keluarga PKK.</span>
-                        </label>
+                        <div>
+                            <input type="radio" name="role" id="role_pkk" value="pkk"
+                                   x-model="role"
+                                   {{ $currentRole === 'pkk' ? 'checked' : '' }}
+                                   onchange="window.updateUserRole && window.updateUserRole(this.value)"
+                                   class="sr-only peer">
+                            <label for="role_pkk"
+                                   class="relative flex flex-col p-4 rounded-2xl border cursor-pointer transition select-none h-full border-slate-200 bg-white hover:border-slate-300 peer-checked:border-pink-500 peer-checked:bg-pink-50/40 peer-checked:ring-2 peer-checked:ring-pink-500/20"
+                                   :class="role === 'pkk' ? 'border-pink-500 bg-pink-50/40 ring-2 ring-pink-500/20' : 'border-slate-200 hover:border-slate-300 bg-white'">
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="w-8 h-8 rounded-xl bg-pink-100 text-pink-700 flex items-center justify-center text-sm font-bold">
+                                        <i class="fas fa-hand-holding-heart"></i>
+                                    </span>
+                                    <i class="fas fa-circle-check text-pink-600 text-sm {{ $currentRole === 'pkk' ? '' : 'hidden' }}"
+                                       :class="{ 'hidden': role !== 'pkk' }"
+                                       x-show="role === 'pkk'" x-cloak></i>
+                                </div>
+                                <span class="text-xs font-bold text-slate-800">Kader TP-PKK</span>
+                                <span class="text-[11px] text-slate-500 mt-1 leading-snug">Publikasi posyandu & kegiatan keluarga PKK.</span>
+                            </label>
+                        </div>
                     </div>
                     @error('role')
                         <p class="text-rose-500 text-xs mt-1.5 font-medium flex items-center gap-1">
@@ -122,12 +157,16 @@
                 </div>
 
                 {{-- Nomor RW (Hanya muncul jika Role RW dipilih) --}}
-                <div x-show="role === 'rw'" x-transition class="p-4 rounded-2xl bg-amber-50/50 border border-amber-200">
+                <div id="rw-select-container"
+                     x-show="role === 'rw'"
+                     x-cloak
+                     class="p-4 rounded-2xl bg-amber-50/50 border border-amber-200 transition-all {{ $currentRole !== 'rw' ? 'hidden' : '' }}">
                     <label for="rw" class="block text-xs font-bold text-amber-900 uppercase tracking-wider mb-2">
                         Pilih Wilayah RW <span class="text-rose-500">*</span>
                     </label>
                     <div class="relative">
-                        <select name="rw" id="rw" class="w-full rounded-xl border-amber-300 text-xs sm:text-sm focus:border-amber-500 focus:ring-amber-500 text-slate-800">
+                        <select name="rw" id="rw" {{ $currentRole !== 'rw' ? 'disabled' : '' }}
+                                class="w-full rounded-xl border-amber-300 text-xs sm:text-sm focus:border-amber-500 focus:ring-amber-500 text-slate-800">
                             <option value="">-- Pilih Nomor RW (01 s/d 10) --</option>
                             @for($i = 1; $i <= 10; $i++)
                                 <option value="{{ $i }}" {{ (string)old('rw') === (string)$i ? 'selected' : '' }}>
@@ -193,5 +232,23 @@
 
         </div>
     </div>
+
+    <script>
+        function updateUserRole(val) {
+            var container = document.getElementById('rw-select-container');
+            var select = document.getElementById('rw');
+            if (container && select) {
+                if (val === 'rw') {
+                    container.classList.remove('hidden');
+                    container.style.display = 'block';
+                    select.disabled = false;
+                } else {
+                    container.classList.add('hidden');
+                    container.style.display = 'none';
+                    select.disabled = true;
+                }
+            }
+        }
+    </script>
 </x-app-layout>
 

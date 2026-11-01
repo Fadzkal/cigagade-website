@@ -256,7 +256,7 @@
                                             </span>
                                         @else
                                             <form action="{{ route('users.destroy', $user->id) }}" method="POST" class="inline"
-                                                  onsubmit="return confirm('Apakah Anda yakin ingin menghapus akun \'{{ $user->name }}\'?{{ $user->posts_count > 0 ? ' Pengguna ini memiliki ' . $user->posts_count . ' berita.' : '' }}');">
+                                                  onsubmit="return confirm('Apakah Anda yakin ingin menghapus akun {{ addslashes($user->name) }}?');">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="submit"

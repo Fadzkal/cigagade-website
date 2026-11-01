@@ -75,7 +75,7 @@ class UserController extends Controller
             'name'     => ['required', 'string', 'max:255'],
             'email'    => ['required', 'string', 'email', 'max:255', 'unique:users,email'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
-            'role'     => ['required', 'string', 'in:superadmin,rw,pkk'],
+            'role'     => ['required', 'string', 'in:superadmin,rw,pkk,kader_pkk'],
             'rw'       => ['nullable', 'integer', 'min:1', 'max:20', 'required_if:role,rw'],
         ], [
             'name.required'      => 'Nama pengguna wajib diisi.',
@@ -89,12 +89,14 @@ class UserController extends Controller
             'rw.required_if'     => 'Nomor RW wajib dipilih untuk role Pengurus RW.',
         ]);
 
+        $role = in_array($validated['role'], ['pkk', 'kader_pkk']) ? 'pkk' : $validated['role'];
+
         User::create([
             'name'              => $validated['name'],
             'email'             => $validated['email'],
             'password'          => Hash::make($validated['password']),
-            'role'              => $validated['role'],
-            'rw'                => $validated['role'] === 'rw' ? (int) $validated['rw'] : null,
+            'role'              => $role,
+            'rw'                => $role === 'rw' ? (int) $validated['rw'] : null,
             'email_verified_at' => now(),
         ]);
 
@@ -118,7 +120,7 @@ class UserController extends Controller
             'name'     => ['required', 'string', 'max:255'],
             'email'    => ['required', 'string', 'email', 'max:255', Rule::unique('users', 'email')->ignore($user->id)],
             'password' => ['nullable', 'string', 'min:8', 'confirmed'],
-            'role'     => ['required', 'string', 'in:superadmin,rw,pkk'],
+            'role'     => ['required', 'string', 'in:superadmin,rw,pkk,kader_pkk'],
             'rw'       => ['nullable', 'integer', 'min:1', 'max:20', 'required_if:role,rw'],
         ], [
             'name.required'      => 'Nama pengguna wajib diisi.',
@@ -131,15 +133,17 @@ class UserController extends Controller
             'rw.required_if'     => 'Nomor RW wajib dipilih untuk role Pengurus RW.',
         ]);
 
+        $role = in_array($validated['role'], ['pkk', 'kader_pkk']) ? 'pkk' : $validated['role'];
+
         // Proteksi: jangan sampai superadmin mencabut hak superadmin akun miliknya sendiri
-        if ($user->id === Auth::id() && $validated['role'] !== 'superadmin') {
+        if ($user->id === Auth::id() && $role !== 'superadmin') {
             return back()->withInput()->with('error', 'Anda tidak dapat menurunkan hak akses akun Anda sendiri dari Superadmin.');
         }
 
         $user->name = $validated['name'];
         $user->email = $validated['email'];
-        $user->role = $validated['role'];
-        $user->rw = $validated['role'] === 'rw' ? (int) $validated['rw'] : null;
+        $user->role = $role;
+        $user->rw = $role === 'rw' ? (int) $validated['rw'] : null;
 
         // Update password jika diisi
         if (!empty($validated['password'])) {

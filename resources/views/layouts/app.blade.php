@@ -24,11 +24,16 @@
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
+    {{-- Alpine.js untuk interaktivitas komponen form & modal --}}
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
     {{-- Quill.js Rich Text Editor (Free, No API Key) --}}
     <link href="https://cdn.quilljs.com/1.3.7/quill.snow.css" rel="stylesheet">
     <script src="https://cdn.quilljs.com/1.3.7/quill.min.js"></script>
 
     <style>
+        [x-cloak] { display: none !important; }
+
         /* Custom Scrollbar untuk Sidebar agar lebih elegan */
         aside::-webkit-scrollbar {
             width: 4px;

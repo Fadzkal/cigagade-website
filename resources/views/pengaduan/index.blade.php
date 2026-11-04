@@ -411,7 +411,7 @@
                     @empty
                         <div class="col-span-full py-16 text-center text-slate-400 bg-white dark:bg-slate-800 rounded-2xl border border-dashed border-slate-200 dark:border-slate-700">
                             <i class="fas fa-inbox text-3xl mb-2 text-slate-300"></i>
-                            <p class="text-sm font-medium">Belum ada pengaduan pada kategori ini.</p>
+                            <p class="text-sm font-medium">Belum ada pengaduan yang telah dikonfirmasi pada kategori ini.</p>
                         </div>
                     @endforelse
                 </div>

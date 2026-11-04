@@ -75,7 +75,7 @@ class PengaduanSeeder extends Seeder
                 'tanggapan'     => null,
                 'tanggapan_at'  => null,
                 'tanggapan_oleh'=> null,
-                'is_public'     => true,
+                'is_public'     => false,
                 'created_at'    => now()->subHours(2),
             ],
         ];

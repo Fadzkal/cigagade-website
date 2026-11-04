@@ -166,8 +166,42 @@
                 @endif
             </div>
 
+            {{-- Banner Konfirmasi Jika Masih Menunggu --}}
+            @if($pengaduan->status === 'menunggu')
+                <div class="bg-amber-50 rounded-3xl p-5 border border-amber-200/90 shadow-xs space-y-3">
+                    <div class="flex items-start gap-3">
+                        <div class="w-8 h-8 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center shrink-0 mt-0.5">
+                            <i class="fas fa-clock text-sm"></i>
+                        </div>
+                        <div>
+                            <h4 class="text-xs font-bold uppercase tracking-wider text-amber-900">Belum Dikonfirmasi</h4>
+                            <p class="text-xs text-amber-800 mt-1 leading-relaxed">
+                                Laporan ini <strong>tidak ditampilkan di portal publik</strong> sebelum diverifikasi dan dikonfirmasi oleh admin atau perangkat desa.
+                            </p>
+                        </div>
+                    </div>
+                    <form action="{{ route('pengaduan.admin.konfirmasi', $pengaduan->id) }}" method="POST" onsubmit="return confirm('Konfirmasi pengaduan ini dan mulai proses penanganan?')">
+                        @csrf
+                        <button type="submit" class="w-full py-2.5 px-4 rounded-xl bg-amber-600 hover:bg-amber-500 text-white font-bold text-xs shadow-sm transition flex items-center justify-center gap-2">
+                            <i class="fas fa-circle-check"></i> Konfirmasi & Mulai Proses Sekarang
+                        </button>
+                    </form>
+                </div>
+            @endif
+
             {{-- Form Update Status & Tanggapan --}}
-            <div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-200/80 space-y-5">
+            <div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-200/80 space-y-5"
+                 x-data="{
+                     status: '{{ old('status', $pengaduan->status) }}',
+                     isPublic: {{ old('is_public', $pengaduan->is_public) ? 'true' : 'false' }},
+                     onStatusChange() {
+                         if (this.status === 'diproses' || this.status === 'selesai') {
+                             this.isPublic = true;
+                         } else {
+                             this.isPublic = false;
+                         }
+                     }
+                 }">
                 <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400">
                     Aksi & Tindak Lanjut Admin
                 </h4>
@@ -181,11 +215,11 @@
                         <label class="block text-xs font-bold text-slate-700 mb-1.5">
                             Status Pengaduan <span class="text-rose-500">*</span>
                         </label>
-                        <select name="status" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-xs font-bold bg-white text-slate-800 focus:ring-2 focus:ring-emerald-500 outline-none transition" required>
-                            <option value="menunggu" {{ $pengaduan->status === 'menunggu' ? 'selected' : '' }}>⏳ Menunggu Verifikasi</option>
-                            <option value="diproses" {{ $pengaduan->status === 'diproses' ? 'selected' : '' }}>🔄 Sedang Diproses</option>
-                            <option value="selesai" {{ $pengaduan->status === 'selesai' ? 'selected' : '' }}>✅ Selesai Ditindaklanjuti</option>
-                            <option value="ditolak" {{ $pengaduan->status === 'ditolak' ? 'selected' : '' }}>❌ Ditolak / Tidak Valid</option>
+                        <select name="status" x-model="status" @change="onStatusChange()" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-xs font-bold bg-white text-slate-800 focus:ring-2 focus:ring-emerald-500 outline-none transition" required>
+                            <option value="menunggu">⏳ Menunggu Verifikasi</option>
+                            <option value="diproses">🔄 Sedang Diproses</option>
+                            <option value="selesai">✅ Selesai Ditindaklanjuti</option>
+                            <option value="ditolak">❌ Ditolak / Tidak Valid</option>
                         </select>
                     </div>
 
@@ -209,11 +243,20 @@
 
                     {{-- Visibilitas Publik --}}
                     <div class="pt-2">
-                        <label class="flex items-center gap-2 cursor-pointer">
-                            <input type="checkbox" name="is_public" value="1" {{ $pengaduan->is_public ? 'checked' : '' }} class="w-4 h-4 text-emerald-600 rounded border-slate-300 focus:ring-emerald-500">
+                        <label class="flex items-center gap-2 cursor-pointer" :class="(status === 'menunggu' || status === 'ditolak') ? 'opacity-60 cursor-not-allowed' : ''">
+                            <input type="checkbox" name="is_public" value="1" x-model="isPublic" :disabled="status === 'menunggu' || status === 'ditolak'" class="w-4 h-4 text-emerald-600 rounded border-slate-300 focus:ring-emerald-500">
                             <span class="text-xs font-semibold text-slate-700">Tampilkan di Transparansi Publik</span>
                         </label>
-                        <span class="text-[10px] text-slate-400 block mt-0.5">Bila dicentang, laporan ini dapat dibaca oleh warga lain di halaman Transparansi Aduan.</span>
+                        <template x-if="status === 'menunggu' || status === 'ditolak'">
+                            <span class="text-[10px] text-amber-600 font-medium block mt-0.5">
+                                * Laporan hanya dapat dipublikasikan setelah status diubah ke "Sedang Diproses" atau "Selesai".
+                            </span>
+                        </template>
+                        <template x-if="status === 'diproses' || status === 'selesai'">
+                            <span class="text-[10px] text-slate-400 block mt-0.5">
+                                Bila dicentang, laporan ini akan tampil pada tab Transparansi Aduan di portal warga.
+                            </span>
+                        </template>
                     </div>
 
                     {{-- Tombol Simpan --}}

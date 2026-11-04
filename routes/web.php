@@ -151,6 +151,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/dashboard/pengaduan', [PengaduanAdminController::class, 'index'])->name('pengaduan.admin.index');
         Route::get('/dashboard/pengaduan/{id}', [PengaduanAdminController::class, 'show'])->name('pengaduan.admin.show');
         Route::put('/dashboard/pengaduan/{id}', [PengaduanAdminController::class, 'update'])->name('pengaduan.admin.update');
+        Route::post('/dashboard/pengaduan/{id}/konfirmasi', [PengaduanAdminController::class, 'konfirmasi'])->name('pengaduan.admin.konfirmasi');
         Route::delete('/dashboard/pengaduan/{id}', [PengaduanAdminController::class, 'destroy'])->name('pengaduan.admin.destroy');
 
         // RUTE MANAJEMEN PENGGUNA & AKUN

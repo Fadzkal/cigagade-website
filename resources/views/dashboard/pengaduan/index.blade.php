@@ -199,10 +199,25 @@
 
                                 {{-- Status --}}
                                 <td class="py-3.5 px-4 whitespace-nowrap">
-                                    <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold border {{ $pgd->status_badge['bg'] }}">
-                                        <span class="w-1.5 h-1.5 rounded-full mr-1.5 {{ $pgd->status_badge['dot'] }}"></span>
-                                        {{ $pgd->status_label }}
-                                    </span>
+                                    <div class="space-y-1">
+                                        <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold border {{ $pgd->status_badge['bg'] }}">
+                                            <span class="w-1.5 h-1.5 rounded-full mr-1.5 {{ $pgd->status_badge['dot'] }}"></span>
+                                            {{ $pgd->status_label }}
+                                        </span>
+                                        @if($pgd->status === 'menunggu')
+                                            <span class="block text-[10px] text-amber-600 font-semibold">
+                                                <i class="fas fa-lock mr-0.5"></i> Belum Dikonfirmasi
+                                            </span>
+                                        @elseif($pgd->is_public)
+                                            <span class="block text-[10px] text-emerald-600 font-semibold">
+                                                <i class="fas fa-globe mr-0.5"></i> Publik
+                                            </span>
+                                        @else
+                                            <span class="block text-[10px] text-slate-400 font-medium">
+                                                <i class="fas fa-lock mr-0.5"></i> Privat
+                                            </span>
+                                        @endif
+                                    </div>
                                 </td>
 
                                 {{-- Tanggal Masuk --}}
@@ -213,6 +228,15 @@
                                 {{-- Aksi --}}
                                 <td class="py-3.5 px-4 text-center whitespace-nowrap">
                                     <div class="inline-flex items-center gap-1.5">
+                                        @if($pgd->status === 'menunggu')
+                                            <form action="{{ route('pengaduan.admin.konfirmasi', $pgd->id) }}" method="POST" class="inline" onsubmit="return confirm('Konfirmasi pengaduan {{ $pgd->kode_tiket }} dan mulai tindak lanjut?')">
+                                                @csrf
+                                                <button type="submit" class="inline-flex items-center px-2.5 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs shadow-sm transition" title="Konfirmasi & Tampilkan ke Transparansi Publik">
+                                                    <i class="fas fa-check mr-1 text-[11px]"></i> Konfirmasi
+                                                </button>
+                                            </form>
+                                        @endif
+
                                         <a href="{{ route('pengaduan.admin.show', $pgd->id) }}" class="inline-flex items-center px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow-sm transition">
                                             <i class="fas fa-reply mr-1.5"></i> Tanggapi
                                         </a>

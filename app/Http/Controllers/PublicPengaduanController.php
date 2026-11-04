@@ -15,14 +15,15 @@ class PublicPengaduanController extends Controller
     {
         $kategoriList = Pengaduan::KATEGORI_LIST;
 
-        // Query pengaduan publik yang sudah diverifikasi / ditampilkan
-        $query = Pengaduan::where('is_public', true);
+        // Query pengaduan publik yang sudah diverifikasi / dikonfirmasi oleh perangkat desa
+        $query = Pengaduan::where('is_public', true)
+            ->whereIn('status', ['diproses', 'selesai']);
 
         if ($request->filled('kategori') && array_key_exists($request->kategori, $kategoriList)) {
             $query->where('kategori', $request->kategori);
         }
 
-        if ($request->filled('status') && in_array($request->status, ['menunggu', 'diproses', 'selesai'])) {
+        if ($request->filled('status') && in_array($request->status, ['diproses', 'selesai'])) {
             $query->where('status', $request->status);
         }
 
@@ -92,7 +93,7 @@ class PublicPengaduanController extends Controller
             'lokasi'        => $request->filled('lokasi') ? trim($request->lokasi) : null,
             'foto_bukti'    => $fotoPath,
             'status'        => 'menunggu',
-            'is_public'     => true,
+            'is_public'     => false, // Belum dikonfirmasi oleh Pemdes (tidak langsung tampil ke publik)
             'ip_address'    => $request->ip(),
         ]);
 

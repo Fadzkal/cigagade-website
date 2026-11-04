@@ -67,6 +67,27 @@ class PengaduanAdminController extends Controller
     }
 
     /**
+     * Konfirmasi cepat pengaduan (Ubah status ke 'diproses' dan aktifkan transparansi publik)
+     */
+    public function konfirmasi(Request $request, $id)
+    {
+        $pengaduan = Pengaduan::findOrFail($id);
+        $pengaduan->status = 'diproses';
+        $pengaduan->is_public = true;
+
+        if (empty($pengaduan->tanggapan)) {
+            $pengaduan->tanggapan = 'Pengaduan telah diverifikasi oleh Pemerintah Desa Cigagade dan saat ini sedang ditindaklanjuti.';
+            $pengaduan->tanggapan_at = now();
+            $pengaduan->tanggapan_oleh = Auth::user()->name ?? 'Pemerintah Desa Cigagade';
+        }
+
+        $pengaduan->save();
+
+        return redirect()->back()
+            ->with('success', 'Pengaduan ' . $pengaduan->kode_tiket . ' berhasil dikonfirmasi dan dipublikasikan ke Transparansi Aduan!');
+    }
+
+    /**
      * Update status dan berikan tanggapan resmi
      */
     public function update(Request $request, $id)
@@ -81,7 +102,13 @@ class PengaduanAdminController extends Controller
         ]);
 
         $pengaduan->status = $validated['status'];
-        $pengaduan->is_public = $request->has('is_public');
+
+        // Pengaduan berstatus 'menunggu' atau 'ditolak' tidak boleh tampil di publik
+        if (in_array($validated['status'], ['menunggu', 'ditolak'])) {
+            $pengaduan->is_public = false;
+        } else {
+            $pengaduan->is_public = $request->boolean('is_public');
+        }
 
         if (!empty(trim($validated['tanggapan'] ?? ''))) {
             $pengaduan->tanggapan = trim($validated['tanggapan']);

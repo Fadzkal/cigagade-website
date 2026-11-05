@@ -45,7 +45,7 @@
         @endif
 
         {{-- ─── KPI METRIC CARDS ─── --}}
-        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3.5">
             <a href="{{ route('users.index') }}" class="p-5 rounded-2xl bg-white border {{ !$roleFilter ? 'ring-2 ring-emerald-500 border-emerald-300' : 'border-slate-200/80' }} shadow-sm hover:border-emerald-400 transition group">
                 <div class="flex items-center justify-between">
                     <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Total Akun</span>
@@ -87,7 +87,18 @@
                     </div>
                 </div>
                 <p class="text-2xl font-black text-pink-700 mt-2">{{ $stats['pkk'] }}</p>
-                <span class="text-[11px] text-pink-600 font-medium">Posyandu & 10 Pokok PKK</span>
+                <span class="text-[11px] text-pink-600 font-medium">Posyandu & PKK</span>
+            </a>
+
+            <a href="{{ route('users.index', ['role' => 'sekolah']) }}" class="p-5 rounded-2xl bg-white border {{ $roleFilter === 'sekolah' ? 'ring-2 ring-blue-500 border-blue-300' : 'border-slate-200/80' }} shadow-sm hover:border-blue-400 transition group">
+                <div class="flex items-center justify-between">
+                    <span class="text-xs font-bold text-blue-600 uppercase tracking-wider">Sekolah</span>
+                    <div class="w-9 h-9 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-sm group-hover:bg-blue-100 transition">
+                        <i class="fas fa-graduation-cap"></i>
+                    </div>
+                </div>
+                <p class="text-2xl font-black text-blue-700 mt-2">{{ $stats['sekolah'] ?? 0 }}</p>
+                <span class="text-[11px] text-blue-600 font-medium">Mitra & Sekolah</span>
             </a>
         </div>
 
@@ -109,6 +120,7 @@
                         <option value="superadmin" {{ $roleFilter === 'superadmin' ? 'selected' : '' }}>Super Admin</option>
                         <option value="rw" {{ $roleFilter === 'rw' ? 'selected' : '' }}>Pengurus RW</option>
                         <option value="pkk" {{ $roleFilter === 'pkk' ? 'selected' : '' }}>Kader TP-PKK</option>
+                        <option value="sekolah" {{ $roleFilter === 'sekolah' ? 'selected' : '' }}>Pihak Sekolah</option>
                     </select>
                 </div>
 
@@ -169,6 +181,8 @@
                                                 bg-amber-100 text-amber-700 border border-amber-200
                                             @elseif($user->isPkk())
                                                 bg-pink-100 text-pink-700 border border-pink-200
+                                            @elseif($user->isSekolah())
+                                                bg-blue-100 text-blue-700 border border-blue-200
                                             @else
                                                 bg-slate-100 text-slate-700 border border-slate-200
                                             @endif">
@@ -204,6 +218,10 @@
                                         <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold bg-pink-50 text-pink-700 border border-pink-200">
                                             <i class="fas fa-hand-holding-heart text-xs text-pink-500"></i> Kader PKK
                                         </span>
+                                    @elseif($user->isSekolah())
+                                        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold bg-blue-50 text-blue-700 border border-blue-200">
+                                            <i class="fas fa-graduation-cap text-xs text-blue-500"></i> Pihak Sekolah
+                                        </span>
                                     @else
                                         <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold bg-slate-100 text-slate-700 border border-slate-200">
                                             <i class="fas fa-user text-xs text-slate-500"></i> Pengguna
@@ -222,6 +240,8 @@
                                         <span class="text-slate-500">Seluruh Desa Cigagade</span>
                                     @elseif($user->isPkk())
                                         <span class="text-slate-500">Tim PKK & Posyandu Desa</span>
+                                    @elseif($user->isSekolah())
+                                        <span class="text-slate-500">Mitra Pendidikan & Sekolah</span>
                                     @else
                                         <span class="text-slate-400">-</span>
                                     @endif

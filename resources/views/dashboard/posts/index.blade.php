@@ -83,6 +83,25 @@
                         </a>
                     </div>
                 </div>
+            @elseif(Auth::check() && Auth::user()->isSekolah())
+                <div class="bg-gradient-to-r from-blue-700 via-indigo-600 to-sky-700 text-white rounded-2xl p-5 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                    <div class="flex items-center gap-3">
+                        <div class="w-12 h-12 rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center text-white text-xl">
+                            <i class="fas fa-graduation-cap"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-base leading-tight">Panel Mitra Pendidikan & Sekolah Desa Cigagade</h3>
+                            <p class="text-xs text-blue-100 mt-0.5">
+                                Berita dan agenda sekolah yang Anda ajukan akan diverifikasi oleh <strong>Super Admin</strong> sebelum dipublikasikan ke portal publik Desa Cigagade.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <a href="{{ route('posts.create') }}" class="px-3.5 py-1.5 bg-white text-blue-700 hover:bg-blue-50 text-xs font-bold rounded-lg shadow-sm transition">
+                            <i class="fas fa-pen-nib mr-1"></i> Tulis Kabar Sekolah Baru
+                        </a>
+                    </div>
+                </div>
             @endif
 
             {{-- ─── TAB FILTER STATUS VALIDASI ─── --}}

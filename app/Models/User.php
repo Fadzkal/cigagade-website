@@ -74,6 +74,14 @@ class User extends Authenticatable
     }
 
     /**
+     * Cek apakah user adalah akun Pihak Sekolah / Pendidikan.
+     */
+    public function isSekolah(): bool
+    {
+        return $this->role === 'sekolah';
+    }
+
+    /**
      * Dapatkan label role pengguna.
      */
     public function getRoleLabel(): string
@@ -86,6 +94,9 @@ class User extends Authenticatable
         }
         if ($this->isPkk()) {
             return 'Kader TP-PKK Desa';
+        }
+        if ($this->isSekolah()) {
+            return 'Pihak Sekolah / Pendidikan';
         }
         return 'Pengguna';
     }

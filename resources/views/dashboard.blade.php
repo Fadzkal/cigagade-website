@@ -7,6 +7,8 @@
                         Panel Warta <span class="text-amber-600">{{ Auth::user()->getRwLabel() }}</span>
                     @elseif($isPkk)
                         Panel <span class="text-pink-600">Kader TP-PKK & Posyandu</span>
+                    @elseif($isSekolah)
+                        Panel <span class="text-blue-600">Mitra Pendidikan & Sekolah</span>
                     @else
                         Dashboard <span class="text-indigo-600">Statistik Desa</span>
                     @endif
@@ -16,6 +18,8 @@
                         Selamat bertugas, {{ Auth::user()->name }}. Publikasikan kegiatan dan kabar warga wilayah Anda.
                     @elseif($isPkk)
                         Selamat bertugas, Kader PKK! Kelola publikasi kegiatan Posyandu, kesehatan keluarga, dan 10 Program Pokok PKK Desa Cigagade.
+                    @elseif($isSekolah)
+                        Selamat bertugas, {{ Auth::user()->name }}! Kelola publikasi warta sekolah, prestasi siswa, dan kegiatan pendidikan Desa Cigagade.
                     @else
                         Pusat kendali dan monitoring informasi Desa Cigagade, Balubur Limbangan, Garut.
                     @endif
@@ -326,6 +330,143 @@
                                         <p class="text-sm font-medium">Belum ada artikel yang diterbitkan oleh Tim Penggerak PKK.</p>
                                         <a href="{{ route('posts.create') }}" class="inline-block mt-3 text-xs text-pink-600 font-bold hover:underline">
                                             + Mulai Tulis Berita Pertama
+                                        </a>
+                                    </td>
+                                </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            @elseif($isSekolah)
+                {{-- ─── SEKOLAH HERO BANNER ─────────────────────────────────────────── --}}
+                <div class="relative overflow-hidden rounded-3xl bg-gradient-to-r from-blue-900 via-indigo-900 to-slate-900 text-white p-6 sm:p-8 shadow-xl">
+                    <div class="absolute -right-10 -bottom-10 w-64 h-64 rounded-full bg-blue-500/20 blur-3xl pointer-events-none"></div>
+                    <div class="relative flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
+                        <div class="space-y-2 max-w-2xl">
+                            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-blue-100 text-blue-950 uppercase tracking-wider shadow-sm">
+                                <i class="fas fa-graduation-cap mr-1.5 text-blue-600"></i> Akun Mitra Pendidikan & Sekolah Desa Cigagade
+                            </span>
+                            <h3 class="text-2xl sm:text-3xl font-extrabold text-white leading-tight">
+                                Selamat Datang, Pihak Sekolah & Pendidik!
+                            </h3>
+                            <p class="text-blue-100/90 text-sm leading-relaxed">
+                                Anda memiliki akses untuk mengunggah dan mempublikasikan warta kegiatan sekolah (SDN, PAUD, Madrasah, SMP), agenda penerimaan siswa baru, prestasi murid di Desa Cigagade, serta kegiatan ekstrakurikuler dan literasi.
+                            </p>
+                        </div>
+                        <div class="flex flex-wrap sm:flex-nowrap items-center gap-3 shrink-0">
+                            <a href="{{ route('posts.create') }}" class="inline-flex items-center justify-center px-5 py-3 bg-blue-600 hover:bg-blue-500 text-white font-bold text-sm rounded-xl shadow-lg shadow-blue-600/30 transition whitespace-nowrap">
+                                <i class="fas fa-pen-nib mr-2"></i> + Tulis Warta Sekolah
+                            </a>
+                            <a href="{{ route('posts.index') }}" class="inline-flex items-center justify-center px-5 py-3 bg-white/15 hover:bg-white/25 text-white font-semibold text-sm rounded-xl backdrop-blur-sm border border-white/20 transition whitespace-nowrap">
+                                <i class="fas fa-list mr-2"></i> Kelola Warta
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- ─── SEKOLAH SUMMARY STATS ───────────────────────────────────────── --}}
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+                    <div class="bg-white rounded-2xl p-6 border border-blue-100 shadow-sm flex items-center gap-5">
+                        <div class="w-14 h-14 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center text-2xl shadow-inner">
+                            <i class="fas fa-newspaper"></i>
+                        </div>
+                        <div>
+                            <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">Artikel Sekolah</p>
+                            <p class="text-3xl font-black text-gray-800 mt-1">{{ $sekolahPostCount }}</p>
+                            <span class="text-[11px] text-blue-600 font-medium">Artikel dipublikasikan</span>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-2xl p-6 border border-indigo-100 shadow-sm flex items-center gap-5">
+                        <div class="w-14 h-14 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-2xl shadow-inner">
+                            <i class="fas fa-eye"></i>
+                        </div>
+                        <div>
+                            <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">Total Pembaca</p>
+                            <p class="text-3xl font-black text-gray-800 mt-1">{{ number_format($sekolahViewsCount) }}</p>
+                            <span class="text-[11px] text-indigo-600 font-medium">Kali dibaca warga</span>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-2xl p-6 border border-emerald-100 shadow-sm flex items-center gap-5">
+                        <div class="w-14 h-14 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-2xl shadow-inner">
+                            <i class="fas fa-school"></i>
+                        </div>
+                        <div>
+                            <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">Fokus Pendidikan</p>
+                            <p class="text-lg font-black text-gray-800 mt-1">Pendidikan & Literasi</p>
+                            <span class="text-[11px] text-emerald-600 font-medium">Desa Cigagade</span>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- ─── SEKOLAH LATEST POSTS TABLE ─────────────────────────────────── --}}
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                    <div class="p-6 border-b border-gray-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                        <div>
+                            <h3 class="text-lg font-bold text-gray-800 flex items-center gap-2">
+                                <i class="fas fa-graduation-cap text-blue-500"></i>
+                                Warta & Publikasi Sekolah Terbaru
+                            </h3>
+                            <p class="text-xs text-gray-500 mt-0.5">Daftar warta yang diajukan atau diterbitkan oleh mitra sekolah.</p>
+                        </div>
+                        <a href="{{ route('posts.create') }}" class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-xl text-xs font-bold hover:bg-blue-700 transition">
+                            <i class="fas fa-plus mr-1.5"></i> Tambah Warta Baru
+                        </a>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-sm text-left text-gray-600">
+                            <thead class="text-xs text-gray-500 uppercase bg-gray-50/75 border-b border-gray-100">
+                                <tr>
+                                    <th class="px-6 py-4 font-semibold">Judul Berita</th>
+                                    <th class="px-6 py-4 font-semibold">Kategori</th>
+                                    <th class="px-6 py-4 font-semibold">Tanggal</th>
+                                    <th class="px-6 py-4 font-semibold text-center">Views</th>
+                                    <th class="px-6 py-4 font-semibold text-right">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-100">
+                                @forelse($sekolahPosts as $p)
+                                <tr class="hover:bg-gray-50/60 transition">
+                                    <td class="px-6 py-4 font-medium text-gray-900">
+                                        <a href="{{ $p->getShowRoute() }}" target="_blank" class="hover:text-blue-600 transition flex items-center gap-2">
+                                            <span>{{ $p->title }}</span>
+                                            <i class="fas fa-external-link-alt text-[10px] text-gray-400"></i>
+                                        </a>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="px-2.5 py-0.5 rounded text-xs bg-blue-50 text-blue-700 font-medium border border-blue-100">
+                                            {{ $p->category->name ?? 'Pendidikan & Sekolah' }}
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-xs text-gray-500">
+                                        {{ ($p->published_at ?? $p->created_at)->format('d M Y') }}
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-center text-xs font-semibold text-gray-700">
+                                        {{ number_format($p->views) }}
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-right space-x-2">
+                                        <a href="{{ route('posts.edit', $p->id) }}" class="inline-flex items-center px-3 py-1.5 text-xs font-semibold text-blue-600 hover:bg-blue-50 rounded-lg border border-blue-200 transition">
+                                            <i class="fas fa-edit mr-1"></i> Edit
+                                        </a>
+                                        <form action="{{ route('posts.destroy', $p->id) }}" method="POST" class="inline" onsubmit="return confirm('Apakah Anda yakin ingin menghapus berita ini?');">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="inline-flex items-center px-3 py-1.5 text-xs font-semibold text-red-600 hover:bg-red-50 rounded-lg border border-red-200 transition">
+                                                <i class="fas fa-trash-alt mr-1"></i> Hapus
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                                @empty
+                                <tr>
+                                    <td colspan="5" class="px-6 py-12 text-center text-gray-400">
+                                        <i class="fas fa-graduation-cap text-3xl mb-2 text-blue-300"></i>
+                                        <p class="text-sm font-medium">Belum ada artikel warta yang diterbitkan oleh Pihak Sekolah.</p>
+                                        <a href="{{ route('posts.create') }}" class="inline-block mt-3 text-xs text-blue-600 font-bold hover:underline">
+                                            + Mulai Tulis Warta Pertama
                                         </a>
                                     </td>
                                 </tr>

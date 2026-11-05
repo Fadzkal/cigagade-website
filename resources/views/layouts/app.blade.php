@@ -214,6 +214,10 @@
                         <span class="ml-auto text-[10px] font-bold px-2 py-0.5 rounded-full bg-pink-500 text-white">
                             PKK
                         </span>
+                    @elseif(Auth::check() && Auth::user()->isSekolah())
+                        <span class="ml-auto text-[10px] font-bold px-2 py-0.5 rounded-full bg-blue-500 text-white">
+                            Sekolah
+                        </span>
                     @endif
                 </a>
 
@@ -311,6 +315,8 @@
                                         <span class="text-[10px] font-bold text-amber-600 uppercase tracking-wide">Akun Resmi {{ Auth::user()->getRwLabel() }}</span>
                                     @elseif(Auth::check() && Auth::user()->isPkk())
                                         <span class="text-[10px] font-bold text-pink-600 uppercase tracking-wide">Kader TP-PKK Desa</span>
+                                    @elseif(Auth::check() && Auth::user()->isSekolah())
+                                        <span class="text-[10px] font-bold text-blue-600 uppercase tracking-wide">Pihak Sekolah / Pendidikan</span>
                                     @else
                                         <span class="text-[10px] text-slate-400 uppercase tracking-wide">Administrator Desa</span>
                                     @endif

@@ -78,6 +78,7 @@ class DesaCigagadeSeeder extends Seeder
             ['name' => 'Inovasi & BUMDes',               'slug' => 'riset-inovasi'],
             ['name' => 'Seni, Budaya & Wisata',          'slug' => 'hiburan'],
             ['name' => 'Layanan & Kesehatan Warga',      'slug' => 'institusional'],
+            ['name' => 'Pendidikan & Sekolah',          'slug' => 'pendidikan-sekolah'],
         ];
 
         $catMap = [];

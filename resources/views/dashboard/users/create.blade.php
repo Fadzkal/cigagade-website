@@ -21,7 +21,7 @@
         @php
             $currentRole = old('role', 'rw');
             if ($currentRole === 'kader_pkk') { $currentRole = 'pkk'; }
-            if (!in_array($currentRole, ['superadmin', 'rw', 'pkk'])) {
+            if (!in_array($currentRole, ['superadmin', 'rw', 'pkk', 'sekolah'])) {
                 $currentRole = 'rw';
             }
         @endphp
@@ -79,7 +79,7 @@
                     <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-3">
                         Pilih Hak Akses / Peran (Role) <span class="text-rose-500">*</span>
                     </label>
-                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
                         {{-- Super Admin --}}
                         <div>
                             <input type="radio" name="role" id="role_superadmin" value="superadmin"
@@ -146,6 +146,29 @@
                                 </div>
                                 <span class="text-xs font-bold text-slate-800">Kader TP-PKK</span>
                                 <span class="text-[11px] text-slate-500 mt-1 leading-snug">Publikasi posyandu & kegiatan keluarga PKK.</span>
+                            </label>
+                        </div>
+
+                        {{-- Pihak Sekolah --}}
+                        <div>
+                            <input type="radio" name="role" id="role_sekolah" value="sekolah"
+                                   x-model="role"
+                                   {{ $currentRole === 'sekolah' ? 'checked' : '' }}
+                                   onchange="window.updateUserRole && window.updateUserRole(this.value)"
+                                   class="sr-only peer">
+                            <label for="role_sekolah"
+                                   class="relative flex flex-col p-4 rounded-2xl border cursor-pointer transition select-none h-full border-slate-200 bg-white hover:border-slate-300 peer-checked:border-blue-500 peer-checked:bg-blue-50/40 peer-checked:ring-2 peer-checked:ring-blue-500/20"
+                                   :class="role === 'sekolah' ? 'border-blue-500 bg-blue-50/40 ring-2 ring-blue-500/20' : 'border-slate-200 hover:border-slate-300 bg-white'">
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="w-8 h-8 rounded-xl bg-blue-100 text-blue-700 flex items-center justify-center text-sm font-bold">
+                                        <i class="fas fa-graduation-cap"></i>
+                                    </span>
+                                    <i class="fas fa-circle-check text-blue-600 text-sm {{ $currentRole === 'sekolah' ? '' : 'hidden' }}"
+                                       :class="{ 'hidden': role !== 'sekolah' }"
+                                       x-show="role === 'sekolah'" x-cloak></i>
+                                </div>
+                                <span class="text-xs font-bold text-slate-800">Pihak Sekolah</span>
+                                <span class="text-[11px] text-slate-500 mt-1 leading-snug">Publikasi berita kegiatan pendidikan & sekolah desa.</span>
                             </label>
                         </div>
                     </div>

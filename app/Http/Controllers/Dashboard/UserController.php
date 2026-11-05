@@ -53,6 +53,7 @@ class UserController extends Controller
             'superadmin'  => User::where('role', 'superadmin')->count(),
             'rw'          => User::where('role', 'rw')->orWhereNotNull('rw')->count(),
             'pkk'         => User::whereIn('role', ['pkk', 'kader_pkk'])->count(),
+            'sekolah'     => User::where('role', 'sekolah')->count(),
         ];
 
         return view('dashboard.users.index', compact('users', 'stats', 'search', 'roleFilter', 'rwFilter'));
@@ -75,7 +76,7 @@ class UserController extends Controller
             'name'     => ['required', 'string', 'max:255'],
             'email'    => ['required', 'string', 'email', 'max:255', 'unique:users,email'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
-            'role'     => ['required', 'string', 'in:superadmin,rw,pkk,kader_pkk'],
+            'role'     => ['required', 'string', 'in:superadmin,rw,pkk,kader_pkk,sekolah'],
             'rw'       => ['nullable', 'integer', 'min:1', 'max:20', 'required_if:role,rw'],
         ], [
             'name.required'      => 'Nama pengguna wajib diisi.',
@@ -120,7 +121,7 @@ class UserController extends Controller
             'name'     => ['required', 'string', 'max:255'],
             'email'    => ['required', 'string', 'email', 'max:255', Rule::unique('users', 'email')->ignore($user->id)],
             'password' => ['nullable', 'string', 'min:8', 'confirmed'],
-            'role'     => ['required', 'string', 'in:superadmin,rw,pkk,kader_pkk'],
+            'role'     => ['required', 'string', 'in:superadmin,rw,pkk,kader_pkk,sekolah'],
             'rw'       => ['nullable', 'integer', 'min:1', 'max:20', 'required_if:role,rw'],
         ], [
             'name.required'      => 'Nama pengguna wajib diisi.',

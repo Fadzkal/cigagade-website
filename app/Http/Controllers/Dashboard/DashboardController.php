@@ -72,6 +72,7 @@ class DashboardController extends Controller
         $user = auth()->user();
         $isRw = $user && $user->isRw();
         $isPkk = $user && $user->isPkk();
+        $isSekolah = $user && $user->isSekolah();
         $rwPostCount = 0;
         $rwViewsCount = 0;
         $rwPosts = collect();
@@ -79,6 +80,10 @@ class DashboardController extends Controller
         $pkkPostCount = 0;
         $pkkViewsCount = 0;
         $pkkPosts = collect();
+
+        $sekolahPostCount = 0;
+        $sekolahViewsCount = 0;
+        $sekolahPosts = collect();
 
         if ($isRw) {
             $rwPostCount = Post::where('rw', $user->rw)->count();
@@ -90,6 +95,12 @@ class DashboardController extends Controller
             $pkkPostCount = Post::where('user_id', $user->id)->count();
             $pkkViewsCount = Post::where('user_id', $user->id)->sum('views');
             $pkkPosts = Post::where('user_id', $user->id)->with(['category', 'user'])->latest()->take(10)->get();
+        }
+
+        if ($isSekolah) {
+            $sekolahPostCount = Post::where('user_id', $user->id)->count();
+            $sekolahViewsCount = Post::where('user_id', $user->id)->sum('views');
+            $sekolahPosts = Post::where('user_id', $user->id)->with(['category', 'user'])->latest()->take(10)->get();
         }
 
         return view('dashboard', compact(
@@ -118,7 +129,11 @@ class DashboardController extends Controller
             'isPkk',
             'pkkPostCount',
             'pkkViewsCount',
-            'pkkPosts'
+            'pkkPosts',
+            'isSekolah',
+            'sekolahPostCount',
+            'sekolahViewsCount',
+            'sekolahPosts'
         ));
     }
 }

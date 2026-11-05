@@ -141,6 +141,9 @@ class PostController extends Controller
             $validatedData['slug_en'] = Str::slug($validatedData['title_en'], '-');
         }
 
+        // Normalisasi field bahasa Inggris
+        $this->normalizeLanguageFields($validatedData);
+
         // LOGIKA VALIDASI:
         // Super Admin -> langsung published
         // Akun RW / PKK / Lainnya -> status pending (menunggu validasi Super Admin)
@@ -230,6 +233,9 @@ class PostController extends Controller
             $validatedData['slug_en'] = null;
         }
 
+        // Normalisasi field bahasa Inggris
+        $this->normalizeLanguageFields($validatedData);
+
         // Logika Status saat Update:
         if (auth()->user()->isSuperAdmin()) {
             // Super Admin dapat langsung mempertahankan status published
@@ -305,5 +311,29 @@ class PostController extends Controller
         $post->delete();
 
         return redirect()->route('posts.index')->with('success', 'Berita berhasil dihapus!');
+    }
+
+    /**
+     * Normalisasi data konten multi-bahasa agar tag kosong dari editor tidak disimpan
+     */
+    private function normalizeLanguageFields(array &$data): void
+    {
+        if (isset($data['content_en'])) {
+            $raw = $data['content_en'];
+            $hasMedia = str_contains($raw, '<img') || str_contains($raw, '<iframe') || str_contains($raw, '<video');
+            $clean = preg_replace('/[\s\x{00a0}\x{200b}]+/u', '', html_entity_decode(strip_tags($raw), ENT_QUOTES | ENT_HTML5, 'UTF-8'));
+            if ($clean === '' && !$hasMedia) {
+                $data['content_en'] = null;
+            }
+        }
+
+        if (isset($data['title_en']) && empty(trim($data['title_en']))) {
+            $data['title_en'] = null;
+            $data['slug_en'] = null;
+        }
+
+        if (isset($data['excerpt_en']) && empty(trim($data['excerpt_en']))) {
+            $data['excerpt_en'] = null;
+        }
     }
 }

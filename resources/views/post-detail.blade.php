@@ -194,7 +194,7 @@
                 @endif
 
                 <!-- Isi Konten - Tanpa Card/Shadow -->
-                <div class="prose prose-lg max-w-none">
+                <div class="prose prose-lg max-w-none prose-img:rounded-2xl prose-img:shadow-sm prose-img:mx-auto prose-img:border prose-img:border-slate-100 prose-img:my-6">
                     <div class="text-gray-700 text-lg leading-loose space-y-6">
                         {!! $post->getContent() !!}
                     </div>

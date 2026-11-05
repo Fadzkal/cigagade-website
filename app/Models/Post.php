@@ -98,15 +98,29 @@ class Post extends Model
     // ─── Locale-aware Helpers ─────────────────────────────────────────────────
 
     /**
+     * Cek apakah string HTML memiliki teks nyata (bukan hanya <p><br></p> atau whitespace).
+     */
+    public function hasRealContent(?string $html): bool
+    {
+        if (empty($html)) {
+            return false;
+        }
+        $text = strip_tags($html);
+        $text = html_entity_decode($text, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+        $text = preg_replace('/[\s\x{00a0}\x{200b}]+/u', '', $text);
+        return $text !== '';
+    }
+
+    /**
      * Kembalikan judul sesuai bahasa aktif.
      * Fallback ke versi Indonesia jika versi EN belum diisi.
      */
     public function getTitle(): string
     {
-        if (app()->getLocale() === 'en' && !empty($this->title_en)) {
+        if (app()->getLocale() === 'en' && !empty(trim($this->title_en ?? ''))) {
             return $this->title_en;
         }
-        return $this->title;
+        return $this->title ?? '';
     }
 
     /**
@@ -114,21 +128,22 @@ class Post extends Model
      */
     public function getExcerpt(): string
     {
-        if (app()->getLocale() === 'en' && !empty($this->excerpt_en)) {
+        if (app()->getLocale() === 'en' && !empty(trim($this->excerpt_en ?? ''))) {
             return $this->excerpt_en;
         }
-        return $this->excerpt;
+        return $this->excerpt ?? '';
     }
 
     /**
      * Kembalikan konten penuh sesuai bahasa aktif.
+     * Fallback otomatis ke konten Bahasa Indonesia jika versi Inggris kosong atau hanya berisi tag editor kosong.
      */
     public function getContent(): string
     {
-        if (app()->getLocale() === 'en' && !empty($this->content_en)) {
+        if (app()->getLocale() === 'en' && $this->hasRealContent($this->content_en)) {
             return $this->content_en;
         }
-        return $this->content;
+        return $this->content ?? '';
     }
 
     /**
@@ -136,7 +151,7 @@ class Post extends Model
      */
     public function getLocalizedSlug(): string
     {
-        if (app()->getLocale() === 'en' && !empty($this->slug_en)) {
+        if (app()->getLocale() === 'en' && !empty(trim($this->slug_en ?? ''))) {
             return $this->slug_en;
         }
         return $this->slug;
@@ -147,7 +162,7 @@ class Post extends Model
      */
     public function getShowRoute(): string
     {
-        if (app()->getLocale() === 'en' && !empty($this->slug_en)) {
+        if (app()->getLocale() === 'en' && !empty(trim($this->slug_en ?? ''))) {
             return route('berita.show.en', $this->slug_en);
         }
         return route('berita.show', $this->slug);

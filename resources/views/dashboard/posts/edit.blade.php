@@ -223,8 +223,12 @@
                                 </div>
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700 mb-1">Isi Konten (Indonesia) <span class="text-red-500">*</span></label>
-                                    <div id="quill-editor-id" class="mt-1 bg-white rounded-b-md border border-gray-300" style="height: 350px;">{!! old('content', $post->content) !!}</div>
+                                    <div id="quill-editor-id" class="mt-1 bg-white rounded-b-md border border-gray-300" style="height: 380px;">{!! old('content', $post->content) !!}</div>
                                     <input type="hidden" name="content" id="content" value="{{ old('content', $post->content) }}">
+                                    <p class="mt-1.5 text-xs text-gray-500 flex items-center gap-1.5">
+                                        <i class="fas fa-camera text-indigo-500"></i>
+                                        <span>Gunakan icon <strong>Gambar/Foto</strong> pada toolbar editor di atas untuk menyisipkan foto dokumentasi langsung ke dalam isi berita.</span>
+                                    </p>
                                 </div>
                             </div>
 
@@ -241,8 +245,12 @@
                                 </div>
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700 mb-1">Content (English)</label>
-                                    <div id="quill-editor-en" class="mt-1 bg-white rounded-b-md border border-gray-300" style="height: 350px;">{!! old('content_en', $post->content_en) !!}</div>
+                                    <div id="quill-editor-en" class="mt-1 bg-white rounded-b-md border border-gray-300" style="height: 380px;">{!! old('content_en', $post->content_en) !!}</div>
                                     <input type="hidden" name="content_en" id="content_en" value="{{ old('content_en', $post->content_en) }}">
+                                    <p class="mt-1.5 text-xs text-gray-500 flex items-center gap-1.5">
+                                        <i class="fas fa-camera text-indigo-500"></i>
+                                        <span>Use the <strong>Image</strong> button on the editor toolbar above to insert photos into the article body.</span>
+                                    </p>
                                 </div>
                             </div>
                         </div>
@@ -272,15 +280,116 @@
         </div>
     </div>
 
-    {{-- Quill.js + Autosave --}}
+    {{-- Quill.js + Autosave + Image Upload --}}
     <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
     <script src="https://cdn.quilljs.com/1.3.6/quill.min.js"></script>
     <script>
         const DRAFT_KEY = 'post_edit_draft_{{ $post->id }}';
 
-        // ── Quill Editors ──────────────────────────────────────────────────
-        const quillID = new Quill('#quill-editor-id', { theme: 'snow', placeholder: 'Tulis isi berita di sini...' });
-        const quillEN = new Quill('#quill-editor-en', { theme: 'snow', placeholder: 'Write article content here...' });
+        // ── Toolbar Lengkap dengan Upload Gambar ──────────────────────────────
+        const quillToolbarOptions = [
+            [{ 'header': [1, 2, 3, 4, false] }],
+            ['bold', 'italic', 'underline', 'strike'],
+            [{ 'color': [] }, { 'background': [] }],
+            [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+            [{ 'align': [] }],
+            ['blockquote', 'code-block'],
+            ['link', 'image', 'video'],
+            ['clean']
+        ];
+
+        // ── Handler Upload Gambar Langsung ke Server ──────────────────────────
+        function selectLocalImage(quillInstance) {
+            const input = document.createElement('input');
+            input.setAttribute('type', 'file');
+            input.setAttribute('accept', 'image/png, image/jpeg, image/jpg, image/webp');
+            input.click();
+
+            input.onchange = async () => {
+                const file = input.files[0];
+                if (!file) return;
+
+                if (file.size > 5 * 1024 * 1024) {
+                    alert('Ukuran gambar maksimal 5 MB!');
+                    return;
+                }
+
+                const formData = new FormData();
+                formData.append('file', file);
+                formData.append('_token', '{{ csrf_token() }}');
+
+                const range = quillInstance.getSelection(true) || { index: quillInstance.getLength() };
+                const tempPlaceholder = '⏳ [Mengunggah foto...] ';
+                quillInstance.insertText(range.index, tempPlaceholder, { 'italic': true, 'color': '#2563eb' });
+
+                try {
+                    const response = await fetch('{{ route("tinymce.upload") }}', {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                            'Accept': 'application/json'
+                        },
+                        body: formData
+                    });
+
+                    const result = await response.json();
+                    quillInstance.deleteText(range.index, tempPlaceholder.length);
+
+                    if (response.ok && result.location) {
+                        quillInstance.insertEmbed(range.index, 'image', result.location);
+                        quillInstance.setSelection(range.index + 1);
+                        saveDraft();
+                    } else {
+                        alert(result.message || 'Gagal mengunggah foto. Silakan coba kembali.');
+                    }
+                } catch (error) {
+                    quillInstance.deleteText(range.index, tempPlaceholder.length);
+                    alert('Terjadi kesalahan jaringan saat mengunggah foto.');
+                }
+            };
+        }
+
+        // ── Inisialisasi Quill Editors ────────────────────────────────────────
+        const quillID = new Quill('#quill-editor-id', {
+            theme: 'snow',
+            placeholder: 'Tulis isi berita di sini... Gunakan tombol foto pada toolbar di atas untuk menyisipkan foto dokumentasi langsung ke dalam teks.',
+            modules: {
+                toolbar: {
+                    container: quillToolbarOptions,
+                    handlers: {
+                        image: function() {
+                            selectLocalImage(quillID);
+                        }
+                    }
+                }
+            }
+        });
+
+        const quillEN = new Quill('#quill-editor-en', {
+            theme: 'snow',
+            placeholder: 'Write article content here... Use the image button on the toolbar above to insert photos.',
+            modules: {
+                toolbar: {
+                    container: quillToolbarOptions,
+                    handlers: {
+                        image: function() {
+                            selectLocalImage(quillEN);
+                        }
+                    }
+                }
+            }
+        });
+
+        // Helper untuk mengecek konten editor agar tidak menghasilkan tag kosong seperti <p><br></p>
+        function getQuillHtml(quill) {
+            if (!quill) return '';
+            const text = quill.getText().trim();
+            const hasMedia = quill.root.querySelector('img, iframe, video');
+            if (text.length === 0 && !hasMedia) {
+                return '';
+            }
+            return quill.root.innerHTML;
+        }
 
         // Restore from old() or localStorage draft
         const draft = JSON.parse(localStorage.getItem(DRAFT_KEY) || '{}');
@@ -303,20 +412,22 @@
 
         // ── Autosave ───────────────────────────────────────────────────────
         function saveDraft() {
-            document.getElementById('content').value = quillID.root.innerHTML;
-            document.getElementById('content_en').value = quillEN.root.innerHTML;
+            document.getElementById('content').value = getQuillHtml(quillID);
+            document.getElementById('content_en').value = getQuillHtml(quillEN);
             const data = {
                 title:      document.getElementById('title').value,
                 excerpt:    document.getElementById('excerpt').value,
                 title_en:   document.getElementById('title_en').value,
                 excerpt_en: document.getElementById('excerpt_en').value,
-                content:    quillID.root.innerHTML,
-                content_en: quillEN.root.innerHTML,
+                content:    getQuillHtml(quillID),
+                content_en: getQuillHtml(quillEN),
             };
             localStorage.setItem(DRAFT_KEY, JSON.stringify(data));
             const ind = document.getElementById('autosave-indicator');
-            ind.classList.remove('hidden');
-            setTimeout(() => ind.classList.add('hidden'), 2000);
+            if (ind) {
+                ind.classList.remove('hidden');
+                setTimeout(() => ind.classList.add('hidden'), 2000);
+            }
         }
 
         function clearDraft() {
@@ -334,8 +445,8 @@
 
         // Sync Quill to hidden inputs on form submit
         document.getElementById('post-form').addEventListener('submit', () => {
-            document.getElementById('content').value = quillID.root.innerHTML;
-            document.getElementById('content_en').value = quillEN.root.innerHTML;
+            document.getElementById('content').value = getQuillHtml(quillID);
+            document.getElementById('content_en').value = getQuillHtml(quillEN);
             localStorage.removeItem(DRAFT_KEY); // Clear draft on successful submit
         });
 

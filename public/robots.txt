@@ -12,5 +12,4 @@ Allow: /storage/
 Allow: /images/
 
 # XML Sitemap with Google Image extensions
-Sitemap: http://127.0.0.1:8000/sitemap.xml
-Sitemap: https://cigagade.desa.id/sitemap.xml
+Sitemap: https://desa-cigagede.id/sitemap.xml

@@ -121,6 +121,20 @@
         <priority>0.6</priority>
     </url>
 
+    <url>
+        <loc>{{ route('pengaduan.index') }}</loc>
+        <lastmod>{{ now()->toAtomString() }}</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.7</priority>
+    </url>
+
+    <url>
+        <loc>{{ route('layanan-surat.index') }}</loc>
+        <lastmod>{{ now()->toAtomString() }}</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.7</priority>
+    </url>
+
     {{-- ─── 3. Detail Setiap Berita, Pengumuman, dan Prestasi Beserta Gambarnya ─── --}}
     @foreach($posts as $post)
         @php

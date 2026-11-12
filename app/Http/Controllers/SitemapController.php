@@ -20,8 +20,7 @@ class SitemapController extends Controller
     public function index(): Response
     {
         $posts = Post::with('category')
-            ->whereNotNull('image')
-            ->where('image', '!=', '')
+            ->where('status', 'published')
             ->latest()
             ->get();
 

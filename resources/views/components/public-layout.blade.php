@@ -7,7 +7,7 @@
     @php
         $pageTitle = $title ?? 'Portal Resmi Desa Cigagade - Balubur Limbangan, Garut';
         $pageDesc = $metaDescription ?? 'Website resmi Desa Cigagade, Kecamatan Balubur Limbangan, Kabupaten Garut. Pusat informasi pembangunan, pelayanan warga, UMKM, dan potensi desa.';
-        $pageKeywords = $metaKeywords ?? 'Desa Cigagade, Balubur Limbangan, Garut, Jawa Barat, Portal Desa, Pelayanan Desa, Wisata Sunan Cibalampu, UMKM Cigagade';
+        $pageKeywords = $metaKeywords ?? 'Desa Cigagade, website resmi desa Cigagade, Balubur Limbangan, Garut, Jawa Barat, Portal Desa Cigagade, Pelayanan Desa, pemerintah desa Cigagade, berita Cigagade, UMKM Cigagade, Wisata Sunan Cibalampu, pengaduan warga Cigagade';
         $pageImage = $metaImage ?? asset('images/LOGO_GARUT.png');
         $pageImageAlt = $metaImageAlt ?? 'Logo Resmi Pemerintah Desa Cigagade';
         $pageUrl = $canonicalUrl ?? url()->current();
@@ -19,6 +19,13 @@
     <meta name="keywords" content="{{ $pageKeywords }}">
     <meta name="author" content="Pemerintah Desa Cigagade">
     <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+    <meta name="geo.region" content="ID-JB">
+    <meta name="geo.placename" content="Cigagade, Balubur Limbangan, Garut">
+    <meta name="geo.position" content="-7.1668;107.7167">
+    <meta name="ICBM" content="-7.1668, 107.7167">
+
+    {{-- Google Search Console Verification (isi setelah daftar di https://search.google.com/search-console/) --}}
+    {{-- <meta name="google-site-verification" content="GANTI_DENGAN_KODE_VERIFIKASI_ANDA"> --}}
 
     <!-- Canonical URL -->
     <link rel="canonical" href="{{ $pageUrl }}">

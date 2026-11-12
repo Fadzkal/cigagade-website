@@ -759,7 +759,7 @@
                     @foreach ($magazinePosts->slice(3, 3) as $post)
                     <div class="group flex flex-col">
                         <a href="{{ $post->getShowRoute() }}" class="block w-full h-36 sm:h-40 relative overflow-hidden mb-3 bg-slate-100 dark:bg-slate-800 rounded-xl">
-                            <img src="{{ $post->image ? asset('storage/' . $post->image) : 'https://placehold.co/500x300/1e293b/FFF?text=News' }}" alt="{{ $post->getTitle() }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                            <img src="{{ $post->image ? asset('storage/' . $post->image) : 'https://placehold.co/500x300/1e293b/FFF?text=News' }}" alt="{{ $post->getTitle() }} - Berita Desa Cigagade" title="{{ $post->getTitle() }}" loading="lazy" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
                         </a>
                         <div class="flex items-center gap-3 mb-1.5">
                             <span class="text-[10px] uppercase font-bold text-red-500 tracking-widest">{{ $post->category->name ?? 'BERITA' }}</span>
@@ -780,7 +780,7 @@
                     @php $mainPost = $magazinePosts[0]; @endphp
                     <div class="relative group overflow-hidden rounded-2xl">
                         <a href="{{ $mainPost->getShowRoute() }}" class="block w-full h-[350px] sm:h-[450px] relative overflow-hidden bg-slate-100 dark:bg-slate-800">
-                            <img src="{{ $mainPost->image ? asset('storage/' . $mainPost->image) : 'https://placehold.co/800x600/1e293b/FFF?text=News' }}" alt="{{ $mainPost->getTitle() }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
+                            <img src="{{ $mainPost->image ? asset('storage/' . $mainPost->image) : 'https://placehold.co/800x600/1e293b/FFF?text=News' }}" alt="{{ $mainPost->getTitle() }} - Berita Utama Desa Cigagade" title="{{ $mainPost->getTitle() }}" loading="lazy" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
                             <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent"></div>
                         </a>
                         <div class="absolute bottom-6 left-6 right-6 z-10 pointer-events-none">
@@ -826,7 +826,7 @@
                     @foreach ($magazinePosts->slice(6, 3) as $post)
                     <div class="group flex flex-col">
                         <a href="{{ $post->getShowRoute() }}" class="block w-full h-36 sm:h-40 relative overflow-hidden mb-3 bg-slate-100 dark:bg-slate-800 rounded-xl">
-                            <img src="{{ $post->image ? asset('storage/' . $post->image) : 'https://placehold.co/500x300/1e293b/FFF?text=News' }}" alt="{{ $post->getTitle() }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                            <img src="{{ $post->image ? asset('storage/' . $post->image) : 'https://placehold.co/500x300/1e293b/FFF?text=News' }}" alt="{{ $post->getTitle() }} - Berita Desa Cigagade" title="{{ $post->getTitle() }}" loading="lazy" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
                         </a>
                         <div class="flex items-center gap-3 mb-1.5">
                             <span class="text-[10px] uppercase font-bold text-red-500 tracking-widest">{{ $post->category->name ?? 'BERITA' }}</span>
@@ -1367,7 +1367,7 @@
                     @php $mainPrestasi = $prestasiPosts[0]; @endphp
                     <div class="h-[280px] rounded-3xl overflow-hidden relative group shadow-sm mb-6">
                         <a href="{{ $mainPrestasi->getShowRoute() }}" class="absolute inset-0 z-20"></a>
-                        <img src="{{ $mainPrestasi->image ? asset('storage/' . $mainPrestasi->image) : 'https://placehold.co/600x400/1e293b/FFF?text=Prestasi' }}" alt="{{ $mainPrestasi->getTitle() }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
+                        <img src="{{ $mainPrestasi->image ? asset('storage/' . $mainPrestasi->image) : 'https://placehold.co/600x400/1e293b/FFF?text=Prestasi' }}" alt="{{ $mainPrestasi->getTitle() }} - Prestasi Desa Cigagade" title="{{ $mainPrestasi->getTitle() }}" loading="lazy" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
                         <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent"></div>
                         <div class="absolute bottom-0 left-0 p-5 w-full z-10">
                             <span class="inline-block px-2.5 py-1 bg-indigo-600 text-white text-[10px] font-bold rounded uppercase tracking-wider mb-2 shadow-sm">
@@ -1389,7 +1389,7 @@
                         @foreach ($prestasiPosts->slice(1, 5) as $sidePrestasi)
                         <div class="flex gap-4 group cursor-pointer bg-slate-50 dark:bg-slate-900 p-3 rounded-2xl border border-slate-100 dark:border-slate-800 hover:shadow-sm transition-all duration-300">
                             <a href="{{ $sidePrestasi->getShowRoute() }}" class="w-24 h-20 sm:w-28 sm:h-24 rounded-xl overflow-hidden shrink-0 relative">
-                                <img src="{{ $sidePrestasi->image ? asset('storage/' . $sidePrestasi->image) : 'https://placehold.co/300x200/1e293b/FFF?text=Prestasi' }}" alt="{{ $sidePrestasi->getTitle() }}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
+                                <img src="{{ $sidePrestasi->image ? asset('storage/' . $sidePrestasi->image) : 'https://placehold.co/300x200/1e293b/FFF?text=Prestasi' }}" alt="{{ $sidePrestasi->getTitle() }} - Prestasi Desa Cigagade" title="{{ $sidePrestasi->getTitle() }}" loading="lazy" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
                             </a>
                             <div class="flex flex-col justify-center flex-1">
                                 <h4 class="text-sm font-bold text-slate-800 dark:text-slate-100 line-clamp-2 mb-1.5 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
@@ -1418,7 +1418,7 @@
                     @php $mainPengumuman = $pengumumanPosts[0]; @endphp
                     <div class="h-[280px] rounded-3xl overflow-hidden relative group shadow-sm mb-6">
                         <a href="{{ $mainPengumuman->getShowRoute() }}" class="absolute inset-0 z-20"></a>
-                        <img src="{{ $mainPengumuman->image ? asset('storage/' . $mainPengumuman->image) : 'https://placehold.co/600x400/1e293b/FFF?text=Pengumuman' }}" alt="{{ $mainPengumuman->getTitle() }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
+                        <img src="{{ $mainPengumuman->image ? asset('storage/' . $mainPengumuman->image) : 'https://placehold.co/600x400/1e293b/FFF?text=Pengumuman' }}" alt="{{ $mainPengumuman->getTitle() }} - Pengumuman Resmi Desa Cigagade" title="{{ $mainPengumuman->getTitle() }}" loading="lazy" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
                         <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent"></div>
                         <div class="absolute bottom-0 left-0 p-5 w-full z-10">
                             <span class="inline-block px-2.5 py-1 bg-indigo-600 text-white text-[10px] font-bold rounded uppercase tracking-wider mb-2 shadow-sm">
@@ -1440,7 +1440,7 @@
                         @foreach ($pengumumanPosts->slice(1, 5) as $sidePengumuman)
                         <div class="flex gap-4 group cursor-pointer bg-slate-50 dark:bg-slate-900 p-3 rounded-2xl border border-slate-100 dark:border-slate-800 hover:shadow-sm transition-all duration-300">
                             <a href="{{ $sidePengumuman->getShowRoute() }}" class="w-24 h-20 sm:w-28 sm:h-24 rounded-xl overflow-hidden shrink-0 relative">
-                                <img src="{{ $sidePengumuman->image ? asset('storage/' . $sidePengumuman->image) : 'https://placehold.co/300x200/1e293b/FFF?text=Pengumuman' }}" alt="{{ $sidePengumuman->getTitle() }}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
+                                <img src="{{ $sidePengumuman->image ? asset('storage/' . $sidePengumuman->image) : 'https://placehold.co/300x200/1e293b/FFF?text=Pengumuman' }}" alt="{{ $sidePengumuman->getTitle() }} - Pengumuman Resmi Desa Cigagade" title="{{ $sidePengumuman->getTitle() }}" loading="lazy" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
                             </a>
                             <div class="flex flex-col justify-center flex-1">
                                 <h4 class="text-sm font-bold text-slate-800 dark:text-slate-100 line-clamp-2 mb-1.5 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">

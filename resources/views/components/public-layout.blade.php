@@ -24,8 +24,8 @@
     <meta name="geo.position" content="-7.1668;107.7167">
     <meta name="ICBM" content="-7.1668, 107.7167">
 
-    {{-- Google Search Console Verification (isi setelah daftar di https://search.google.com/search-console/) --}}
-    {{-- <meta name="google-site-verification" content="GANTI_DENGAN_KODE_VERIFIKASI_ANDA"> --}}
+    {{-- Google Search Console Verification --}}
+    <meta name="google-site-verification" content="OBF0qd1bgyDYEMRsfa94uykIZl_LhgoybSRZ_H-4r64">
 
     <!-- Canonical URL -->
     <link rel="canonical" href="{{ $pageUrl }}">

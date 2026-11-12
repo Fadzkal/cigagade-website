@@ -16,6 +16,7 @@ use App\Models\Partner;
 use App\Models\HeroSlide;
 use App\Models\Video;
 use App\Models\InstagramReel;
+use App\Models\TiktokVideo;
 use App\Models\Umkm;
 use App\Models\Infografis;
 use App\Models\RunningText;
@@ -107,6 +108,12 @@ class HomeController extends Controller
             ->take(8)
             ->get();
 
+        $tiktokVideos = TiktokVideo::where('is_active', true)
+            ->orderBy('order')
+            ->orderBy('created_at', 'desc')
+            ->take(8)
+            ->get();
+
         return view('home', [
             'settings'          => $settings,
             'embedUrl'          => $embedUrl,
@@ -122,6 +129,7 @@ class HomeController extends Controller
             'pengumumanPosts'   => $pengumumanPosts,
             'magazinePosts'     => $magazinePosts,
             'instagramReels'    => $instagramReels,
+            'tiktokVideos'      => $tiktokVideos,
             'umkmProducts'      => Umkm::active()->latest()->take(6)->get(),
             'runningTexts'      => RunningText::where('is_active', true)->orderBy('order')->get(),
             'landscapeBanners'  => LandscapeBanner::active()->get(),

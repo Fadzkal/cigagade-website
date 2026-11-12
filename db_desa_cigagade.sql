@@ -249,6 +249,36 @@ LOCK TABLES `instagram_reels` WRITE;
 UNLOCK TABLES;
 
 --
+-- Table structure for table `tiktok_videos`
+--
+
+DROP TABLE IF EXISTS `tiktok_videos`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `tiktok_videos` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `title` varchar(255) NOT NULL,
+  `tiktok_url` varchar(255) NOT NULL,
+  `video_id` varchar(255) DEFAULT NULL,
+  `thumbnail` varchar(255) DEFAULT NULL,
+  `order` int(11) NOT NULL DEFAULT 0,
+  `is_active` tinyint(1) NOT NULL DEFAULT 1,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `tiktok_videos`
+--
+
+LOCK TABLES `tiktok_videos` WRITE;
+/*!40000 ALTER TABLE `tiktok_videos` DISABLE KEYS */;
+/*!40000 ALTER TABLE `tiktok_videos` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `job_batches`
 --
 
@@ -392,7 +422,7 @@ CREATE TABLE `migrations` (
 
 LOCK TABLES `migrations` WRITE;
 /*!40000 ALTER TABLE `migrations` DISABLE KEYS */;
-INSERT INTO `migrations` VALUES (1,'0001_01_01_000000_create_users_table',1),(2,'0001_01_01_000001_create_cache_table',1),(3,'0001_01_01_000002_create_jobs_table',1),(4,'2025_10_24_072331_add_role_to_users_table',1),(5,'2025_10_24_072638_create_categories_table',1),(6,'2025_10_24_072648_create_posts_table',1),(7,'2025_10_24_153018_create_settings_table',1),(8,'2025_10_24_153922_create_ministries_table',1),(9,'2025_10_24_154347_create_partners_table',1),(10,'2025_10_24_154733_create_galleries_table',1),(11,'2026_07_28_154807_create_hero_slides_table',1),(12,'2026_07_28_225833_add_published_at_to_posts_table',1),(13,'2026_07_29_231134_create_media_table',1),(14,'2026_07_29_231149_create_videos_table',1),(15,'2026_08_02_231258_add_views_to_posts_table',1),(16,'2026_08_03_002156_add_english_fields_to_posts_table',1),(17,'2026_08_03_215441_create_instagram_reels_table',1),(18,'2026_10_05_100000_create_visitor_logs_table',2),(19,'2026_10_05_120000_create_umkms_table',3),(20,'2026_10_05_140000_create_infografis_table',4),(21,'2026_10_05_160000_create_running_texts_table',5),(22,'2026_10_05_174438_create_landscape_banners_table',6),(23,'2026_10_26_100000_add_rw_to_users_and_posts_tables',7),(24,'2026_10_28_090000_create_surat_requests_table',8),(25,'2026_10_28_100000_create_pengaduans_table',9),(26,'2026_11_01_120000_add_status_and_validation_to_posts_table',10),(27,'2026_11_05_100000_update_pengaduans_is_public_default_to_false',11),(28,'2026_11_05_120000_clean_empty_content_en_in_posts',12),(29,'2026_11_05_130000_add_pendidikan_dan_sekolah_category',13);
+INSERT INTO `migrations` VALUES (1,'0001_01_01_000000_create_users_table',1),(2,'0001_01_01_000001_create_cache_table',1),(3,'0001_01_01_000002_create_jobs_table',1),(4,'2025_10_24_072331_add_role_to_users_table',1),(5,'2025_10_24_072638_create_categories_table',1),(6,'2025_10_24_072648_create_posts_table',1),(7,'2025_10_24_153018_create_settings_table',1),(8,'2025_10_24_153922_create_ministries_table',1),(9,'2025_10_24_154347_create_partners_table',1),(10,'2025_10_24_154733_create_galleries_table',1),(11,'2026_07_28_154807_create_hero_slides_table',1),(12,'2026_07_28_225833_add_published_at_to_posts_table',1),(13,'2026_07_29_231134_create_media_table',1),(14,'2026_07_29_231149_create_videos_table',1),(15,'2026_08_02_231258_add_views_to_posts_table',1),(16,'2026_08_03_002156_add_english_fields_to_posts_table',1),(17,'2026_08_03_215441_create_instagram_reels_table',1),(18,'2026_10_05_100000_create_visitor_logs_table',2),(19,'2026_10_05_120000_create_umkms_table',3),(20,'2026_10_05_140000_create_infografis_table',4),(21,'2026_10_05_160000_create_running_texts_table',5),(22,'2026_10_05_174438_create_landscape_banners_table',6),(23,'2026_10_26_100000_add_rw_to_users_and_posts_tables',7),(24,'2026_10_28_090000_create_surat_requests_table',8),(25,'2026_10_28_100000_create_pengaduans_table',9),(26,'2026_11_01_120000_add_status_and_validation_to_posts_table',10),(27,'2026_11_05_100000_update_pengaduans_is_public_default_to_false',11),(28,'2026_11_05_120000_clean_empty_content_en_in_posts',12),(29,'2026_11_05_130000_add_pendidikan_dan_sekolah_category',13),(30,'2026_11_12_080000_create_tiktok_videos_table',14);
 /*!40000 ALTER TABLE `migrations` ENABLE KEYS */;
 UNLOCK TABLES;
 

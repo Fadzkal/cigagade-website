@@ -1788,6 +1788,90 @@
     @endif
     {{-- ========== AKHIR SECTION INSTAGRAM REELS ========== --}}
 
+    {{-- ========== SECTION TIKTOK DESA CIGAGADE ========== --}}
+    @if(isset($tiktokVideos) && $tiktokVideos->isNotEmpty())
+    <div id="tiktok" class="pt-12 pb-24 bg-slate-50 dark:bg-slate-900 border-t border-slate-100 dark:border-slate-800" x-data="{ tiktokModalOpen: false, selectedTiktokUrl: '', selectedDirectUrl: '', selectedTiktokTitle: '' }">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            {{-- Header --}}
+            <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-10 scroll-reveal">
+                <div>
+                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-900 text-white text-xs font-bold mb-3 shadow-sm">
+                        <i class="fab fa-tiktok text-cyan-400"></i>
+                        <span>TikTok Resmi Desa Cigagade</span>
+                    </div>
+                    <h2 class="text-3xl md:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight flex items-center gap-3">
+                        <span>Keseruan Warga di TikTok</span>
+                    </h2>
+                    <p class="mt-2 text-slate-500 dark:text-slate-400 text-base md:text-lg">Video kreatif, dokumentasi kegiatan, dan ragam kreasi Desa Cigagade di TikTok</p>
+                </div>
+            </div>
+
+            {{-- Splide Carousel --}}
+            <section class="splide" id="tiktok-carousel" data-options='{"type":"slide","perPage":5,"perMove":1,"gap":"1.5rem","pagination":false,"arrows":true,"breakpoints":{"1024":{"perPage":4},"768":{"perPage":3},"640":{"perPage":2}}}'>
+                <div class="splide__track px-2 py-4">
+                    <ul class="splide__list">
+                        @foreach($tiktokVideos as $video)
+                        <li class="splide__slide">
+                            <button type="button" @click="tiktokModalOpen = true; selectedTiktokUrl = '{{ $video->embed_url }}'; selectedDirectUrl = '{{ $video->tiktok_url }}'; selectedTiktokTitle = '{{ addslashes($video->title) }}'" class="block w-full text-left group relative aspect-[9/16] rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl hover:shadow-slate-900/30 transition-all duration-300 transform hover:-translate-y-2 border border-slate-200 dark:border-slate-700 bg-slate-950">
+                                
+                                {{-- Thumbnail --}}
+                                <img src="{{ $video->thumbnail_url }}" alt="{{ $video->title }} - TikTok Desa Cigagade" title="{{ $video->title }}" loading="lazy" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
+                                
+                                {{-- Gradient Overlay --}}
+                                <div class="absolute inset-0 bg-gradient-to-t from-black/95 via-black/30 to-transparent"></div>
+                                
+                                {{-- Play Icon overlay (Center) --}}
+                                <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
+                                    <div class="w-16 h-16 bg-slate-900/60 backdrop-blur-sm border border-cyan-400/50 rounded-full flex items-center justify-center transform scale-75 group-hover:scale-100 transition-all duration-300 shadow-lg">
+                                        <i class="fas fa-play text-white text-2xl ml-1"></i>
+                                    </div>
+                                </div>
+                                
+                                {{-- Content (Bottom) --}}
+                                <div class="absolute bottom-0 left-0 p-4 w-full z-20">
+                                    <div class="flex items-center gap-2 mb-2">
+                                        <div class="w-6 h-6 bg-black border border-white/20 rounded-full flex items-center justify-center shadow">
+                                            <i class="fab fa-tiktok text-white text-[11px]"></i>
+                                        </div>
+                                        <span class="text-[11px] font-semibold text-cyan-300 tracking-wider">TikTok</span>
+                                    </div>
+                                    <h3 class="text-white font-bold text-sm leading-snug line-clamp-3 group-hover:text-cyan-200 transition-colors drop-shadow-md">
+                                        {{ $video->title }}
+                                    </h3>
+                                </div>
+                            </button>
+                        </li>
+                        @endforeach
+                    </ul>
+                </div>
+            </section>
+        </div>
+
+        {{-- Modal Player --}}
+        <div x-show="tiktokModalOpen" class="fixed inset-0 z-[100] flex items-center justify-center bg-black/90 backdrop-blur-sm p-4" style="display: none;" x-transition.opacity>
+            <div class="relative w-full max-w-sm aspect-[9/16] bg-black rounded-2xl overflow-hidden shadow-2xl flex flex-col" @click.away="tiktokModalOpen = false; selectedTiktokUrl = ''; selectedDirectUrl = ''; selectedTiktokTitle = ''">
+                <button @click="tiktokModalOpen = false; selectedTiktokUrl = ''; selectedDirectUrl = ''; selectedTiktokTitle = ''" class="absolute -top-12 right-0 text-white hover:text-gray-300 transition-colors z-[110]" aria-label="Tutup">
+                    <i class="fas fa-times text-3xl"></i>
+                </button>
+                <div class="flex-1 w-full h-full relative bg-black">
+                    <template x-if="selectedTiktokUrl">
+                        <iframe :src="selectedTiktokUrl" class="w-full h-full border-0" frameborder="0" scrolling="no" allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share" allowfullscreen></iframe>
+                    </template>
+                </div>
+                {{-- Tombol Buka Langsung di TikTok (Pasti Berhasil) --}}
+                <div class="p-3 bg-slate-900 border-t border-slate-800 flex items-center justify-between text-xs text-white">
+                    <div class="truncate mr-2 font-medium" x-text="selectedTiktokTitle"></div>
+                    <a :href="selectedDirectUrl" target="_blank" rel="noopener noreferrer" class="shrink-0 px-3 py-1.5 bg-gradient-to-r from-cyan-500 to-pink-500 hover:from-cyan-400 hover:to-pink-400 text-white font-bold rounded-lg transition flex items-center gap-1.5 shadow">
+                        <i class="fab fa-tiktok"></i>
+                        <span>Buka TikTok</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    @endif
+    {{-- ========== AKHIR SECTION TIKTOK DESA CIGAGADE ========== --}}
+
     <style>
         /* Typography & Utilities */
 

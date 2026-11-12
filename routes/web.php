@@ -20,6 +20,7 @@ use App\Http\Controllers\Dashboard\VideoController;
 use App\Http\Controllers\Dashboard\DashboardController;
 use App\Http\Controllers\Dashboard\BengkelIlmuController;
 use App\Http\Controllers\Dashboard\InstagramReelController;
+use App\Http\Controllers\Dashboard\TiktokVideoController;
 use App\Http\Controllers\Dashboard\UmkmController;
 use App\Http\Controllers\Dashboard\InfografisController;
 use App\Http\Controllers\Dashboard\RunningTextController;
@@ -135,6 +136,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
         Route::resource('/dashboard/bengkel-ilmu', BengkelIlmuController::class)->names('bengkel-ilmu');
         Route::resource('/dashboard/instagram-reels', InstagramReelController::class)->names('instagram-reels');
+        Route::resource('/dashboard/tiktok-videos', TiktokVideoController::class)->names('tiktok-videos');
 
         // RUTE LAYANAN & PERMOHONAN SURAT DESA
         Route::get('/dashboard/surat', [SuratAdminController::class, 'index'])->name('surat.admin.index');

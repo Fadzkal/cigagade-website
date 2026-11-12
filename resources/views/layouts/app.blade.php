@@ -263,6 +263,11 @@
                     <i class="fab fa-instagram mr-3 text-slate-400 group-hover:text-emerald-400 transition-colors"></i>
                     <span class="text-sm">Reels & Kabar Warga</span>
                 </a>
+                <a href="{{ route('tiktok-videos.index') }}" aria-current="{{ request()->routeIs('tiktok-videos.*') ? 'page' : '' }}"
+                   class="sidebar-link flex items-center px-3 py-2.5 text-slate-300 rounded-xl group">
+                    <i class="fab fa-tiktok mr-3 text-slate-400 group-hover:text-emerald-400 transition-colors"></i>
+                    <span class="text-sm">TikTok Desa Cigagade</span>
+                </a>
                 @endcan
 
                 {{-- LOGOUT --}}

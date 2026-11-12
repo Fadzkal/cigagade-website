@@ -32,6 +32,8 @@
 
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="{{ $pageType }}">
+    <meta property="og:locale" content="id_ID">
+    <meta property="og:locale:alternate" content="en_US">
     <meta property="og:site_name" content="Desa Cigagade">
     <meta property="og:url" content="{{ $pageUrl }}">
     <meta property="og:title" content="{{ $pageTitle }}">
@@ -39,9 +41,12 @@
     <meta property="og:image" content="{{ $pageImage }}">
     <meta property="og:image:secure_url" content="{{ $pageImage }}">
     <meta property="og:image:alt" content="{{ $pageImageAlt }}">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
 
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:site" content="@desacigagade">
     <meta name="twitter:title" content="{{ $pageTitle }}">
     <meta name="twitter:description" content="{{ $pageDesc }}">
     <meta name="twitter:image" content="{{ $pageImage }}">
@@ -53,16 +58,38 @@
         "@@context": "https://schema.org",
         "@type": "GovernmentOrganization",
         "name": "Pemerintah Desa Cigagade",
-        "alternateName": "Desa Cigagade",
+        "alternateName": ["Desa Cigagade", "Cigagade Village", "Desa Cigagede"],
         "url": "{{ url('/') }}",
-        "logo": "{{ asset('images/LOGO_GARUT.png') }}",
+        "logo": {
+            "@type": "ImageObject",
+            "url": "{{ asset('images/LOGO_GARUT.png') }}",
+            "width": 200,
+            "height": 200
+        },
         "image": "{{ $pageImage }}",
-        "description": "Website resmi Pemerintah Desa Cigagade, Kecamatan Balubur Limbangan, Kabupaten Garut, Jawa Barat.",
+        "description": "Website resmi Pemerintah Desa Cigagade, Kecamatan Balubur Limbangan, Kabupaten Garut, Jawa Barat. Pusat informasi pembangunan, pelayanan warga, dan potensi desa.",
+        "telephone": "+62858-6110-2174",
         "address": {
             "@@type": "PostalAddress",
+            "streetAddress": "Desa Cigagade",
             "addressLocality": "Balubur Limbangan",
             "addressRegion": "Jawa Barat",
+            "postalCode": "44192",
             "addressCountry": "ID"
+        },
+        "geo": {
+            "@@type": "GeoCoordinates",
+            "latitude": -7.1668,
+            "longitude": 107.7167
+        },
+        "sameAs": [
+            "https://www.instagram.com/kkn_cigagade.polman",
+            "https://id.wikipedia.org/wiki/Cigagade,_Balubur_Limbangan,_Garut"
+        ],
+        "openingHours": "Mo-Fr 08:00-16:00",
+        "areaServed": {
+            "@@type": "AdministrativeArea",
+            "name": "Desa Cigagade, Kecamatan Balubur Limbangan, Kabupaten Garut"
         }
     }
     </script>
